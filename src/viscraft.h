@@ -2,6 +2,7 @@
 	Header file includes
 */
 #include <windows.h>
+#include "cinput.h"
 
 /**
 	Defines and Globals
@@ -24,6 +25,8 @@ private:
 	char						*m_applicationName;								//!< The applications name
 	HINSTANCE					m_hinstance;									//!< The handle to the application instance
 	HWND						m_hwnd;											//!< The main application window handle
+
+	CInput						*m_input;
 
 private:
 								//! Render the current state of the world scene to the window

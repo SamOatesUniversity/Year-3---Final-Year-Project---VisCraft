@@ -17,8 +17,11 @@ int WINAPI WinMain(
 	#endif
 
 	VisCraft *const visCraft = new VisCraft();
-	if (!visCraft->Create())
+	if (!visCraft->Create()) 
+	{
+		SafeDelete(visCraft);
 		return FALSE;
+	}
 
 	visCraft->Run();
 	visCraft->Release();
