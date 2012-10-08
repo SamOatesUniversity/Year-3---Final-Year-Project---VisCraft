@@ -7,7 +7,6 @@
 	Defines and Globals
 */
 
-#define FULL_SCREEN		FALSE
 static class VisCraft*	VisCraftPtr = nullptr;
 
 /**
@@ -27,28 +26,41 @@ private:
 	HWND						m_hwnd;											//!< The main application window handle
 
 private:
-	bool						Render();								
+								//! Render the current state of the world scene to the window
+	bool						Render();		
+
+								//! Create the window we will render on
 	void						CreateWindowInternal(
-									int& width, 
-									int& height
+									int& width,									//!< A refernce for what the width of the window will be
+									int& height									//!< A refernce for what the height of the window will be
 								);
-	//void						ShutdownWindows();
 
 public:
+								//! The constructor
 								VisCraft();
+
+								//! The copy constructor
 								VisCraft(
-									const VisCraft& other
+									const VisCraft& other						//!< 
 								);
+
+								//! The destructor
 								~VisCraft();
 
+								//! Initializes the application
 	const bool					Create();
+
+								//! Destroy anything we created
 	void						Release();
+
+								//! The main run loop
 	void						Run();
 
+								//! 
 	LRESULT CALLBACK			MessageHandler(
-									HWND hwnd, 
-									UINT msg, 
-									WPARAM wParam, 
-									LPARAM lParam
+									HWND hwnd,									//!< 
+									UINT msg,									//!< 
+									WPARAM wParam,								//!< 
+									LPARAM lParam								//!< 
 								);
 };
