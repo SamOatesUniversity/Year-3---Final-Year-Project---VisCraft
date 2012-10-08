@@ -3,7 +3,7 @@
 
 /*!
  * \brief Main entry point of the application
- * \return 0 on success, else an error code
+ * \return TRUE on success, FALSE on unknown error else an error code
  */
 int WINAPI WinMain(
 	HINSTANCE hInstance,				//!< A handle to the current instance of the application.
@@ -12,6 +12,18 @@ int WINAPI WinMain(
 	int cmdshow							//!< The initial show status of the application
 	)
 {
+	#if defined(_DEBUG)
+		_CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG)|_CRTDBG_LEAK_CHECK_DF);
+	#endif
 
-	return 0;
+	VisCraft *const visCraft = new VisCraft();
+	if (!visCraft->Create())
+		return FALSE;
+
+	visCraft->Run();
+	visCraft->Release();
+
+	SafeDelete(visCraft);
+
+	return TRUE;
 }
