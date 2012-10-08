@@ -5,11 +5,6 @@
 #include "viscraft.h"
 
 /**
-	Additionally included libraries
-*/
-
-
-/**
 	Function prototypes helpers
 */
 
@@ -18,7 +13,7 @@ void SafeDelete(T*& ptr) {
 	if (ptr) 
 	{
 		delete ptr;
-		ptr = NULL;
+		ptr = nullptr;
 	}
 }
 
@@ -27,7 +22,7 @@ void SafeDelete(T*const& ptr) {
 	if (ptr) 
 	{
 		delete ptr;
-		const_cast<T*>(ptr) = NULL;
+		const_cast<T*>(ptr) = nullptr;
 	}
 }
 

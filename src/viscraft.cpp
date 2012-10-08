@@ -9,7 +9,7 @@ VisCraft::VisCraft() :
 	m_hinstance(NULL),
 	m_hwnd(NULL)
 {
-
+	m_input = nullptr;
 }
 
 /*!
@@ -42,6 +42,10 @@ const bool VisCraft::Create()
 
 	// Initialize the windows api.
 	CreateWindowInternal(screenWidth, screenHeight);
+
+	m_input = new CInput();
+	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
+		return false;
 
 	return true;
 }
@@ -145,6 +149,9 @@ void VisCraft::Run()
  */
 void VisCraft::Release()
 {
+	delete m_input;
+	m_input = nullptr;
+
 	// Show the mouse cursor.
 	ShowCursor(true);
 
