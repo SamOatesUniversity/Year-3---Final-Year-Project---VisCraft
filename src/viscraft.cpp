@@ -47,8 +47,7 @@ const bool VisCraft::Create()
 }
 
 /*!
- * \brief
- * \return
+ * \brief Create the window we will render on
  */
 void VisCraft::CreateWindowInternal( 
 		int& width, 
@@ -115,8 +114,7 @@ void VisCraft::CreateWindowInternal(
 }
 
 /*!
- * \brief
- * \return
+ * \brief the main run loop
  */
 void VisCraft::Run()
 {
@@ -143,8 +141,7 @@ void VisCraft::Run()
 }
 
 /*!
- * \brief
- * \return
+ * \brief Destroy anything we created
  */
 void VisCraft::Release()
 {
@@ -152,8 +149,8 @@ void VisCraft::Release()
 }
 
 /*!
- * \brief
- * \return
+ * \brief Render the current state of the world scene to the window
+ * \return true if successful, false otherwise.
  */
 bool VisCraft::Render()
 {
