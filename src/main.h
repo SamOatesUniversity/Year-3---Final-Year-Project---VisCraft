@@ -5,28 +5,6 @@
 #include "viscraft.h"
 
 /**
-	Function prototypes helpers
-*/
-
-template<typename T> 
-void SafeDelete(T*& ptr) {
-	if (ptr) 
-	{
-		delete ptr;
-		ptr = nullptr;
-	}
-}
-
-template<typename T> 
-void SafeDelete(T*const& ptr) {
-	if (ptr) 
-	{
-		delete ptr;
-		const_cast<T*>(ptr) = nullptr;
-	}
-}
-
-/**
 	Advanced memory leek detection
 */
 #if defined(_DEBUG)

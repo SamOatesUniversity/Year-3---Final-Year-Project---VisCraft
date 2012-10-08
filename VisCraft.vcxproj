@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cinput.h" />
+    <ClInclude Include="src\helper.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\viscraft.h" />
   </ItemGroup>

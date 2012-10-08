@@ -3,6 +3,7 @@
 */
 #include <windows.h>
 #include "cinput.h"
+#include "helper.h"
 
 /**
 	Defines and Globals
@@ -57,7 +58,7 @@ public:
 	void						Release();
 
 								//! The main run loop
-	void						Run();
+	void						Update();
 
 								//! 
 	LRESULT CALLBACK			MessageHandler(

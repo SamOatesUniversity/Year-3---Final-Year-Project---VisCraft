@@ -17,7 +17,6 @@ VisCraft::VisCraft() :
  */
 VisCraft::VisCraft(const VisCraft& other)
 {
-
 }
 
 /*!
@@ -25,7 +24,7 @@ VisCraft::VisCraft(const VisCraft& other)
  */
 VisCraft::~VisCraft() 
 {
-
+	ASSERT(!m_input, "Release has not been called before the deletion of a ViCraft object");
 }
 
 /*!
@@ -137,7 +136,7 @@ void VisCraft::Run()
 		}
 
 		// If windows signals to end the application then exit out.
-		if(msg.message == WM_QUIT || !Render())
+		if(msg.message == WM_QUIT || !Update())
 		{
 			return;
 		}
@@ -149,15 +148,13 @@ void VisCraft::Run()
  */
 void VisCraft::Release()
 {
-	delete m_input;
-	m_input = nullptr;
+	SafeDelete(m_input);
 
 	// Show the mouse cursor.
 	ShowCursor(true);
 
 	// Remove the window.
 	DestroyWindow(m_hwnd);
-	m_hwnd = NULL;
 
 	// Remove the application instance.
 	UnregisterClass(m_applicationName, m_hinstance);
@@ -171,8 +168,10 @@ void VisCraft::Release()
  * \brief Render the current state of the world scene to the window
  * \return true if successful, false otherwise.
  */
-bool VisCraft::Render()
+bool VisCraft::Update()
 {
+	m_input->Update();
+
 	return true;
 }
 
