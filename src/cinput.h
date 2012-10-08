@@ -1,3 +1,5 @@
+#pragma once
+
 /**
 	Header file includes
 */
@@ -57,4 +59,9 @@ public:
 	
 									//! Update input devices
 	bool							Update();
+
+									//! Check if a key is pressed
+	const bool						IsKeyPressed( 
+										const int key							//!< The key to check
+									);
 };

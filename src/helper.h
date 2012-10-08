@@ -16,7 +16,7 @@
 #ifndef NDEBUG
 	#define ASSERT(condition, message) \
 	do { \
-		if (!(condition)) { \
+		if (!condition) { \
 			std::stringstream msg; \
 			msg << "Assert Failed: \"" #condition "\"\n In " << __FILE__ \
 				<< "(" << __LINE__ << ")\n \"" << message << "\"" << std::endl; \
@@ -64,6 +64,19 @@ void SafeRelease(T*& ptr) {
 	if (ptr) 
 	{
 		ptr->Release();
+		ptr = nullptr;
+	}
+}
+
+/*!
+ * \brief release and delete, then null a pointer
+ */
+template<typename T> 
+void SafeReleaseDelete(T*& ptr) {
+	if (ptr) 
+	{
+		ptr->Release();
+		delete ptr;
 		ptr = nullptr;
 	}
 }

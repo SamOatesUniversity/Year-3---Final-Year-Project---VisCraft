@@ -2,7 +2,7 @@
 	Header file includes
 */
 #include <windows.h>
-#include "viscraft.h"
+#include "cviscraft.h"
 
 /**
 	Advanced memory leek detection
