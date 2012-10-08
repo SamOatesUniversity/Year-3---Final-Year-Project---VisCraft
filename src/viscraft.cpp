@@ -114,7 +114,7 @@ void VisCraft::CreateWindowInternal(
 }
 
 /*!
- * \brief the main run loop
+ * \brief The main run loop
  */
 void VisCraft::Run()
 {
@@ -145,7 +145,19 @@ void VisCraft::Run()
  */
 void VisCraft::Release()
 {
+	// Show the mouse cursor.
+	ShowCursor(true);
 
+	// Remove the window.
+	DestroyWindow(m_hwnd);
+	m_hwnd = NULL;
+
+	// Remove the application instance.
+	UnregisterClass(m_applicationName, m_hinstance);
+	m_hinstance = NULL;
+
+	// Release the pointer to this class.
+	VisCraftPtr = NULL;
 }
 
 /*!
@@ -175,7 +187,12 @@ LRESULT CALLBACK VisCraft::MessageHandler(
  * \brief
  * \return
  */
-LRESULT CALLBACK WindowsProcedure(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowsProcedure(
+		HWND hwnd, 
+		UINT umessage, 
+		WPARAM wparam, 
+		LPARAM lparam
+	)
 {
 	switch(umessage)
 	{
