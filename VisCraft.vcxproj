@@ -88,15 +88,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ccamera.cpp" />
     <ClCompile Include="src\cinput.cpp" />
+    <ClCompile Include="src\crenderer.cpp" />
+    <ClCompile Include="src\cshader.cpp" />
+    <ClCompile Include="src\cterrain.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\viscraft.cpp" />
+    <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ccamera.h" />
     <ClInclude Include="src\cinput.h" />
+    <ClInclude Include="src\crenderer.h" />
+    <ClInclude Include="src\cshader.h" />
+    <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\helper.h" />
     <ClInclude Include="src\main.h" />
-    <ClInclude Include="src\viscraft.h" />
+    <ClInclude Include="src\cviscraft.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

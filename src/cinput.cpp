@@ -17,9 +17,9 @@ CInput::CInput() :
  */
 CInput::~CInput()
 {
-	ASSERT(m_mouse, "Release has not been called before the deletion of a CInput object");
-	ASSERT(m_keyboard, "Release has not been called before the deletion of a CInput object");
-	ASSERT(m_directInput, "Release has not been called before the deletion of a CInput object");
+	ASSERT(!m_mouse, "Release has not been called before the deletion of a CInput object");
+	ASSERT(!m_keyboard, "Release has not been called before the deletion of a CInput object");
+	ASSERT(!m_directInput, "Release has not been called before the deletion of a CInput object");
 }
 
 /*!
@@ -159,4 +159,18 @@ void CInput::HandleMousePosition()
 	if (m_mouseY < 0) m_mouseY = 0;
 	if (m_mouseX > m_screenWidth) m_mouseX = m_screenWidth;
 	if (m_mouseY > m_screenHeight) m_mouseY = m_screenHeight;
+}
+
+/*!
+ * \brief Lock the mouse position to the screen
+ * \return true if the key is pressed, false otherwise
+ */
+const bool CInput::IsKeyPressed( 
+		const int key 
+	)
+{
+	if (m_keyboardState[key] & 0x80)
+		return true;
+
+	return false;
 }
