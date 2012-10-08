@@ -19,14 +19,14 @@ int WINAPI WinMain(
 	VisCraft *const visCraft = new VisCraft();
 	if (!visCraft->Create()) 
 	{
-		SafeDelete(visCraft);
+		delete visCraft;
 		return FALSE;
 	}
 
 	visCraft->Run();
-	visCraft->Release();
 
-	SafeDelete(visCraft);
+	visCraft->Release();
+	delete visCraft;
 
 	return TRUE;
 }
