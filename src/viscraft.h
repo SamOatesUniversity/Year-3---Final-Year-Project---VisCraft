@@ -31,7 +31,7 @@ private:
 
 private:
 								//! Render the current state of the world scene to the window
-	bool						Render();		
+	bool						Update();		
 
 								//! Create the window we will render on
 	void						CreateWindowInternal(
@@ -58,7 +58,7 @@ public:
 	void						Release();
 
 								//! The main run loop
-	void						Update();
+	void						Run();
 
 								//! 
 	LRESULT CALLBACK			MessageHandler(
