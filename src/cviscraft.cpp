@@ -28,8 +28,7 @@ CVisCraft::CVisCraft(const CVisCraft& other)
  */
 CVisCraft::~CVisCraft() 
 {
-	ASSERT(!m_input, "Release has not been called before the deletion of a ViCraft object");
-	ASSERT(!m_renderer, "Release has not been called before the deletion of a ViCraft object");
+	ASSERT(!m_input || !m_renderer || !m_camera || !m_terrain || !m_shader, "Release has not been called before the deletion of a VisCraft object.\nTHIS WILL LEAK MEMORY!");
 }
 
 /*!
