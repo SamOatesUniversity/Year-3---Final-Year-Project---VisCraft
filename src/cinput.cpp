@@ -50,8 +50,7 @@ bool CInput::Create(
 	if (FAILED(m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
 		return false;
 
-	if (FAILED(m_keyboard->Acquire()))
-		return false;
+	
 
 	if (FAILED(m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL)))
 		return false;
@@ -62,8 +61,8 @@ bool CInput::Create(
 	if (FAILED(m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
 		return false;
 
-	if (FAILED(m_mouse->Acquire()))
-		return false;
+	m_keyboard->Acquire();
+	m_mouse->Acquire();
 
 	return true;
 }
