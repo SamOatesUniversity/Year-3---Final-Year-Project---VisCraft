@@ -19,8 +19,10 @@
 		if (!condition) { \
 			std::stringstream msg; \
 			msg << "Assert Failed: \"" #condition "\"\n In " << __FILE__ \
-				<< "(" << __LINE__ << ")\n \"" << message << "\"" << std::endl; \
-			MessageBox(NULL, msg.str().c_str(), "Assert Failed", MB_OK | MB_ICONERROR); \
+				<< "(" << __LINE__ << ")\n \"" << message << "\"\nBreak into debugger?"; \
+			if (MessageBox(NULL, msg.str().c_str(), "Assert Failed", MB_YESNO | MB_ICONERROR) == IDYES) { \
+				DebugBreak(); \
+			} \
 		} \
 	} while (false)
 #else

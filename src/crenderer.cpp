@@ -84,7 +84,7 @@ const bool CRenderer::Create(
 	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.
-	if (FAILED(D3D11CreateDeviceAndSwapChain(
+	HRESULT result = D3D11CreateDeviceAndSwapChain(
 		NULL, 
 		D3D_DRIVER_TYPE_HARDWARE, 
 		NULL, 
@@ -97,8 +97,10 @@ const bool CRenderer::Create(
 		&m_device, 
 		NULL, 
 		&m_deviceContext
-		)))
+		);
+	if (FAILED(result))
 	{
+		ASSERT(false, "Failed to create d3d device and swap chain");
 		return false;
 	}
 
