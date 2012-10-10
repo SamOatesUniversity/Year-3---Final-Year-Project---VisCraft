@@ -39,52 +39,6 @@ const bool CRenderer::Create(
 		const int screenHeight		//!< The screen height
 	)
 {
-	//// Create a DirectX graphics interface factory.
-	//IDXGIFactory *factory = nullptr;
-	//if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory)))
-	//	return false;
-
-	//// Use the factory to create an adapter for the primary graphics interface.
-	//IDXGIAdapter *adapter = nullptr;
-	//if (FAILED(factory->EnumAdapters(0, &adapter)))
-	//	return false;
-
-	//// Enumerate the primary monitor.
-	//IDXGIOutput *adapterOutput = nullptr;
-	//if (FAILED(adapter->EnumOutputs(0, &adapterOutput)))
-	//	return false;
-
-	//// Get the number of modes that fit the display format for the monitor.
-	//unsigned int numModes = 0;
-	//if (FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL)))
-	//	return false;
-
-	//// Fill the display mode list structures.
-	//DXGI_MODE_DESC *const displayModeList = new DXGI_MODE_DESC[numModes];
-	//if (FAILED(adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList)))
-	//	return false;
-
-	//// Go through all the display modes and find the one that matches the screen width and height.
-	//// When a match is found store the numerator and denominator of the refresh rate for that monitor.
-	//unsigned int numerator = 0;
-	//unsigned int denominator = 0;
-	//for(unsigned int index = 0; index < numModes; ++index)
-	//{
-	//	if (displayModeList[index].Width == (unsigned int)screenWidth)
-	//	{
-	//		if (displayModeList[index].Height == (unsigned int)screenHeight)
-	//		{
-	//			numerator = displayModeList[index].RefreshRate.Numerator;
-	//			denominator = displayModeList[index].RefreshRate.Denominator;
-	//		}
-	//	}
-	//}
-
-	//// Get the adapter description.
-	//DXGI_ADAPTER_DESC adapterDesc;
-	//if (FAILED(adapter->GetDesc(&adapterDesc)))
-	//	return false;
-	
 	// Initialize the swap chain description.
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
