@@ -49,23 +49,35 @@ const bool CVisCraft::Create()
 	// Create the input handling class
 	m_input = new CInput();
 	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
+	{
+		Release();
 		return false;
+	}
 
 	// Create the d3d renderer class
 	m_renderer = new CRenderer();
 	if (!m_renderer->Create(m_hwnd, screenWidth, screenHeight))
+	{
+		Release();
 		return false;
+	}
 
 	m_camera = new CCamera();
 	m_camera->SetPosition(50.0f, 2.0f, -7.0f);
 
 	m_terrain = new CTerrain();
 	if (!m_terrain->Create(m_renderer))
+	{
+		Release();
 		return false;
+	}
 
 	m_shader = new CShader();
 	if (!m_shader->Create(m_renderer))
+	{
+		Release();
 		return false;
+	}
 
 	return true;
 }
