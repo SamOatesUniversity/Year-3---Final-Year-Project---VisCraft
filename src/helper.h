@@ -16,7 +16,7 @@
 #ifndef NDEBUG
 	#define ASSERT(condition, message) \
 	do { \
-		if (!condition) { \
+		if (!(condition)) { \
 			std::stringstream msg; \
 			msg << "Assert Failed: \"" #condition "\"\n In " << __FILE__ \
 				<< "(" << __LINE__ << ")\n \"" << message << "\"\nBreak into debugger?"; \
