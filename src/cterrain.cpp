@@ -1,5 +1,8 @@
 #include "cterrain.h"
 
+/*
+ *	\brief Class constructor
+*/
 CTerrain::CTerrain()
 {
 	m_renderer = nullptr;
@@ -9,11 +12,17 @@ CTerrain::CTerrain()
 	m_size = D3DXVECTOR2(256, 256);
 }
 
+/*
+ *	\brief Class destructor
+*/
 CTerrain::~CTerrain()
 {
 
 }
 
+/*
+ *	\brief Create a flat terrain
+*/
 bool CTerrain::Create( 
 		CRenderer *renderer 
 	)
@@ -26,6 +35,9 @@ bool CTerrain::Create(
 	return true;
 }
 
+/*
+ *	\brief Setup the terrain buffers to a default state
+*/
 const bool CTerrain::InitializeBuffers()
 {
 	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 8;
@@ -40,17 +52,17 @@ const bool CTerrain::InitializeBuffers()
 	{
 		for(int x = 0; x < (m_size.x - 1); ++x)
 		{
-			AddVerticie(vertices, indices, x, z + 1, index);
-			AddVerticie(vertices, indices, x + 1, z + 1, index);
+			AddVertex(vertices, indices, x, z + 1, index);
+			AddVertex(vertices, indices, x + 1, z + 1, index);
 
-			AddVerticie(vertices, indices, x + 1, z + 1, index);
-			AddVerticie(vertices, indices, x + 1, z, index);
+			AddVertex(vertices, indices, x + 1, z + 1, index);
+			AddVertex(vertices, indices, x + 1, z, index);
 
-			AddVerticie(vertices, indices, x + 1, z, index);
-			AddVerticie(vertices, indices, x, z, index);
+			AddVertex(vertices, indices, x + 1, z, index);
+			AddVertex(vertices, indices, x, z, index);
 
-			AddVerticie(vertices, indices, x, z, index);
-			AddVerticie(vertices, indices, x, z + 1, index);
+			AddVertex(vertices, indices, x, z, index);
+			AddVertex(vertices, indices, x, z + 1, index);
 		}
 	}
 
@@ -99,7 +111,10 @@ const bool CTerrain::InitializeBuffers()
 	return true;
 }
 
-void CTerrain::AddVerticie( 
+/*
+ *	\brief Add a vertex at a given x,z coordinate
+*/
+void CTerrain::AddVertex( 
 		VertexType *vertices,
 		unsigned long *indices,
 		const int x, 
@@ -113,12 +128,18 @@ void CTerrain::AddVerticie(
 	index++;
 }
 
+/*
+ *	\brief Release any resources allocated by the terrain class
+*/
 void CTerrain::Release()
 {
 	SafeRelease(m_indexBuffer);
 	SafeRelease(m_vertexBuffer);
 }
 
+/*
+ *	\brief Update the terrain for the D3D11 renderer
+*/
 void CTerrain::Update()
 {
 	// Set vertex buffer stride and offset.
