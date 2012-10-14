@@ -24,7 +24,7 @@ const bool CShader::Create(
 
 	// Compile the vertex shader code.
 	if (FAILED(D3DX11CompileFromFile(
-		vsFilename, NULL, NULL, "ColorVertexShader", "vs_5_0", 
+		vsFilename, NULL, NULL, "ColorVertexShader", "vs_4_0", 
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 		&vertexShaderBuffer, &errorMessage, NULL)))
 	{
@@ -34,7 +34,7 @@ const bool CShader::Create(
 	// Compile the pixel shader code.
 	ID3D10Blob *pixelShaderBuffer = nullptr;
 	if (FAILED(D3DX11CompileFromFile(
-		psFilename, NULL, NULL, "ColorPixelShader", "ps_5_0", 
+		psFilename, NULL, NULL, "ColorPixelShader", "ps_4_0", 
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 		&pixelShaderBuffer, &errorMessage, NULL)))
 	{
