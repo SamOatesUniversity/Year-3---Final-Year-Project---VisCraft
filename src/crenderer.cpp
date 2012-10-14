@@ -80,17 +80,14 @@ const bool CRenderer::Create(
 	// Don't set the advanced flags.
 	swapChainDesc.Flags = 0;
 
-	// Set the feature level to DirectX 11.
-	const D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
 	// Create the swap chain, Direct3D device, and Direct3D device context.
 	HRESULT result = D3D11CreateDeviceAndSwapChain(
 		NULL, 
 		D3D_DRIVER_TYPE_HARDWARE, 
 		NULL, 
-		0, 
-		&featureLevel, 
-		1, 
+		NULL, 
+		NULL, 
+		NULL, 
 		D3D11_SDK_VERSION, 
 		&swapChainDesc, 
 		&m_swapChain, 

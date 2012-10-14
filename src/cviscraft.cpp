@@ -51,6 +51,7 @@ const bool CVisCraft::Create()
 	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
 	{
 		Release();
+		ASSERT(false, "Failed to create input class");
 		return false;
 	}
 
@@ -59,6 +60,7 @@ const bool CVisCraft::Create()
 	if (!m_renderer->Create(m_hwnd, screenWidth, screenHeight))
 	{
 		Release();
+		ASSERT(false, "Failed to create renderer");
 		return false;
 	}
 
@@ -69,6 +71,7 @@ const bool CVisCraft::Create()
 	if (!m_terrain->Create(m_renderer))
 	{
 		Release();
+		ASSERT(false, "Failed to create terrain class");
 		return false;
 	}
 
@@ -76,6 +79,7 @@ const bool CVisCraft::Create()
 	if (!m_shader->Create(m_renderer))
 	{
 		Release();
+		ASSERT(false, "Failed to create/load shaders");
 		return false;
 	}
 
