@@ -8,6 +8,7 @@ CTerrain::CTerrain()
 	m_renderer = nullptr;
 	m_vertexBuffer = nullptr;
 	m_indexBuffer = nullptr;
+	m_heightMap = nullptr;
 
 	m_size = D3DXVECTOR2(256, 256);
 }
@@ -44,12 +45,7 @@ bool CTerrain::Create(
 	}
 
 	if (!InitializeBuffers(heightMap)) 
-	{
-		delete heightMap;
 		return false;
-	}
-
-	delete heightMap;
 
 	return true;
 }
@@ -118,7 +114,12 @@ const bool CTerrain::InitializeBuffers(
 
 	// Now create the vertex buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer)))
+	{
+		delete vertices;
+		delete indices;
+		delete heightMap;
 		return false;
+	}
 
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -137,11 +138,19 @@ const bool CTerrain::InitializeBuffers(
 
 	// Create the index buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer)))
+	{
+		delete vertices;
+		delete indices;
+		delete heightMap;
 		return false;
+	}
 
 	// Release the arrays now that the buffers have been created and loaded.
 	delete vertices;
 	delete indices;
+
+	SafeDelete(m_heightMap);
+	m_heightMap = heightMap;
 
 	return true;
 }
@@ -171,6 +180,7 @@ void CTerrain::Release()
 {
 	SafeRelease(m_indexBuffer);
 	SafeRelease(m_vertexBuffer);
+	SafeDelete(m_heightMap);
 }
 
 /*
@@ -266,7 +276,6 @@ const bool CTerrain::LoadHeightMap(
 		return false;
 
 	delete image;
-	delete heightMap;
 
 	return true;
 }
