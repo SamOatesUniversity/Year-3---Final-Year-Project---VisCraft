@@ -4,6 +4,14 @@
 	Header file includes
 */
 #include "crenderer.h"
+#include <stdio.h>
+
+struct HightMapType {
+	enum Enum {
+		IMAGE,
+		RAW
+	};
+};
 
 class CTerrain {
 private:
@@ -32,8 +40,9 @@ private:
 	void					AddVertex(
 								VertexType *vertices,			//!< A pointer to the vertex array
 								unsigned long *indices,			//!< A pointer to the index array
-								const int x,					//!< The x coordinate of the vertex
-								const int z,					//!< The z coordinate of the vertex
+								const float x,					//!< The x coordinate of the vertex
+								const float y,					//!< The y coordinate of the vertex
+								const float z,					//!< The z coordinate of the vertex
 								unsigned int &index				//!< The index into the arrays this vertex represents
 							);
 
@@ -60,4 +69,10 @@ public:
 							{
 								return m_indexCount;
 							}
+
+							//! Load a height map into the terrain
+	const bool				LoadHeightMap(
+								const char *heightmapLocation,									//!< The location of the heightmap to load
+								HightMapType::Enum heightmapType = HightMapType::IMAGE			//!< The type of heightmap the file conatins
+							);
 };

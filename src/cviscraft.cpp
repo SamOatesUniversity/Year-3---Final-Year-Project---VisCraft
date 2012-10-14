@@ -65,7 +65,7 @@ const bool CVisCraft::Create()
 	}
 
 	m_camera = new CCamera();
-	m_camera->SetPosition(50.0f, 2.0f, -7.0f);
+	m_camera->SetPosition(50.0f, 25.0f, -7.0f);
 
 	m_terrain = new CTerrain();
 	if (!m_terrain->Create(m_renderer))
@@ -74,6 +74,8 @@ const bool CVisCraft::Create()
 		ASSERT(false, "Failed to create terrain class");
 		return false;
 	}
+
+	m_terrain->LoadHeightMap("heightmap.bmp");
 
 	m_shader = new CShader();
 	if (!m_shader->Create(m_renderer))
