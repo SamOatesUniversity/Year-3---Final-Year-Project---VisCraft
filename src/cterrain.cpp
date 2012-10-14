@@ -29,8 +29,27 @@ bool CTerrain::Create(
 {
 	m_renderer = renderer;
 
-	if (!InitializeBuffers())
+	// create a dummy height map
+	D3DXVECTOR3 *const heightMap = new D3DXVECTOR3[static_cast<int>(m_size.x * m_size.y)];
+	// Read the image data into the height map.
+	for (int z = 0; z < m_size.y; ++z)
+	{
+		for (int x = 0; x < m_size.x; ++x)
+		{
+			const int index = static_cast<int>(m_size.y * z) + x;
+			heightMap[index].x = static_cast<float>(x);
+			heightMap[index].y = 0.0f;
+			heightMap[index].z = static_cast<float>(z);
+		}
+	}
+
+	if (!InitializeBuffers(heightMap)) 
+	{
+		delete heightMap;
 		return false;
+	}
+
+	delete heightMap;
 
 	return true;
 }
@@ -38,9 +57,14 @@ bool CTerrain::Create(
 /*
  *	\brief Setup the terrain buffers to a default state
 */
-const bool CTerrain::InitializeBuffers()
+const bool CTerrain::InitializeBuffers(
+		D3DXVECTOR3 *heightMap			//!< Heightmap to initalize the buffers too
+	)
 {
-	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 8;
+	if (heightMap == nullptr)
+		return false;
+
+	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 12;
 
 	VertexType *const vertices = new VertexType[m_vertexCount];
 
@@ -52,17 +76,28 @@ const bool CTerrain::InitializeBuffers()
 	{
 		for(int x = 0; x < (m_size.x - 1); ++x)
 		{
-			AddVertex(vertices, indices, x + 0.0f,		0.0f,		z + 1.0f,		index);
-			AddVertex(vertices, indices, x + 1.0f,		0.0f,		z + 1.0f,		index);
+			const int bottomLeft	= static_cast<int>(m_size.y * z) + x;				
+			const int bottomRight	= static_cast<int>(m_size.y * z) + (x+1);			
+			const int topLeft		= static_cast<int>(m_size.y * (z+1)) + x;			
+			const int topRight		= static_cast<int>(m_size.y * (z+1)) + (x+1);	
 
-			AddVertex(vertices, indices, x + 1.0f,		0.0f,		z + 1.0f,		index);
-			AddVertex(vertices, indices, x + 1.0f,		0.0f,		z + 1.0f,		index);
+			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
+			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
 
-			AddVertex(vertices, indices, x + 1.0f,		0.0f,		z + 0.0f,		index);
-			AddVertex(vertices, indices, x + 0.0f,		0.0f,		z + 0.0f,		index);
+			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
+			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
 
-			AddVertex(vertices, indices, x + 0.0f,		0.0f,		z + 0.0f,		index);
-			AddVertex(vertices, indices, x + 0.0f,		0.0f,		z + 1.0f,		index);
+			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
+			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
+
+			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
+			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
+
+			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
+			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
+
+			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
+			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
 		}
 	}
 
@@ -202,6 +237,7 @@ const bool CTerrain::LoadHeightMap(
 
 	fclose(file);
 
+	// get the image data into a height map array
 	D3DXVECTOR3 *const heightMap = new D3DXVECTOR3[static_cast<int>(m_size.x * m_size.y)];
 	
 	unsigned int y = 0;
@@ -225,85 +261,10 @@ const bool CTerrain::LoadHeightMap(
 	// free the old buffers
 	Release();
 
-	// load in the image data to our buffers
-	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 12;
-
-	VertexType *const vertices = new VertexType[m_vertexCount];
-
-	unsigned long *const indices = new unsigned long[m_indexCount];
-
-	unsigned int index = 0;
-
-	for (int z = 0; z < (m_size.y - 1); ++z)
-	{
-		for(int x = 0; x < (m_size.x - 1); ++x)
-		{
-			const int bottomLeft	= static_cast<int>(m_size.y * z) + x;				
-			const int bottomRight	= static_cast<int>(m_size.y * z) + (x+1);			
-			const int topLeft		= static_cast<int>(m_size.y * (z+1)) + x;			
-			const int topRight		= static_cast<int>(m_size.y * (z+1)) + (x+1);	
-
-			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
-
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
-
-			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-		}
-	}
-
-	// Set up the description of the static vertex buffer.
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the vertex data.
-	D3D11_SUBRESOURCE_DATA vertexData;
-	vertexData.pSysMem = vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	// Now create the vertex buffer.
-	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer)))
+	// load in the height map data to our buffers
+	if (!InitializeBuffers(heightMap))
 		return false;
 
-	// Set up the description of the static index buffer.
-	D3D11_BUFFER_DESC indexBufferDesc;
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the index data.
-	D3D11_SUBRESOURCE_DATA indexData;
-	indexData.pSysMem = indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	// Create the index buffer.
-	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer)))
-		return false;
-
-	// Release the arrays now that the buffers have been created and loaded.
-	delete vertices;
-	delete indices;
 	delete image;
 	delete heightMap;
 
