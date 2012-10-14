@@ -29,6 +29,8 @@ private:
 	unsigned int			m_vertexCount;						//!< The number of verticies
 	unsigned int			m_indexCount;						//!< The number of indecies
 
+	D3DXVECTOR3				*m_heightMap;						//!< The heightmap of ther terrain, used for modifying the terrain buffers		
+
 	ID3D11Buffer			*m_vertexBuffer;					//!< Terrain D3D11 vertex buffer
 	ID3D11Buffer			*m_indexBuffer;						//!< Terrain D3D11 index buffer
 
