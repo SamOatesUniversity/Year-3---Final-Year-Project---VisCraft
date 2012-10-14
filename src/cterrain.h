@@ -34,7 +34,9 @@ private:
 
 private:
 							//! Initialize the terrains vertex buffers
-	const bool				InitializeBuffers();
+	const bool				InitializeBuffers(
+								D3DXVECTOR3 *heightMap			//!< Heightmap to initalize the buffers too
+							);
 
 							//! Add a vertex at a given x,z coordinate
 	void					AddVertex(
