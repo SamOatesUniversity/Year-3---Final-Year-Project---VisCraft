@@ -24,6 +24,17 @@ struct VectorType
 	D3DXVECTOR3 position;
 };
 
+union TerrainFlags 
+{
+	struct 
+	{
+		unsigned int wireframe : 1;								//!< Should the terrain render in wireframe mode
+		#define TERRAIN_FLAG_WIREFRAME		0x01
+	};
+
+	unsigned int allflags;
+};
+
 class CTerrain {
 private:
 	//! The vertex type deceleration
@@ -34,6 +45,8 @@ private:
 	};
 
 private:
+	TerrainFlags			m_flags;							//!< Flags representing the terrain
+
 	CRenderer				*m_renderer;						//!< Pointer to the renderer object
 
 	D3DXVECTOR2				m_size;								//!< The size of the terrain
@@ -93,4 +106,28 @@ public:
 								const char *heightmapLocation,									//!< The location of the heightmap to load
 								HightMapType::Enum heightmapType = HightMapType::IMAGE			//!< The type of heightmap the file conatins
 							);
+
+							//! 
+	void					EnableFlag(
+								unsigned int flag
+							) 
+							{
+								m_flags.allflags |= flag;
+							}
+
+							//! 
+	void					DisableFlag(
+								unsigned int flag
+							) 
+							{
+								m_flags.allflags &= ~flag;
+							}
+
+							//! 
+	bool					GetFlag(
+								unsigned int flag
+							) 
+							{
+								return (m_flags.allflags & flag) == 1;
+							}
 };
