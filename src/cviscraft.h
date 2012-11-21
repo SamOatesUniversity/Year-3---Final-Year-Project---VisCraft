@@ -8,6 +8,7 @@
 #include "cterrain.h"
 #include "cshader.h"
 #include "helper.h"
+#include "cgizmo.h"
 
 /**
 	Defines and Globals
@@ -36,6 +37,8 @@ private:
 	CCamera						*m_camera;										//!< The main camera, representing the view into 3d space
 	CTerrain					*m_terrain;										//!< The terrain object
 	CShader						*m_shader;										//!< The shader we want to render the scene with
+
+	CGizmo						*m_gizmo;										//!< The xform gizmo
 
 private:
 								//! Render the current state of the world scene to the window
