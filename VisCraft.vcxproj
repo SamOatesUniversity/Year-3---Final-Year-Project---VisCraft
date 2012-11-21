@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ccamera.cpp" />
+    <ClCompile Include="src\cgizmo.cpp" />
     <ClCompile Include="src\cinput.cpp" />
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\cshader.cpp" />
@@ -101,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ccamera.h" />
+    <ClInclude Include="src\cgizmo.h" />
     <ClInclude Include="src\cinput.h" />
     <ClInclude Include="src\crenderer.h" />
     <ClInclude Include="src\cshader.h" />

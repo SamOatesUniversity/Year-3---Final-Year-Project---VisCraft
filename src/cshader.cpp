@@ -196,8 +196,8 @@ const bool CShader::Render(
 
 	// Copy the lighting variables into the constant buffer.
 	lightDataPtr->ambientColor = D3DXVECTOR4(0.05f, 0.05f, 0.05f, 0.05f);
-	lightDataPtr->diffuseColor = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
-	lightDataPtr->lightDirection = D3DXVECTOR3(0.0f, 0.0f, 0.75f);
+	lightDataPtr->diffuseColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
+	lightDataPtr->lightDirection = D3DXVECTOR3(0.0f, -0.5f, 0.75f);
 	lightDataPtr->__padding__ = 0.0f;
 
 	// Unlock the constant buffer.
