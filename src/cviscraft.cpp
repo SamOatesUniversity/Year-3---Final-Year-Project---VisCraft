@@ -204,8 +204,15 @@ void CVisCraft::Release()
 bool CVisCraft::Update()
 {
 	m_input->Update();
-	if(m_input->IsKeyPressed(DIK_ESCAPE) == true)
+	if (m_input->IsKeyPressed(DIK_ESCAPE) == true)
 		return false;
+
+	// toggle wireframe mode
+	if (m_input->IsKeyPressed(DIK_F1) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_F1)) m_input->Update();
+		m_terrain->GetFlag(TERRAIN_FLAG_WIREFRAME) ? m_terrain->DisableFlag(TERRAIN_FLAG_WIREFRAME) : m_terrain->EnableFlag(TERRAIN_FLAG_WIREFRAME);
+	}		
 
 	m_camera->Control(m_input);
 

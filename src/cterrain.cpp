@@ -5,6 +5,8 @@
 */
 CTerrain::CTerrain()
 {
+	m_flags.allflags = 0;
+	
 	m_renderer = nullptr;
 	m_vertexBuffer = nullptr;
 	m_indexBuffer = nullptr;
@@ -323,8 +325,13 @@ void CTerrain::Update()
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	m_renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case a line list.
-	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //D3D11_PRIMITIVE_TOPOLOGY_LINELIST
+	// Set the type of primitive that should be rendered from this vertex buffer
+	// if we are drawing in wireframe use a line list
+	// else use a triangle list
+	if (m_flags.wireframe)
+		m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST); 
+	else
+		m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 /*
