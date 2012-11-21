@@ -12,6 +12,8 @@ CGizmo::CGizmo()
 	m_pixelShader = nullptr;
 	m_layout = nullptr;
 	m_matrixBuffer = nullptr;
+
+	m_position = D3DXVECTOR3(0, 4, 0);
 }
 
 /*
@@ -190,11 +192,13 @@ void CGizmo::Render(
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y, m_position.z); 
 	
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
-	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
+	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);	
 
 	// Lock the constant buffer so it can be written to.
 	HRESULT result;
@@ -227,4 +231,13 @@ void CGizmo::Render(
 
 	// Render the triangle.
 	m_renderer->GetDeviceContext()->DrawIndexed(m_indexCount, 0, 0);
+}
+
+void CGizmo::Control( 
+		CInput *input									//!< 
+	)
+{
+	const D3DXVECTOR2 mousePos = input->GetMousePosition();
+	m_position.x = mousePos.x * 0.1f;
+	m_position.z = mousePos.y * 0.1f;
 }

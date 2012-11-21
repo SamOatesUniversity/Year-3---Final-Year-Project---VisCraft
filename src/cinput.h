@@ -6,6 +6,8 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#include <D3DX10math.h>
+
 #include "helper.h"
 
 /**
@@ -64,4 +66,7 @@ public:
 	const bool						IsKeyPressed( 
 										const int key							//!< The key to check
 									);
+
+									//! Get the cursor position
+	const D3DXVECTOR2				GetMousePosition() const;
 };
