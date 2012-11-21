@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{7046d5d3-cca2-498e-99ce-0bb58e4f045d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -62,5 +65,19 @@
     <ClInclude Include="src\cshader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\terrain_diffuse.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_diffuse.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_wire.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_wire.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

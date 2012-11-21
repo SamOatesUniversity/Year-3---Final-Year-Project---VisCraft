@@ -31,16 +31,16 @@ bool CTerrain::Create(
 	m_renderer = renderer;
 
 	// create a dummy height map
-	D3DXVECTOR3 *const heightMap = new D3DXVECTOR3[static_cast<int>(m_size.x * m_size.y)];
+	HeightMap *const heightMap = new HeightMap[static_cast<int>(m_size.x * m_size.y)];
 	// Read the image data into the height map.
 	for (int z = 0; z < m_size.y; ++z)
 	{
 		for (int x = 0; x < m_size.x; ++x)
 		{
 			const int index = static_cast<int>(m_size.y * z) + x;
-			heightMap[index].x = static_cast<float>(x);
-			heightMap[index].y = 0.0f;
-			heightMap[index].z = static_cast<float>(z);
+			heightMap[index].position.x = static_cast<float>(x);
+			heightMap[index].position.y = 0.0f;
+			heightMap[index].position.z = static_cast<float>(z);
 		}
 	}
 
@@ -54,13 +54,16 @@ bool CTerrain::Create(
  *	\brief Setup the terrain buffers to a default state
 */
 const bool CTerrain::InitializeBuffers(
-		D3DXVECTOR3 *heightMap			//!< Heightmap to initalize the buffers too
+		HeightMap *heightMap			//!< Heightmap to initalize the buffers too
 	)
 {
 	if (heightMap == nullptr)
 		return false;
 
-	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 12;
+	if (!CalculateNormals(heightMap))
+		return false;
+
+	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 6;
 
 	VertexType *const vertices = new VertexType[m_vertexCount];
 
@@ -77,23 +80,14 @@ const bool CTerrain::InitializeBuffers(
 			const int topLeft		= static_cast<int>(m_size.y * (z+1)) + x;			
 			const int topRight		= static_cast<int>(m_size.y * (z+1)) + (x+1);	
 
-			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
+			AddVertex(vertices, indices, heightMap[topLeft],		index);
+			AddVertex(vertices, indices, heightMap[topRight],		index);
 
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
+			AddVertex(vertices, indices, heightMap[bottomLeft],		index);
+			AddVertex(vertices, indices, heightMap[bottomLeft],		index);
 
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-			AddVertex(vertices, indices, heightMap[topLeft].x,		heightMap[topLeft].y,		heightMap[topLeft].z,		index);
-
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-
-			AddVertex(vertices, indices, heightMap[topRight].x,		heightMap[topRight].y,		heightMap[topRight].z,		index);
-			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
-
-			AddVertex(vertices, indices, heightMap[bottomRight].x,	heightMap[bottomRight].y,	heightMap[bottomRight].z,	index);
-			AddVertex(vertices, indices, heightMap[bottomLeft].x,	heightMap[bottomLeft].y,	heightMap[bottomLeft].z,	index);
+			AddVertex(vertices, indices, heightMap[topRight],		index);
+			AddVertex(vertices, indices, heightMap[bottomRight],	index);
 		}
 	}
 
@@ -161,16 +155,147 @@ const bool CTerrain::InitializeBuffers(
 void CTerrain::AddVertex( 
 		VertexType *vertices,
 		unsigned long *indices,
-		const float x, 
-		const float y, 
-		const float z, 
+		const HeightMap hm, 
 		unsigned int &index 
 	)
 {
-	vertices[index].position = D3DXVECTOR3(x, y, z);
-	vertices[index].color = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+	vertices[index].position = hm.position;
+	vertices[index].normal = hm.normal;
 	indices[index] = index;
 	index++;
+}
+
+/*
+ *	\brief Calculate the normals of the terrain
+*/
+bool CTerrain::CalculateNormals(
+		HeightMap *heightMap							//!< 
+	)
+{
+	// Create a temporary array to hold the un-normalized normal vectors.
+	VectorType *const normals = new VectorType[static_cast<int>((m_size.x - 1) * (m_size.y - 1))];
+	
+	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3], sum[3], length;
+
+	// Go through all the faces in the mesh and calculate their normals.
+	for (int z = 0; z < (m_size.y - 1); ++z)
+	{
+		for (int x = 0; x < (m_size.x - 1); ++x)
+		{
+			int index1 = static_cast<int>((z * m_size.y) + x);
+			int index2 = static_cast<int>((z * m_size.y) + (x + 1));
+			int index3 = static_cast<int>(((z + 1) * m_size.y) + x);
+
+			// Get three vertices from the face.
+			vertex1[0] = heightMap[index1].position.x;
+			vertex1[1] = heightMap[index1].position.y;
+			vertex1[2] = heightMap[index1].position.z;
+
+			vertex2[0] = heightMap[index2].position.x;
+			vertex2[1] = heightMap[index2].position.y;
+			vertex2[2] = heightMap[index2].position.z;
+
+			vertex3[0] = heightMap[index3].position.x;
+			vertex3[1] = heightMap[index3].position.y;
+			vertex3[2] = heightMap[index3].position.z;
+
+			// Calculate the two vectors for this face.
+			vector1[0] = vertex1[0] - vertex3[0];
+			vector1[1] = vertex1[1] - vertex3[1];
+			vector1[2] = vertex1[2] - vertex3[2];
+			vector2[0] = vertex3[0] - vertex2[0];
+			vector2[1] = vertex3[1] - vertex2[1];
+			vector2[2] = vertex3[2] - vertex2[2];
+
+			int index = static_cast<int>((z * (m_size.y - 1)) + x);
+
+			// Calculate the cross product of those two vectors to get the un-normalized value for this face normal.
+			normals[index].position.x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
+			normals[index].position.y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
+			normals[index].position.z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+		}
+	}
+
+	// Now go through all the vertices and take an average of each face normal 	
+	// that the vertex touches to get the averaged normal for that vertex.
+	for (int z = 0; z < m_size.y; ++z)
+	{
+		for (int x = 0; x < m_size.x; ++x)
+		{
+			// Initialize the sum.
+			sum[0] = 0.0f;
+			sum[1] = 0.0f;
+			sum[2] = 0.0f;
+
+			// Initialize the count.
+			int count = 0;
+
+			// Bottom left face.
+			if (((x - 1) >= 0) && ((z - 1) >= 0))
+			{
+				int index = static_cast<int>(((z - 1) * (m_size.y - 1)) + (x - 1));
+
+				sum[0] += normals[index].position.x;
+				sum[1] += normals[index].position.y;
+				sum[2] += normals[index].position.z;
+				count++;
+			}
+
+			// Bottom right face.
+			if ((x < (m_size.x - 1)) && ((z - 1) >= 0))
+			{
+				int index = static_cast<int>(((z - 1) * (m_size.y - 1)) + x);
+
+				sum[0] += normals[index].position.x;
+				sum[1] += normals[index].position.y;
+				sum[2] += normals[index].position.z;
+				count++;
+			}
+
+			// Upper left face.
+			if (((x - 1) >= 0) && (z < (m_size.y - 1)))
+			{
+				int index = static_cast<int>((z * (m_size.y - 1)) + (x - 1));
+
+				sum[0] += normals[index].position.x;
+				sum[1] += normals[index].position.y;
+				sum[2] += normals[index].position.z;
+				count++;
+			}
+
+			// Upper right face.
+			if ((x < (m_size.x - 1)) && (z < (m_size.y - 1)))
+			{
+				int index = static_cast<int>((z * (m_size.y - 1)) + x);
+
+				sum[0] += normals[index].position.x;
+				sum[1] += normals[index].position.y;
+				sum[2] += normals[index].position.z;
+				count++;
+			}
+
+			// Take the average of the faces touching this vertex.
+			sum[0] = (sum[0] / static_cast<float>(count));
+			sum[1] = (sum[1] / static_cast<float>(count));
+			sum[2] = (sum[2] / static_cast<float>(count));
+
+			// Calculate the length of this normal.
+			length = sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
+
+			// Get an index to the vertex location in the height map array.
+			int index = static_cast<int>((z * m_size.y) + x);
+
+			// Normalize the final shared normal for this vertex and store it in the height map array.
+			heightMap[index].normal.x = (sum[0] / length);
+			heightMap[index].normal.y = (sum[1] / length);
+			heightMap[index].normal.z = (sum[2] / length);
+		}
+	}
+
+	// Release the temporary normals.
+	delete [] normals;
+
+	return true;
 }
 
 /*
@@ -199,7 +324,7 @@ void CTerrain::Update()
 	m_renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case a line list.
-	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); //D3D11_PRIMITIVE_TOPOLOGY_LINELIST
 }
 
 /*
@@ -248,7 +373,7 @@ const bool CTerrain::LoadHeightMap(
 	fclose(file);
 
 	// get the image data into a height map array
-	D3DXVECTOR3 *const heightMap = new D3DXVECTOR3[static_cast<int>(m_size.x * m_size.y)];
+	HeightMap *const heightMap = new HeightMap[static_cast<int>(m_size.x * m_size.y)];
 	
 	unsigned int y = 0;
 
@@ -260,9 +385,9 @@ const bool CTerrain::LoadHeightMap(
 			const float height = image[y] * 0.1f;
 
 			const int index = static_cast<int>(m_size.y * z) + x;
-			heightMap[index].x = static_cast<float>(x);
-			heightMap[index].y = height;
-			heightMap[index].z = static_cast<float>(z);
+			heightMap[index].position.x = static_cast<float>(x);
+			heightMap[index].position.y = height;
+			heightMap[index].position.z = static_cast<float>(z);
 
 			y += 3;
 		}
