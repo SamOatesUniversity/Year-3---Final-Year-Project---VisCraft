@@ -14,6 +14,7 @@ CVisCraft::CVisCraft() :
 	m_camera = nullptr;
 	m_terrain = nullptr;
 	m_shader = nullptr;
+	m_gizmo = nullptr;
 }
 
 /*!
@@ -82,6 +83,14 @@ const bool CVisCraft::Create()
 	{
 		Release();
 		ASSERT(false, "Failed to create/load shaders");
+		return false;
+	}
+
+	m_gizmo = new CGizmo();
+	if (!m_gizmo->Create(m_renderer))
+	{
+		Release();
+		ASSERT(false, "Failed to create gizmo");
 		return false;
 	}
 
@@ -182,9 +191,7 @@ void CVisCraft::Release()
 	SafeDelete(m_camera);
 	SafeReleaseDelete(m_terrain);
 	SafeReleaseDelete(m_shader);
-
-	// Show the mouse cursor.
-	ShowCursor(true);
+	SafeDelete(m_gizmo);
 
 	// Remove the window.
 	DestroyWindow(m_hwnd);
@@ -256,6 +263,8 @@ const bool CVisCraft::RenderGraphics()
 
 	if (!m_shader->Render(m_terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix))
 		return false;
+
+	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix);
 
 	// Present the rendered scene to the screen.
 	m_renderer->EndScene();
