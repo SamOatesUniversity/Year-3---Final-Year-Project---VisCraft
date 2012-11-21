@@ -223,6 +223,8 @@ bool CVisCraft::Update()
 
 	m_camera->Control(m_input);
 
+	m_gizmo->Control(m_input);
+
 	if (!RenderGraphics())
 		return false;
 

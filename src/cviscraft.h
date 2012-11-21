@@ -2,13 +2,14 @@
 	Header file includes
 */
 #include <windows.h>
-#include "cinput.h"
 #include "crenderer.h"
 #include "ccamera.h"
 #include "cterrain.h"
 #include "cshader.h"
 #include "helper.h"
+#include "cinput.h"
 #include "cgizmo.h"
+
 
 /**
 	Defines and Globals

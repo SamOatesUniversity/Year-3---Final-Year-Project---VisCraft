@@ -171,3 +171,12 @@ const bool CInput::IsKeyPressed(
 
 	return false;
 }
+
+/*!
+ * \brief Lock the mouse position to the screen
+ * \return true if the key is pressed, false otherwise
+ */
+const D3DXVECTOR2 CInput::GetMousePosition() const
+{
+	return D3DXVECTOR2(static_cast<float>(m_mouseX), static_cast<float>(m_mouseY));
+}

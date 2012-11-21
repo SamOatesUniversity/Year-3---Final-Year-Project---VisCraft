@@ -4,6 +4,7 @@
 	Header file includes
 */
 #include "crenderer.h"
+#include "cinput.h"
 #include <d3dx11async.h>
 
 class CGizmo {
@@ -57,5 +58,10 @@ public:
 								D3DXMATRIX world,					//!< 
 								D3DXMATRIX view,					//!< 
 								D3DXMATRIX projection				//!< 
+							);
+
+							//! 
+	void					Control( 
+								CInput *input					//!< 
 							);
 };
