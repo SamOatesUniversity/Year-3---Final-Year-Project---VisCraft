@@ -112,10 +112,10 @@
     <ClInclude Include="src\cviscraft.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\gizmo.ps" />
+    <None Include="shaders\gizmo.vs" />
     <None Include="shaders\terrain_diffuse.ps" />
     <None Include="shaders\terrain_diffuse.vs" />
-    <None Include="shaders\terrain_wire.ps" />
-    <None Include="shaders\terrain_wire.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

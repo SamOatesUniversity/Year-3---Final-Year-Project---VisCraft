@@ -12,8 +12,11 @@ CGizmo::CGizmo()
 	m_pixelShader = nullptr;
 	m_layout = nullptr;
 	m_matrixBuffer = nullptr;
+	m_gizmoBuffer = nullptr;
 
 	m_position = D3DXVECTOR3(0, 4, 0);
+
+	m_gizmoState = GizmoState::Free;
 }
 
 /*
@@ -43,14 +46,9 @@ bool CGizmo::Create(
 	unsigned long *const indices = new unsigned long[m_indexCount];
 
 	// Load the vertex array with data.
-	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);		// Bottom left.
+	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);		// Top middle.
+	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);		// Bottom right.
 
 	// Load the index array with data.
 	indices[0] = 0;  // Bottom left.
@@ -125,7 +123,7 @@ bool CGizmo::Create(
 
 	// Now setup the layout of the data that goes into the shader.
 	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[1];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -133,14 +131,6 @@ bool CGizmo::Create(
 	polygonLayout[0].AlignedByteOffset = 0;
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "COLOR";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -165,6 +155,20 @@ bool CGizmo::Create(
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = m_renderer->GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	if (FAILED(result))
+		return false;
+
+	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+	D3D11_BUFFER_DESC gizmoBufferDesc;
+	gizmoBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	gizmoBufferDesc.ByteWidth = sizeof(CGizmo::GizmoBuffer);
+	gizmoBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	gizmoBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	gizmoBufferDesc.MiscFlags = 0;
+	gizmoBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = m_renderer->GetDevice()->CreateBuffer(&gizmoBufferDesc, NULL, &m_gizmoBuffer);
 	if (FAILED(result))
 		return false;
 
@@ -209,19 +213,41 @@ void CGizmo::Render(
 		return;
 	
 	// Get a pointer to the data in the constant buffer.
-	MatrixBuffer *const dataPtr = (MatrixBuffer*)mappedResource.pData;
+	CGizmo::MatrixBuffer *const matrixDataPtr = (CGizmo::MatrixBuffer*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->world = worldMatrix;
-	dataPtr->view = viewMatrix;
-	dataPtr->projection = projectionMatrix;
+	matrixDataPtr->world = worldMatrix;
+	matrixDataPtr->view = viewMatrix;
+	matrixDataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.
 	m_renderer->GetDeviceContext()->Unmap(m_matrixBuffer, 0);
 
+	result = m_renderer->GetDeviceContext()->Map(m_gizmoBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+		return;
+
+	// Get a pointer to the data in the constant buffer.
+	CGizmo::GizmoBuffer *const gizmoDataPtr = (CGizmo::GizmoBuffer*)mappedResource.pData;
+
+	// Copy the data into the constant buffer.
+
+	// color based upon gizmo state
+	if (m_gizmoState == GizmoState::Free)
+	{
+		gizmoDataPtr->color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	}
+	else
+	{
+		gizmoDataPtr->color = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	// Unlock the constant buffer.
+	m_renderer->GetDeviceContext()->Unmap(m_gizmoBuffer, 0);
+
 	// Finally set the constant buffer in the vertex shader with the updated values.
-	unsigned int bufferNumber = 0;
-	m_renderer->GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+	m_renderer->GetDeviceContext()->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+	m_renderer->GetDeviceContext()->VSSetConstantBuffers(1, 1, &m_gizmoBuffer);
 
 	// Set the vertex input layout.
 	m_renderer->GetDeviceContext()->IASetInputLayout(m_layout);
@@ -238,7 +264,16 @@ void CGizmo::Control(
 		CInput *input									//!< 
 	)
 {
-	const D3DXVECTOR2 mousePos = input->GetMousePosition();
-	m_position.x = mousePos.x * 0.1f;
-	m_position.z = mousePos.y * 0.1f;
+	m_gizmoState = GizmoState::Free;
+	if (input->IsMouseDown(MouseButton::Right))
+	{
+		m_gizmoState = GizmoState::Locked;
+	}
+
+	if (m_gizmoState == GizmoState::Free)
+	{
+		const D3DXVECTOR2 mousePos = input->GetMousePosition();
+		m_position.x = mousePos.x * 0.1f;
+		m_position.z = mousePos.y * 0.1f;
+	}
 }

@@ -7,13 +7,19 @@
 #include "cinput.h"
 #include <d3dx11async.h>
 
+struct GizmoState {
+	enum Enum {
+		Free,
+		Locked
+	};
+};
+
 class CGizmo {
 private:
 
 	struct Vertex
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR4 color;
 	};
 
 	struct MatrixBuffer
@@ -21,6 +27,11 @@ private:
 		D3DXMATRIX world;
 		D3DXMATRIX view;
 		D3DXMATRIX projection;
+	};
+
+	struct GizmoBuffer
+	{
+		D3DXVECTOR4 color;
 	};
 
 private:
@@ -36,8 +47,11 @@ private:
 	ID3D11PixelShader		*m_pixelShader;						//!< 
 	ID3D11InputLayout		*m_layout;							//!< 
 	ID3D11Buffer			*m_matrixBuffer;					//!< 
+	ID3D11Buffer			*m_gizmoBuffer;						//!< 
 
 	D3DXVECTOR3				m_position;							//! The position of the gizmo
+
+	GizmoState::Enum		m_gizmoState;						//! The current state of the gizmo
 
 private:
 

@@ -163,8 +163,8 @@ void CInput::HandleMousePosition()
  * \return true if the key is pressed, false otherwise
  */
 const bool CInput::IsKeyPressed( 
-		const int key 
-	)
+		const int key													//!< The key to check
+	) const
 {
 	if (m_keyboardState[key] & 0x80)
 		return true;
@@ -179,4 +179,15 @@ const bool CInput::IsKeyPressed(
 const D3DXVECTOR2 CInput::GetMousePosition() const
 {
 	return D3DXVECTOR2(static_cast<float>(m_mouseX), static_cast<float>(m_mouseY));
+}
+
+/*!
+ * \brief Get if a mouse button is down
+ * \return true if the key is pressed, false otherwise
+ */
+const bool CInput::IsMouseDown( 
+		const MouseButton::Enum button 
+	) const
+{
+	return m_mouseState.rgbButtons[button] != 0;
 }
