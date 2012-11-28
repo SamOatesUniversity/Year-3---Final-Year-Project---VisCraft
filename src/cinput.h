@@ -17,6 +17,18 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
+/**
+	Input enums
+*/
+
+struct MouseButton {
+	enum Enum {
+		Left = 0,
+		Right = 1,
+		Middle = 2		
+	};
+};
+
 class CInput {
 private:
 	IDirectInput8					*m_directInput;								//!< The direct input object
@@ -65,8 +77,13 @@ public:
 									//! Check if a key is pressed
 	const bool						IsKeyPressed( 
 										const int key							//!< The key to check
-									);
+									) const;
 
 									//! Get the cursor position
 	const D3DXVECTOR2				GetMousePosition() const;
+
+									//! Get if a mouse button is down
+	const bool						IsMouseDown(
+										const MouseButton::Enum button
+									) const;
 };

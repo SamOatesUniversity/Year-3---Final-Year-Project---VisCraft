@@ -79,10 +79,10 @@
     <None Include="shaders\terrain_diffuse.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\terrain_wire.ps">
+    <None Include="shaders\gizmo.ps">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\terrain_wire.vs">
+    <None Include="shaders\gizmo.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
