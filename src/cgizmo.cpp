@@ -193,7 +193,8 @@ void CGizmo::Render(
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y, m_position.z); 
+	// move to the position, but offset the y coordinate by one, to compensate for it been drawn around 0, 0, 0 local space
+	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y + 1.0f, m_position.z); 
 	
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);

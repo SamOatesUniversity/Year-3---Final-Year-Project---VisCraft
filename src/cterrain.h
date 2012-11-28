@@ -130,4 +130,10 @@ public:
 							{
 								return (m_flags.allflags & flag) == 1;
 							}
+
+							//! Gets the y height of the terrain at a given x and z location
+	const float				GetTerrainHeightAt(
+								const float x,														//!< The x coord to look up the y from
+								const float z														//!< The z coord to look up the y from
+							) const;
 };
