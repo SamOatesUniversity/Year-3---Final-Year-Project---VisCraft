@@ -261,13 +261,22 @@ void CGizmo::Render(
 }
 
 void CGizmo::Control( 
-		CInput *input									//!< 
+		CInput *input,									//!< 
+		CTerrain *terrain								//!<
 	)
 {
-	m_gizmoState = GizmoState::Free;
 	if (input->IsMouseDown(MouseButton::Right))
 	{
-		m_gizmoState = GizmoState::Locked;
+		if (m_gizmoState != GizmoState::Locked)
+		{
+			const D3DXVECTOR2 mousePos = input->GetMousePosition();
+			m_dragData.startY = mousePos.y;
+			m_gizmoState = GizmoState::Locked;
+		}		
+	}
+	else
+	{
+		m_gizmoState = GizmoState::Free;
 	}
 
 	if (m_gizmoState == GizmoState::Free)
@@ -275,5 +284,15 @@ void CGizmo::Control(
 		const D3DXVECTOR2 mousePos = input->GetMousePosition();
 		m_position.x = mousePos.x * 0.1f;
 		m_position.z = mousePos.y * 0.1f;
+		m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
+	}
+	else
+	{
+		const D3DXVECTOR2 mousePos = input->GetMousePosition();
+		const float moveAmount = (mousePos.y - m_dragData.startY) * 0.1f;
+		HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x, m_position.z);
+		hmap->position.y -= moveAmount;
+		terrain->UpdateHeightMap();
+		m_dragData.startY = mousePos.y;
 	}
 }

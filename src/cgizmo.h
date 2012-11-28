@@ -5,6 +5,7 @@
 */
 #include "crenderer.h"
 #include "cinput.h"
+#include "cterrain.h"
 #include <d3dx11async.h>
 
 struct GizmoState {
@@ -53,6 +54,10 @@ private:
 
 	GizmoState::Enum		m_gizmoState;						//! The current state of the gizmo
 
+	struct {
+		float startY;
+	}						m_dragData;
+
 private:
 
 public:
@@ -76,7 +81,8 @@ public:
 
 							//! 
 	void					Control( 
-								CInput *input						//!< 
+								CInput *input,						//!< 
+								CTerrain *terrain					//!< 
 							);
 
 							//! 

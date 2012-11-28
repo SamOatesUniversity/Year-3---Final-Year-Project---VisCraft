@@ -223,10 +223,7 @@ bool CVisCraft::Update()
 
 	m_camera->Control(m_input);
 
-	m_gizmo->Control(m_input);
-
-	const float gizmoY = m_terrain->GetTerrainHeightAt(m_gizmo->Position().x, m_gizmo->Position().z);
-	m_gizmo->SetYPosition(gizmoY);
+	m_gizmo->Control(m_input, m_terrain);
 
 	if (!RenderGraphics())
 		return false;

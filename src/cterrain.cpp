@@ -49,6 +49,9 @@ bool CTerrain::Create(
 	if (!InitializeBuffers(heightMap)) 
 		return false;
 
+	SafeDelete(m_heightMap);
+	m_heightMap = heightMap;
+
 	return true;
 }
 
@@ -144,9 +147,6 @@ const bool CTerrain::InitializeBuffers(
 	// Release the arrays now that the buffers have been created and loaded.
 	delete vertices;
 	delete indices;
-
-	SafeDelete(m_heightMap);
-	m_heightMap = heightMap;
 
 	return true;
 }
@@ -335,6 +335,14 @@ void CTerrain::Update()
 }
 
 /*
+ *	\brief Update the buffers from the current heightmap
+*/
+void CTerrain::UpdateHeightMap()
+{
+	InitializeBuffers(m_heightMap);
+}
+
+/*
  *	\brief Load a height map into the terrain
 */
 const bool CTerrain::LoadHeightMap( 
@@ -407,6 +415,9 @@ const bool CTerrain::LoadHeightMap(
 	if (!InitializeBuffers(heightMap))
 		return false;
 
+	SafeDelete(m_heightMap);
+	m_heightMap = heightMap;
+
 	delete image;
 
 	return true;
@@ -415,16 +426,16 @@ const bool CTerrain::LoadHeightMap(
 /*
  *	\brief Gets the y height of the terrain at a given x and z location
 */
-const float CTerrain::GetTerrainHeightAt( 
-		const float x,										//!< The x coord to look up the y from 
-		const float z										//!< The z coord to look up the y from 
+HeightMap *CTerrain::GetTerrainVertexAt( 
+		const float x,															//!< The x coord to look up the vertex from 
+		const float z															//!< The z coord to look up the vertex from 
 	) const
 {
 	D3DXVECTOR2 lookupVec = D3DXVECTOR2(x, z);
 
 	int closestVertIndex = 0;
 	float lastDistance = m_size.x * m_size.y;
-	
+
 	const int heightMapSize = static_cast<int>(m_size.x * m_size.y);
 	for (int heightMapIndex = 0; heightMapIndex < heightMapSize; ++heightMapIndex)
 	{
@@ -438,5 +449,16 @@ const float CTerrain::GetTerrainHeightAt(
 		}
 	}
 
-	return m_heightMap[closestVertIndex].position.y;
+	return &m_heightMap[closestVertIndex];
+}
+
+/*
+ *	\brief Gets the y height of the terrain at a given x and z location
+*/
+const float CTerrain::GetTerrainHeightAt( 
+		const float x,										//!< The x coord to look up the y from 
+		const float z										//!< The z coord to look up the y from 
+	) const
+{
+	return GetTerrainVertexAt(x, z)->position.y;
 }

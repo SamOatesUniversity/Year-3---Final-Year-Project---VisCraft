@@ -95,6 +95,9 @@ public:
 							//! Update the terrain for the D3D11 renderer
 	void					Update();
 
+							//! Update the buffers from the current heightmap
+	void					UpdateHeightMap();
+
 							//! Returns the index count
 	inline unsigned int		GetIndexCount() const
 							{
@@ -130,6 +133,12 @@ public:
 							{
 								return (m_flags.allflags & flag) == 1;
 							}
+
+							//! Gets the terrain vertex at a given x and z location
+	HeightMap				*GetTerrainVertexAt(
+								const float x,														//!< The x coord to look up the vertex from
+								const float z														//!< The z coord to look up the vertex from
+							) const;
 
 							//! Gets the y height of the terrain at a given x and z location
 	const float				GetTerrainHeightAt(
