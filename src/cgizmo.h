@@ -62,6 +62,21 @@ public:
 
 							//! 
 	void					Control( 
-								CInput *input					//!< 
+								CInput *input						//!< 
 							);
+
+							//! 
+	const D3DXVECTOR3		&Position() const
+							{
+								return m_position;
+							}
+
+							//! Set the Y coord of the gizmo
+	void					SetYPosition(
+								const float y						//!< THe new y coordinate
+							)
+							{
+								m_position.y = y;
+							}
+
 };

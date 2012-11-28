@@ -76,7 +76,7 @@ const bool CVisCraft::Create()
 		return false;
 	}
 
-	//m_terrain->LoadHeightMap("heightmap.bmp");
+	m_terrain->LoadHeightMap("heightmap.bmp");
 
 	m_shader = new CShader();
 	if (!m_shader->Create(m_renderer))
@@ -224,6 +224,9 @@ bool CVisCraft::Update()
 	m_camera->Control(m_input);
 
 	m_gizmo->Control(m_input);
+
+	const float gizmoY = m_terrain->GetTerrainHeightAt(m_gizmo->Position().x, m_gizmo->Position().z);
+	m_gizmo->SetYPosition(gizmoY);
 
 	if (!RenderGraphics())
 		return false;

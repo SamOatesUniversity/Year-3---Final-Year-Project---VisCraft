@@ -411,3 +411,32 @@ const bool CTerrain::LoadHeightMap(
 
 	return true;
 }
+
+/*
+ *	\brief Gets the y height of the terrain at a given x and z location
+*/
+const float CTerrain::GetTerrainHeightAt( 
+		const float x,										//!< The x coord to look up the y from 
+		const float z										//!< The z coord to look up the y from 
+	) const
+{
+	D3DXVECTOR2 lookupVec = D3DXVECTOR2(x, z);
+
+	int closestVertIndex = 0;
+	float lastDistance = m_size.x * m_size.y;
+	
+	const int heightMapSize = static_cast<int>(m_size.x * m_size.y);
+	for (int heightMapIndex = 0; heightMapIndex < heightMapSize; ++heightMapIndex)
+	{
+		const D3DXVECTOR2 currentVec = D3DXVECTOR2(m_heightMap[heightMapIndex].position.x, m_heightMap[heightMapIndex].position.z);
+		const D3DXVECTOR2 distanceVec = currentVec - lookupVec;
+		const float currentDistance = sqrt((distanceVec.x * distanceVec.x) + (distanceVec.y * distanceVec.y));
+		if (currentDistance < lastDistance)
+		{
+			lastDistance = currentDistance;
+			closestVertIndex = heightMapIndex;
+		}
+	}
+
+	return m_heightMap[closestVertIndex].position.y;
+}
