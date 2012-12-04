@@ -292,16 +292,27 @@ void CGizmo::Control(
 	else
 	{
 		const D3DXVECTOR2 mousePos = input->GetMousePosition();
-		const float moveAmount = (mousePos.y - m_dragData.startY) * 0.1f;
+		const float moveAmount = (mousePos.y - m_dragData.startY) * 0.025f;
 
-		if (moveAmount == 0.0f) return;
+		if (moveAmount == 0.0f)
+			return;
+		
+		static const int size = 1;
 
-		for (int xOffset = -2; xOffset <= 2; ++xOffset)
+		for (int xOffset = -size; xOffset <= size; ++xOffset)
 		{
-			for (int zOffset = -2; zOffset <= 2; ++zOffset)
+			for (int zOffset = -size; zOffset <= size; ++zOffset)
 			{
 				HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x + xOffset, m_position.z + zOffset);
-				hmap->position.y -= moveAmount;
+
+				float scale = 1;
+				if (xOffset < 0) scale += -xOffset; else scale += xOffset;
+				if (zOffset < 0) scale += -zOffset; else scale += zOffset;
+				scale *= 0.75f;
+
+				const float scaledMovedAmount = moveAmount / (scale);
+
+				hmap->position.y -= scaledMovedAmount;
 			}
 		}
 

@@ -76,7 +76,7 @@ const bool CVisCraft::Create()
 		return false;
 	}
 
-	m_terrain->LoadHeightMap("heightmap.bmp");
+	//m_terrain->LoadHeightMap("heightmap.bmp");
 
 	m_shader = new CShader();
 	if (!m_shader->Create(m_renderer))
