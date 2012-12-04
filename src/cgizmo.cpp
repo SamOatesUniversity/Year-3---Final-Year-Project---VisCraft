@@ -260,6 +260,9 @@ void CGizmo::Render(
 	m_renderer->GetDeviceContext()->DrawIndexed(m_indexCount, 0, 0);
 }
 
+/*
+*	\breif 
+*/
 void CGizmo::Control( 
 		CInput *input,									//!< 
 		CTerrain *terrain								//!<
@@ -290,8 +293,18 @@ void CGizmo::Control(
 	{
 		const D3DXVECTOR2 mousePos = input->GetMousePosition();
 		const float moveAmount = (mousePos.y - m_dragData.startY) * 0.1f;
-		HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x, m_position.z);
-		hmap->position.y -= moveAmount;
+
+		if (moveAmount == 0.0f) return;
+
+		for (int xOffset = -2; xOffset <= 2; ++xOffset)
+		{
+			for (int zOffset = -2; zOffset <= 2; ++zOffset)
+			{
+				HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x + xOffset, m_position.z + zOffset);
+				hmap->position.y -= moveAmount;
+			}
+		}
+
 		terrain->UpdateHeightMap();
 		m_dragData.startY = mousePos.y;
 	}
