@@ -98,10 +98,10 @@ const bool CTerrain::InitializeBuffers(
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC vertexBufferDesc;
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 
@@ -339,7 +339,45 @@ void CTerrain::Update()
 */
 void CTerrain::UpdateHeightMap()
 {
-	InitializeBuffers(m_heightMap);
+	//InitializeBuffers(m_heightMap);
+
+	if (!CalculateNormals(m_heightMap))
+		return;
+
+	D3D11_MAPPED_SUBRESOURCE resource;
+	const HRESULT result = m_renderer->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	if (FAILED(result))	
+		return;
+
+	VertexType *const vertices = static_cast<VertexType*>(resource.pData);
+
+	unsigned long *const indices = new unsigned long[m_indexCount];
+
+	unsigned int index = 0;
+
+	for (int z = 0; z < (m_size.y - 1); ++z)
+	{
+		for(int x = 0; x < (m_size.x - 1); ++x)
+		{
+			const int bottomLeft	= static_cast<int>(m_size.y * z) + x;				
+			const int bottomRight	= static_cast<int>(m_size.y * z) + (x+1);			
+			const int topLeft		= static_cast<int>(m_size.y * (z+1)) + x;			
+			const int topRight		= static_cast<int>(m_size.y * (z+1)) + (x+1);	
+
+			AddVertex(vertices, indices, m_heightMap[topLeft],		index);
+			AddVertex(vertices, indices, m_heightMap[topRight],		index);
+
+			AddVertex(vertices, indices, m_heightMap[bottomLeft],	index);
+			AddVertex(vertices, indices, m_heightMap[bottomLeft],	index);
+
+			AddVertex(vertices, indices, m_heightMap[topRight],		index);
+			AddVertex(vertices, indices, m_heightMap[bottomRight],	index);
+		}
+	}
+
+	m_renderer->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
+
+	delete indices;
 }
 
 /*
