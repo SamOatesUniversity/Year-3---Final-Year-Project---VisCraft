@@ -223,7 +223,7 @@ bool CVisCraft::Update()
 
 	m_camera->Control(m_input);
 
-	m_gizmo->Control(m_input, m_terrain);
+	m_gizmo->Control(m_input, m_terrain, m_camera);
 
 	if (!RenderGraphics())
 		return false;
@@ -266,7 +266,7 @@ const bool CVisCraft::RenderGraphics()
 	if (!m_shader->Render(m_terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix))
 		return false;
 
-	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix);
+	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix, m_camera);
 
 	// Present the rendered scene to the screen.
 	m_renderer->EndScene();
