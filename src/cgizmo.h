@@ -6,6 +6,8 @@
 #include "crenderer.h"
 #include "cinput.h"
 #include "cterrain.h"
+#include "ccamera.h"
+
 #include <d3dx11async.h>
 
 struct GizmoState {
@@ -76,13 +78,15 @@ public:
 	void					Render(
 								D3DXMATRIX world,					//!< 
 								D3DXMATRIX view,					//!< 
-								D3DXMATRIX projection				//!< 
+								D3DXMATRIX projection,				//!< 
+								CCamera *camera						//!< 
 							);
 
 							//! 
 	void					Control( 
 								CInput *input,						//!< 
-								CTerrain *terrain					//!< 
+								CTerrain *terrain,					//!< 
+								CCamera *camera						//!< 
 							);
 
 							//! 

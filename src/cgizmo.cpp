@@ -181,7 +181,8 @@ bool CGizmo::Create(
 void CGizmo::Render(
 		D3DXMATRIX worldMatrix,					//!< 
 		D3DXMATRIX viewMatrix,					//!< 
-		D3DXMATRIX projectionMatrix				//!< 
+		D3DXMATRIX projectionMatrix,			//!< 
+		CCamera *camera
 	)
 {
 	// Set vertex buffer stride and offset.
@@ -198,7 +199,7 @@ void CGizmo::Render(
 	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// move to the position, but offset the y coordinate by one, to compensate for it been drawn around 0, 0, 0 local space
-	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y + 1.0f, m_position.z); 
+	D3DXMatrixTranslation(&worldMatrix, camera->GetPosition().x + m_position.x - 100, m_position.y + 1.0f, camera->GetPosition().z + m_position.z + 100); 
 	
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
@@ -265,7 +266,8 @@ void CGizmo::Render(
 */
 void CGizmo::Control( 
 		CInput *input,									//!< 
-		CTerrain *terrain								//!<
+		CTerrain *terrain,								//!<
+		CCamera *camera
 	)
 {
 	if (input->IsMouseDown(MouseButton::Right))
@@ -297,13 +299,13 @@ void CGizmo::Control(
 		if (moveAmount == 0.0f)
 			return;
 		
-		static const int size = 1;
+		static const int size = 3;
 
 		for (int xOffset = -size; xOffset <= size; ++xOffset)
 		{
 			for (int zOffset = -size; zOffset <= size; ++zOffset)
 			{
-				HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x + xOffset, m_position.z + zOffset);
+				HeightMap *hmap = terrain->GetTerrainVertexAt(camera->GetPosition().x + m_position.x + xOffset - 100, camera->GetPosition().z + m_position.z + zOffset + 100);
 
 				float scale = 1;
 				if (xOffset < 0) scale += -xOffset; else scale += xOffset;
