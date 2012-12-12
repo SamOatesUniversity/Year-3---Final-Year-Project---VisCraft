@@ -57,7 +57,8 @@ private:
 	GizmoState::Enum		m_gizmoState;						//! The current state of the gizmo
 
 	struct {
-		float startY;
+		D3DXVECTOR2 startMousePosition;
+		float lastY;
 	}						m_dragData;
 
 private:

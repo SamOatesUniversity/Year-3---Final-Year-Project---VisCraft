@@ -24,6 +24,8 @@ private:
 	IDXGISwapChain				*m_swapChain;							//!< The device swap chain
 	ID3D11DeviceContext			*m_deviceContext;						//!< The device context
 
+	D3D11_VIEWPORT				m_viewport;								//!< The devices viewport
+
 	ID3D11RenderTargetView		*m_renderTargetView;					//!< The render target view
 	ID3D11Texture2D				*m_depthStencilBuffer;					//!< The depth stencil buffer
 	ID3D11DepthStencilState		*m_depthStencilState;					//!< The depth stencil state
@@ -77,13 +79,20 @@ public:
 
 								//! Get the d3d11 device
 	inline ID3D11Device			*GetDevice()
-	{
-		return m_device;
-	}
+								{
+									return m_device;
+								}
+
 								//! Get the d3d11 device context
 	inline ID3D11DeviceContext	*GetDeviceContext()
-	{
-		return m_deviceContext;
-	}
+								{
+									return m_deviceContext;
+								}
+
+								//! Get the devices viewport
+	D3D11_VIEWPORT				GetViewPort();
+
+								//! Get the devices viewport in a D3D10 structure
+	D3D10_VIEWPORT				GetViewPortD3D10() const;
 };
 

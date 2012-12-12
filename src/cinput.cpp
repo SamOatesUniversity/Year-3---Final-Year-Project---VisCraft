@@ -6,7 +6,6 @@
  */
 CInput::CInput() :
 	m_directInput(nullptr),
-	m_mouse(nullptr),
 	m_keyboard(nullptr)
 {
 
@@ -17,14 +16,13 @@ CInput::CInput() :
  */
 CInput::~CInput()
 {
-	ASSERT(!m_mouse, "Release has not been called before the deletion of a CInput object");
 	ASSERT(!m_keyboard, "Release has not been called before the deletion of a CInput object");
 	ASSERT(!m_directInput, "Release has not been called before the deletion of a CInput object");
 }
 
 /*!
  * \brief initialize all input devices
- * \return true on sucess, false otherwise
+ * \return true on success, false otherwise
  */
 bool CInput::Create( 
 		HINSTANCE hInstance,			//!< The applications instance handle
@@ -36,7 +34,10 @@ bool CInput::Create(
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
 
-	m_mouseX = m_mouseY = 0;
+	m_mousePosition = D3DXVECTOR2(0, 0);
+	memset(m_mouseButton, false, sizeof(MouseButton::Enum));
+
+	::ShowCursor(FALSE);
 
 	if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL)))
 		return false;
@@ -50,17 +51,7 @@ bool CInput::Create(
 	if (FAILED(m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
 		return false;
 
-	if (FAILED(m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL)))
-		return false;
-
-	if (FAILED(m_mouse->SetDataFormat(&c_dfDIMouse)))
-		return false;
-
-	if (FAILED(m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
-		return false;
-
 	m_keyboard->Acquire();
-	m_mouse->Acquire();
 
 	return true;
 }
@@ -70,16 +61,14 @@ bool CInput::Create(
  */
 void CInput::Release()
 {
-	// Release the mouse.
-	m_mouse->Unacquire();
-	SafeRelease(m_mouse);
-
 	// Release the keyboard.
 	m_keyboard->Unacquire();
 	SafeRelease(m_keyboard);
 
 	// Release the main interface to direct input.
 	SafeRelease(m_directInput);
+
+	::ShowCursor(TRUE);
 }
 
 /*!
@@ -91,13 +80,6 @@ bool CInput::Update()
 	// Read the current state of the keyboard.
 	if (!HandleKeyboard())
 		return false;
-
-	// Read the current state of the mouse.
-	if (!HandleMouse())
-		return false;
-
-	// Process the changes in the mouse.
-	HandleMousePosition();
 
 	return true;
 }
@@ -123,42 +105,6 @@ const bool CInput::HandleKeyboard()
 }
 
 /*!
- * \brief Update mouse state, or if device lost, try to reacquire it.
- * \return true on success, false otherwise
- */
-const bool CInput::HandleMouse()
-{
-	// Read the mouse device.
-	const HRESULT result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
-	if(FAILED(result))
-	{
-		// If the mouse lost focus or was not acquired then try to get control back.
-		if((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
-			m_mouse->Acquire();
-		else
-			return false;
-	}
-
-	return true;
-}
-
-/*!
- * \brief Lock the mouse position to the screen
- */
-void CInput::HandleMousePosition()
-{
-	// Update the location of the mouse cursor based on the change of the mouse location during the frame.
-	m_mouseX += m_mouseState.lX;
-	m_mouseY += m_mouseState.lY;
-
-	// Ensure the mouse location doesn't exceed the screen width or height.
-	if (m_mouseX < 0) m_mouseX = 0;
-	if (m_mouseY < 0) m_mouseY = 0;
-	if (m_mouseX > m_screenWidth) m_mouseX = m_screenWidth;
-	if (m_mouseY > m_screenHeight) m_mouseY = m_screenHeight;
-}
-
-/*!
  * \brief Lock the mouse position to the screen
  * \return true if the key is pressed, false otherwise
  */
@@ -172,13 +118,22 @@ const bool CInput::IsKeyPressed(
 	return false;
 }
 
-/*!
- * \brief Lock the mouse position to the screen
- * \return true if the key is pressed, false otherwise
- */
-const D3DXVECTOR2 CInput::GetMousePosition() const
+void CInput::SetMousePosition( 
+		const int x,						//!< The new x position of the mouse
+		const int y							//!< The new y position of the mouse
+	)
 {
-	return D3DXVECTOR2(static_cast<float>(m_mouseX), static_cast<float>(m_mouseY));
+	m_mousePosition.x = static_cast<float>(x);
+	m_mousePosition.y = static_cast<float>(y);
+}
+
+/*!
+ * \brief Get the relative mouse position
+ * \return the absolute mouse position
+ */
+const D3DXVECTOR2 CInput::GetMousePosition() const 
+{
+	return D3DXVECTOR2(static_cast<float>(m_mousePosition.x), static_cast<float>(m_mousePosition.y));
 }
 
 /*!
@@ -189,5 +144,16 @@ const bool CInput::IsMouseDown(
 		const MouseButton::Enum button 
 	) const
 {
-	return m_mouseState.rgbButtons[button] != 0;
+	return m_mouseButton[button];
+}
+
+/*
+*	\brief Sets the state of a mouse button
+*/
+void CInput::SetMouseButton( 
+		MouseButton::Enum mouseButton,							//!< The buttons of which state needs setting
+		bool down												//!< Is the button down or up?
+	)
+{
+	m_mouseButton[mouseButton] = down;
 }
