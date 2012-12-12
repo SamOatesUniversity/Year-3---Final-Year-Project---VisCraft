@@ -79,24 +79,36 @@ void CCamera::Control(
 	if (input->IsKeyPressed(DIK_W)) 
 	{
 		SetPosition(m_position.x, m_position.y, m_position.z + 1.0f);
-		return;
 	}
 
 	if (input->IsKeyPressed(DIK_S))
 	{
 		SetPosition(m_position.x, m_position.y, m_position.z - 1.0f);
-		return;
 	}
 
 	if (input->IsKeyPressed(DIK_A))
 	{
 		SetPosition(m_position.x - 1.0f, m_position.y, m_position.z);
-		return;
 	}
 
 	if (input->IsKeyPressed(DIK_D))
 	{
 		SetPosition(m_position.x + 1.0f, m_position.y, m_position.z);
-		return;
+	}
+
+	if (input->IsKeyPressed(DIK_Q))
+	{
+		SetPosition(m_position.x, m_position.y + 1.0f, m_position.z);
+	}
+
+	if (input->IsKeyPressed(DIK_Z))
+	{
+		SetPosition(m_position.x, m_position.y - 1.0f, m_position.z);
+	}
+
+	// rotate the camera in here
+	if (input->IsMouseDown(MouseButton::Left))
+	{
+
 	}
 }
