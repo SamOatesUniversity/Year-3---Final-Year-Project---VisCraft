@@ -237,12 +237,30 @@ bool CVisCraft::Update()
  */
 LRESULT CALLBACK CVisCraft::MessageHandler(
 		HWND hwnd, 
-		UINT umsg, 
-		WPARAM wparam, 
-		LPARAM lparam
+		UINT message, 
+		WPARAM wParam, 
+		LPARAM lParam
 	)
 {
-	return DefWindowProc(hwnd, umsg, wparam, lparam);
+	switch (message)
+	{
+	case WM_MOUSEMOVE:
+		{
+			const int x = (short)LOWORD(lParam);
+			const int y = (short)HIWORD(lParam);
+			m_input->SetMousePosition(x, y);
+		}
+		break;
+
+	case WM_RBUTTONUP:
+	case WM_RBUTTONDOWN:
+		{
+			m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
+		}
+		break;
+	}
+
+	return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 /*!

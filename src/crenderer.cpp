@@ -203,16 +203,15 @@ const bool CRenderer::Create(
 	m_deviceContext->RSSetState(m_rasterState);
 
 	// Setup the viewport for rendering.
-	D3D11_VIEWPORT viewport;
-	viewport.Width = (float)screenWidth;
-	viewport.Height = (float)screenHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
+	m_viewport.Width = (float)screenWidth;
+	m_viewport.Height = (float)screenHeight;
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
+	m_viewport.TopLeftX = 0.0f;
+	m_viewport.TopLeftY = 0.0f;
 
 	// Create the viewport.
-	m_deviceContext->RSSetViewports(1, &viewport);
+	m_deviceContext->RSSetViewports(1, &m_viewport);
 
 	// Setup the projection matrix.
 	const float fieldOfView = static_cast<float>(D3DX_PI) * 0.25f;
@@ -339,4 +338,29 @@ void CRenderer::GetProjectionMatrix(
 	)
 {
 	projectionMatrix = m_projectionMatrix;
+}
+
+/*!
+ * \brief Get the devices viewport
+ */
+D3D11_VIEWPORT CRenderer::GetViewPort()
+{
+	UINT noofViewPorts = 0;
+	m_deviceContext->RSGetViewports(&noofViewPorts, &m_viewport);
+	return m_viewport;
+}
+
+/*!
+ * \brief Get the devices viewport
+ */
+D3D10_VIEWPORT CRenderer::GetViewPortD3D10() const
+{
+	D3D10_VIEWPORT viewportD3D10;
+	viewportD3D10.TopLeftX = static_cast<UINT>(m_viewport.TopLeftX);
+	viewportD3D10.TopLeftY = static_cast<UINT>(m_viewport.TopLeftY);
+	viewportD3D10.Width = static_cast<UINT>(m_viewport.Width);
+	viewportD3D10.Height = static_cast<UINT>(m_viewport.Height);
+	viewportD3D10.MinDepth = m_viewport.MinDepth;
+	viewportD3D10.MaxDepth = m_viewport.MaxDepth;
+	return viewportD3D10;
 }

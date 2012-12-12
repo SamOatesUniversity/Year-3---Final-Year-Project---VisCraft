@@ -199,7 +199,7 @@ void CGizmo::Render(
 	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// move to the position, but offset the y coordinate by one, to compensate for it been drawn around 0, 0, 0 local space
-	D3DXMatrixTranslation(&worldMatrix, camera->GetPosition().x + m_position.x - 100, m_position.y + 1.0f, camera->GetPosition().z + m_position.z + 100); 
+	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y + 1.0f, m_position.z); 
 	
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
@@ -274,38 +274,74 @@ void CGizmo::Control(
 	{
 		if (m_gizmoState != GizmoState::Locked)
 		{
-			const D3DXVECTOR2 mousePos = input->GetMousePosition();
-			m_dragData.startY = mousePos.y;
+			m_dragData.startMousePosition = input->GetMousePosition();
+			m_dragData.lastY = m_dragData.startMousePosition.y;
 			m_gizmoState = GizmoState::Locked;
 		}		
 	}
 	else
 	{
+		if (m_gizmoState == GizmoState::Locked)
+		{
+			::SetCursorPos(
+				static_cast<int>(m_dragData.startMousePosition.x), 
+				static_cast<int>(m_dragData.startMousePosition.y)
+			);
+		}
 		m_gizmoState = GizmoState::Free;
 	}
 
 	if (m_gizmoState == GizmoState::Free)
 	{
 		const D3DXVECTOR2 mousePos = input->GetMousePosition();
-		m_position.x = mousePos.x * 0.1f;
-		m_position.z = mousePos.y * 0.1f;
+
+		D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
+
+		D3DXMATRIX projection;
+		m_renderer->GetProjectionMatrix(projection);
+
+		D3DXMATRIX view;
+		camera->GetViewMatrix(view);
+
+		D3DXVECTOR3 ray;
+		ray.x = ( ( ( 2.1f * mousePos.x ) / viewport.Width ) - 1 ) / projection._11;
+		ray.y = -( ( ( 2.1f * mousePos.y ) / viewport.Height ) - 1 ) / projection._22;
+		ray.z = 1.0f;
+
+		D3DXMATRIX inverseView;
+		D3DXMatrixInverse(&inverseView, NULL, &view);
+
+		D3DXVECTOR3 rayOrigin, rayDirection;
+		rayDirection.x = ray.x * inverseView._11 + ray.y * inverseView._21 + ray.z * inverseView._31;
+		rayDirection.y = ray.x * inverseView._12 + ray.y * inverseView._22 + ray.z * inverseView._32;
+		rayDirection.z = ray.x * inverseView._13 + ray.y * inverseView._23 + ray.z * inverseView._33;
+		rayOrigin.x = inverseView._41;
+		rayOrigin.y = inverseView._42;
+		rayOrigin.z = inverseView._43;
+
+		const D3DXVECTOR3 floorNorm = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+		const float distance = -(D3DXVec3Dot(&floorNorm, &rayOrigin) / D3DXVec3Dot(&floorNorm, &rayDirection));
+
+		m_position.x = rayOrigin.x + (rayDirection.x * distance);
+		m_position.z = rayOrigin.z + (rayDirection.z * distance);
 		m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
 	}
 	else
 	{
 		const D3DXVECTOR2 mousePos = input->GetMousePosition();
-		const float moveAmount = (mousePos.y - m_dragData.startY) * 0.025f;
+		const float moveAmount = (mousePos.y - m_dragData.lastY) * 0.025f;
 
 		if (moveAmount == 0.0f)
 			return;
 		
-		static const int size = 3;
+		static const int size = 2;
 
 		for (int xOffset = -size; xOffset <= size; ++xOffset)
 		{
 			for (int zOffset = -size; zOffset <= size; ++zOffset)
 			{
-				HeightMap *hmap = terrain->GetTerrainVertexAt(camera->GetPosition().x + m_position.x + xOffset - 100, camera->GetPosition().z + m_position.z + zOffset + 100);
+				HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x + xOffset, m_position.z + zOffset);
 
 				float scale = 1;
 				if (xOffset < 0) scale += -xOffset; else scale += xOffset;
@@ -319,6 +355,6 @@ void CGizmo::Control(
 		}
 
 		terrain->UpdateHeightMap();
-		m_dragData.startY = mousePos.y;
+		m_dragData.lastY = mousePos.y;
 	}
 }

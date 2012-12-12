@@ -25,7 +25,8 @@ struct MouseButton {
 	enum Enum {
 		Left = 0,
 		Right = 1,
-		Middle = 2		
+		Middle = 2,
+		Noof
 	};
 };
 
@@ -33,15 +34,14 @@ class CInput {
 private:
 	IDirectInput8					*m_directInput;								//!< The direct input object
 	IDirectInputDevice8				*m_keyboard;								//!< The keyboard input device
-	IDirectInputDevice8				*m_mouse;									//!< The mouse input device
 
 	unsigned char					m_keyboardState[256];						//!< The current key states of the keyboard
-	DIMOUSESTATE					m_mouseState;								//!< The current mouse state
 
 	int								m_screenWidth;								//!< The windows screen width
 	int								m_screenHeight;								//!< The windows screen height
-	int								m_mouseX;									//!< The current mouse x position
-	int								m_mouseY;									//!< The currunt mouse y position
+
+	D3DXVECTOR2						m_mousePosition;							//!< The position of the mouse
+	bool							m_mouseButton[MouseButton::Noof];			//!< The states of the mouse buttons
 
 private:
 									//! Update keyboard key state, or if device lost, try to reacquire it.
@@ -79,6 +79,12 @@ public:
 										const int key							//!< The key to check
 									) const;
 
+									//! Sets the position of the mouse
+	void							SetMousePosition(
+										const int x,							//!< The new x position of the mouse
+										const int y								//!< The new y position of the mouse
+									);
+
 									//! Get the cursor position
 	const D3DXVECTOR2				GetMousePosition() const;
 
@@ -86,4 +92,10 @@ public:
 	const bool						IsMouseDown(
 										const MouseButton::Enum button
 									) const;
+
+									//! Sets the state of a mouse button
+	void							SetMouseButton( 
+										MouseButton::Enum mouseButton,			//!< The buttons of which state needs setting
+										bool down								//!< Is the button down or up?
+									);
 };
