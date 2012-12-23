@@ -6,6 +6,8 @@
 CTerrain::CTerrain()
 {
 	m_flags.allflags = 0;
+	m_vertexCount = 0;
+	m_indexCount = 0;
 	
 	m_renderer = nullptr;
 	m_vertexBuffer = nullptr;
@@ -157,7 +159,7 @@ const bool CTerrain::InitializeBuffers(
 void CTerrain::AddVertex( 
 		VertexType *vertices,
 		unsigned long *indices,
-		const HeightMap hm, 
+		const HeightMap &hm, 
 		unsigned int &index 
 	)
 {
@@ -420,6 +422,7 @@ const bool CTerrain::LoadHeightMap(
 	if (fread(image, 1, imageSize, file) != imageSize)
 	{
 		ASSERT(false, "Failed to read image data");
+		delete[] image;
 		return false;
 	}
 
@@ -451,7 +454,10 @@ const bool CTerrain::LoadHeightMap(
 
 	// load in the height map data to our buffers
 	if (!InitializeBuffers(heightMap))
+	{
+		delete[] image;
 		return false;
+	}
 
 	SafeDelete(m_heightMap);
 	m_heightMap = heightMap;

@@ -58,11 +58,6 @@ public:
 								//! The constructor
 								CVisCraft();
 
-								//! The copy constructor
-								CVisCraft(
-									const CVisCraft& other						//!< 
-								);
-
 								//! The destructor
 								~CVisCraft();
 

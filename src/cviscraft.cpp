@@ -5,7 +5,7 @@
  * \brief The constructor
  */
 CVisCraft::CVisCraft() : 
-	m_applicationName(""),
+	m_applicationName(NULL),
 	m_hinstance(NULL),
 	m_hwnd(NULL)
 {
@@ -15,13 +15,6 @@ CVisCraft::CVisCraft() :
 	m_terrain = nullptr;
 	m_shader = nullptr;
 	m_gizmo = nullptr;
-}
-
-/*!
- * \brief The copy constructor
- */
-CVisCraft::CVisCraft(const CVisCraft& other)
-{
 }
 
 /*!

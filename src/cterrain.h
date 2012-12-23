@@ -68,7 +68,7 @@ private:
 	void					AddVertex(
 								VertexType *vertices,			//!< A pointer to the vertex array
 								unsigned long *indices,			//!< A pointer to the index array
-								const HeightMap hm,
+								const HeightMap &hm,
 								unsigned int &index				//!< The index into the arrays this vertex represents
 							);
 

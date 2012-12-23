@@ -8,6 +8,7 @@ CShader::CShader()
 	m_pixelShader = nullptr;
 	m_vertexShader = nullptr;
 	m_lightBuffer = nullptr;
+	m_sampleState = nullptr;
 }
 
 CShader::~CShader()

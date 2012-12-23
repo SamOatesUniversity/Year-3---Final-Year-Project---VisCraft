@@ -8,7 +8,15 @@ CInput::CInput() :
 	m_directInput(nullptr),
 	m_keyboard(nullptr)
 {
+	for (int key = 0; key < 255; ++key)
+		m_keyboardState[key] = false;
 
+	m_mousePosition = D3DXVECTOR2(0, 0);
+	for (int mouseIndex = 0; mouseIndex < MouseButton::Noof; ++ mouseIndex)
+		m_mouseButton[mouseIndex] = false;
+
+	m_screenWidth = 0;
+	m_screenHeight = 0;
 }
 
 /*!
@@ -33,10 +41,6 @@ bool CInput::Create(
 {
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
-
-	m_mousePosition = D3DXVECTOR2(0, 0);
-	for (int mouseIndex = 0; mouseIndex < MouseButton::Noof; ++ mouseIndex)
-		m_mouseButton[mouseIndex] = false;
 
 	::ShowCursor(FALSE);
 
