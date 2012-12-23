@@ -35,7 +35,8 @@ bool CInput::Create(
 	m_screenHeight = screenHeight;
 
 	m_mousePosition = D3DXVECTOR2(0, 0);
-	memset(m_mouseButton, false, sizeof(MouseButton::Enum));
+	for (int mouseIndex = 0; mouseIndex < MouseButton::Noof; ++ mouseIndex)
+		m_mouseButton[mouseIndex] = false;
 
 	::ShowCursor(FALSE);
 

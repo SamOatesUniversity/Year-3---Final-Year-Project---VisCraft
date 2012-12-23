@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../cterrain.h"
-#include "../cinput.h"
-
+#include "../cgizmo.h"
 
 class IBrush {
+
+friend class CGizmo;
 
 protected:
 
@@ -23,9 +23,11 @@ public:
 
 													//! Apply the brush to the terrain
 	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling the brush
 														CInput *input,								//!< The input device being used for the brush
 														CTerrain *terrain							//!< The terrain object we want to apply the brush too
 													) = 0;
 
-
+													//! Gets whether the brush is lockable or not
+	virtual bool									IsLockable() = 0;
 };

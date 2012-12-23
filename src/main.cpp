@@ -6,10 +6,10 @@
  * \return TRUE on success, FALSE on unknown error else an error code
  */
 int WINAPI WinMain(
-	HINSTANCE hInstance,				//!< A handle to the current instance of the application.
-	HINSTANCE hPrevInstance,			//!< A handle to the previous instance of the application. This parameter is always NULL.
-	LPSTR cmdline,						//!< Command line arguments
-	int cmdshow							//!< The initial show status of the application
+	_In_ HINSTANCE hInstance,				//!< A handle to the current instance of the application.
+	_In_opt_ HINSTANCE hPrevInstance,			//!< A handle to the previous instance of the application. This parameter is always NULL.
+	_In_ LPSTR cmdline,						//!< Command line arguments
+	_In_ int cmdshow							//!< The initial show status of the application
 	)
 {
 	#if defined(_DEBUG)

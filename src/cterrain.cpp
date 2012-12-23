@@ -114,8 +114,8 @@ const bool CTerrain::InitializeBuffers(
 	// Now create the vertex buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer)))
 	{
-		delete vertices;
-		delete indices;
+		delete[] vertices;
+		delete[] indices;
 		delete heightMap;
 		return false;
 	}
@@ -138,15 +138,15 @@ const bool CTerrain::InitializeBuffers(
 	// Create the index buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer)))
 	{
-		delete vertices;
-		delete indices;
+		delete[] vertices;
+		delete[] indices;
 		delete heightMap;
 		return false;
 	}
 
 	// Release the arrays now that the buffers have been created and loaded.
-	delete vertices;
-	delete indices;
+	delete[] vertices;
+	delete[] indices;
 
 	return true;
 }
@@ -377,7 +377,7 @@ void CTerrain::UpdateHeightMap()
 
 	m_renderer->GetDeviceContext()->Unmap(m_vertexBuffer, 0);
 
-	delete indices;
+	delete[] indices;
 }
 
 /*
@@ -456,7 +456,7 @@ const bool CTerrain::LoadHeightMap(
 	SafeDelete(m_heightMap);
 	m_heightMap = heightMap;
 
-	delete image;
+	delete[] image;
 
 	return true;
 }
