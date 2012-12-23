@@ -19,6 +19,9 @@
     <Filter Include="Header Files\brush">
       <UniqueIdentifier>{85105c8e-bb53-4599-8cda-00a54d9a4327}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\brush">
+      <UniqueIdentifier>{3af308a8-c4c1-4a8f-be0e-41e46c1a699a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="src\cgizmo.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brush\CBrushDeform.cpp">
+      <Filter>Source Files\brush</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +81,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\brush\IBrush.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\CBrushDeform.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\CBrushRaise.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\CBrushLower.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\CBrushSmooth.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\CBrushNoise.h">
+      <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brushes.h">
       <Filter>Header Files\brush</Filter>
     </ClInclude>
   </ItemGroup>

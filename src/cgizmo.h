@@ -7,13 +7,26 @@
 #include "cinput.h"
 #include "cterrain.h"
 #include "ccamera.h"
+#include "brushes.h"
 
 #include <d3dx11async.h>
+#include <vector>
 
 struct GizmoState {
 	enum Enum {
 		Free,
 		Locked
+	};
+};
+
+struct BrushType {
+	enum Enum {
+		Deform,
+		Raise,
+		Lower,
+		Smooth,
+		Noise,
+		Noof
 	};
 };
 
@@ -53,13 +66,15 @@ private:
 	ID3D11Buffer			*m_gizmoBuffer;						//!< 
 
 	D3DXVECTOR3				m_position;							//! The position of the gizmo
-
 	GizmoState::Enum		m_gizmoState;						//! The current state of the gizmo
 
 	struct {
 		D3DXVECTOR2 startMousePosition;
 		float lastY;
 	}						m_dragData;
+
+	BrushType::Enum			m_currentBrush;						//!< The currently active brush
+	std::vector<IBrush*>	m_brush;							//!< A list of all the avaluble brushes
 
 private:
 
