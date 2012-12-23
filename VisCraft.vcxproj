@@ -101,6 +101,7 @@
     <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\brush\IBrush.h" />
     <ClInclude Include="src\ccamera.h" />
     <ClInclude Include="src\cgizmo.h" />
     <ClInclude Include="src\cinput.h" />

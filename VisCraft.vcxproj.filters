@@ -16,6 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{7046d5d3-cca2-498e-99ce-0bb58e4f045d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\brush">
+      <UniqueIdentifier>{85105c8e-bb53-4599-8cda-00a54d9a4327}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="src\cgizmo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\brush\IBrush.h">
+      <Filter>Header Files\brush</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
