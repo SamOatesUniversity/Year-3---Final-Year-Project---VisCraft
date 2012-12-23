@@ -16,6 +16,9 @@ void CBrushDeform::Apply(
 		CTerrain *terrain				//!< The terrain object we want to apply the brush too 
 	)
 {
+	if (gizmo->GetGizmoState() != GizmoState::Locked)
+		return;
+
 	const D3DXVECTOR2 mousePos = input->GetMousePosition();
 	const float moveAmount = (mousePos.y - gizmo->DragData().lastY) * 0.025f;
 

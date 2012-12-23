@@ -129,4 +129,9 @@ public:
 								return m_dragData;
 							}
 
+	GizmoState::Enum		GetGizmoState() const
+							{
+								return m_gizmoState;
+							}
+
 };
