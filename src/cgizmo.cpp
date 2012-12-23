@@ -80,7 +80,11 @@ bool CGizmo::Create(
 
 	// Now create the vertex buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer)))
+	{
+		delete[] vertices;
+		delete[] indices;
 		return false;
+	}
 
 	// Set up the description of the static index buffer.
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -99,7 +103,11 @@ bool CGizmo::Create(
 
 	// Create the index buffer.
 	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer)))
+	{
+		delete[] vertices;
+		delete[] indices;
 		return false;
+	}
 
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete[] vertices;
