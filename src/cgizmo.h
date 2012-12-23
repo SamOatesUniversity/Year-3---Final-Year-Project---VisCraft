@@ -31,6 +31,9 @@ struct BrushType {
 };
 
 class CGizmo {
+
+friend class IBrush;
+
 private:
 
 	struct Vertex
@@ -50,6 +53,11 @@ private:
 		D3DXVECTOR4 color;
 	};
 
+	struct DragData {
+		D3DXVECTOR2 startMousePosition;
+		float lastY;
+	};
+
 private:
 
 	CRenderer				*m_renderer;						//!< Pointer to the renderer object
@@ -65,13 +73,9 @@ private:
 	ID3D11Buffer			*m_matrixBuffer;					//!< 
 	ID3D11Buffer			*m_gizmoBuffer;						//!< 
 
-	D3DXVECTOR3				m_position;							//! The position of the gizmo
-	GizmoState::Enum		m_gizmoState;						//! The current state of the gizmo
-
-	struct {
-		D3DXVECTOR2 startMousePosition;
-		float lastY;
-	}						m_dragData;
+	D3DXVECTOR3				m_position;							//!< The position of the gizmo
+	GizmoState::Enum		m_gizmoState;						//!< The current state of the gizmo
+	DragData				m_dragData;							//!<
 
 	BrushType::Enum			m_currentBrush;						//!< The currently active brush
 	std::vector<IBrush*>	m_brush;							//!< A list of all the avaluble brushes
@@ -117,6 +121,12 @@ public:
 							)
 							{
 								m_position.y = y;
+							}
+
+							//! Grab a reference of the gizmos drag data
+	DragData				&DragData()
+							{
+								return m_dragData;
 							}
 
 };

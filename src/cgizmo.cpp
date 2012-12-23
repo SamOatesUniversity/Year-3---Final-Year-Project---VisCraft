@@ -277,28 +277,33 @@ void CGizmo::Render(
 void CGizmo::Control( 
 		CInput *input,									//!< 
 		CTerrain *terrain,								//!<
-		CCamera *camera
+		CCamera *camera									//!< 
 	)
 {
-	if (input->IsMouseDown(MouseButton::Right))
+	IBrush *const brush = m_brush[m_currentBrush];	
+
+	if (brush->IsLockable())
 	{
-		if (m_gizmoState != GizmoState::Locked)
+		if (input->IsMouseDown(MouseButton::Right))
 		{
-			m_dragData.startMousePosition = input->GetMousePosition();
-			m_dragData.lastY = m_dragData.startMousePosition.y;
-			m_gizmoState = GizmoState::Locked;
-		}		
-	}
-	else
-	{
-		if (m_gizmoState == GizmoState::Locked)
-		{
-			::SetCursorPos(
-				static_cast<int>(m_dragData.startMousePosition.x), 
-				static_cast<int>(m_dragData.startMousePosition.y)
-			);
+			if (m_gizmoState != GizmoState::Locked)
+			{
+				m_dragData.startMousePosition = input->GetMousePosition();
+				m_dragData.lastY = m_dragData.startMousePosition.y;
+				m_gizmoState = GizmoState::Locked;
+			}		
 		}
-		m_gizmoState = GizmoState::Free;
+		else
+		{
+			if (m_gizmoState == GizmoState::Locked)
+			{
+				::SetCursorPos(
+					static_cast<int>(m_dragData.startMousePosition.x), 
+					static_cast<int>(m_dragData.startMousePosition.y)
+					);
+			}
+			m_gizmoState = GizmoState::Free;
+		}
 	}
 
 	if (m_gizmoState == GizmoState::Free)
@@ -337,34 +342,6 @@ void CGizmo::Control(
 		m_position.z = rayOrigin.z + (rayDirection.z * distance);
 		m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
 	}
-	else
-	{
-		const D3DXVECTOR2 mousePos = input->GetMousePosition();
-		const float moveAmount = (mousePos.y - m_dragData.lastY) * 0.025f;
 
-		if (moveAmount == 0.0f)
-			return;
-		
-		static const int size = 2;
-
-		for (int xOffset = -size; xOffset <= size; ++xOffset)
-		{
-			for (int zOffset = -size; zOffset <= size; ++zOffset)
-			{
-				HeightMap *hmap = terrain->GetTerrainVertexAt(m_position.x + xOffset, m_position.z + zOffset);
-
-				float scale = 1;
-				if (xOffset < 0) scale += -xOffset; else scale += xOffset;
-				if (zOffset < 0) scale += -zOffset; else scale += zOffset;
-				scale *= 0.75f;
-
-				const float scaledMovedAmount = moveAmount / (scale);
-
-				hmap->position.y -= scaledMovedAmount;
-			}
-		}
-
-		terrain->UpdateHeightMap();
-		m_dragData.lastY = mousePos.y;
-	}
+	brush->Apply(this, input, terrain);
 }
