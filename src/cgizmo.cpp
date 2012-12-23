@@ -17,6 +17,9 @@ CGizmo::CGizmo()
 	m_position = D3DXVECTOR3(0, 4, 0);
 
 	m_gizmoState = GizmoState::Free;
+
+	m_currentBrush = BrushType::Deform;
+	m_brush.resize(BrushType::Noof);
 }
 
 /*
@@ -171,6 +174,8 @@ bool CGizmo::Create(
 	result = m_renderer->GetDevice()->CreateBuffer(&gizmoBufferDesc, NULL, &m_gizmoBuffer);
 	if (FAILED(result))
 		return false;
+
+	m_brush[BrushType::Deform] = new CBrushDeform(); 
 
 	return true;
 }

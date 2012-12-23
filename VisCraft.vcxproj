@@ -91,6 +91,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\brush\CBrushDeform.cpp" />
     <ClCompile Include="src\ccamera.cpp" />
     <ClCompile Include="src\cgizmo.cpp" />
     <ClCompile Include="src\cinput.cpp" />
@@ -101,6 +102,12 @@
     <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\brushes.h" />
+    <ClInclude Include="src\brush\CBrushDeform.h" />
+    <ClInclude Include="src\brush\CBrushLower.h" />
+    <ClInclude Include="src\brush\CBrushNoise.h" />
+    <ClInclude Include="src\brush\CBrushRaise.h" />
+    <ClInclude Include="src\brush\CBrushSmooth.h" />
     <ClInclude Include="src\brush\IBrush.h" />
     <ClInclude Include="src\ccamera.h" />
     <ClInclude Include="src\cgizmo.h" />
