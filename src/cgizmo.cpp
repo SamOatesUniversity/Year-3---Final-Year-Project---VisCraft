@@ -29,6 +29,11 @@ CGizmo::~CGizmo()
 {
 	SafeRelease(m_indexBuffer);
 	SafeRelease(m_vertexBuffer);
+
+	for (IBrush* brush : m_brush)
+	{
+		SafeDelete(brush);
+	}
 }
 
 /*
