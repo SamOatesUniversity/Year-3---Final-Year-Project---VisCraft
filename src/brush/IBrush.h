@@ -32,52 +32,77 @@ public:
 	virtual bool									IsLockable() const = 0;
 };
 
-class CBrushRaise : public IBrush
-{
-private:
-
-public:
-	//! Class constructor
-	CBrushRaise();
-
-	//! Class destructor
-	virtual											~CBrushRaise();
-
-	//! Apply the brush to the terrain
-	virtual void									Apply(
-		CGizmo *gizmo,								//!< The gizmo controlling this brush
-		CInput *input,								//!< The input device being used for the brush
-		CTerrain *terrain							//!< The terrain object we want to apply the brush too
-		);
-
-	//! Gets whether the brush is lockable or not
-	virtual bool									IsLockable() const
-	{
-		return false;
-	}
-};
-
 class CBrushDeform : public IBrush {
 
 private:
 
 public:
-	//! Class constructor
-	CBrushDeform();
+													//! Class constructor
+													CBrushDeform();
 
-	//! Class destructor
+													//! Class destructor
 	virtual											~CBrushDeform();
 
-	//! Apply the brush to the terrain
+													//! Apply the brush to the terrain
 	virtual void									Apply(
-		CGizmo *gizmo,								//!< The gizmo controlling this brush
-		CInput *input,								//!< The input device being used for the brush
-		CTerrain *terrain							//!< The terrain object we want to apply the brush too
-		);
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CInput *input,								//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
 
-	//! Gets whether the brush is lockable or not
+													//! Gets whether the brush is lockable or not
 	virtual bool									IsLockable() const
-	{
-		return true;
-	}
+													{
+														return true;
+													}
+};
+
+class CBrushLower : public IBrush {
+
+private:
+
+public:
+													//! Class constructor
+													CBrushLower();
+
+													//! Class destructor
+	virtual											~CBrushLower();
+
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CInput *input,								//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
+
+													//! Gets whether the brush is lockable or not
+	virtual bool									IsLockable() const
+													{
+														return false;
+													}
+};
+
+class CBrushRaise : public IBrush
+{
+private:
+
+public:
+													//! Class constructor
+													CBrushRaise();
+
+													//! Class destructor
+	virtual											~CBrushRaise();
+
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CInput *input,								//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
+
+													//! Gets whether the brush is lockable or not
+	virtual bool									IsLockable() const
+													{
+														return false;
+													}
 };
