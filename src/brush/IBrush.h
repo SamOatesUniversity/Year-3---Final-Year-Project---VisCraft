@@ -8,12 +8,12 @@ friend class CGizmo;
 
 protected:
 
-	float											m_size;											//!< The size of the brush
+	int												m_size;											//!< The size of the brush
 	float											m_strength;										//!< The strength of the brush
 
 public:
 													//! Class constructor
-													IBrush() : m_size(1.0f), m_strength(1.0f)
+													IBrush() : m_size(1), m_strength(1.0f)
 													{
 
 													}
@@ -29,5 +29,55 @@ public:
 													) = 0;
 
 													//! Gets whether the brush is lockable or not
-	virtual bool									IsLockable() = 0;
+	virtual bool									IsLockable() const = 0;
+};
+
+class CBrushRaise : public IBrush
+{
+private:
+
+public:
+	//! Class constructor
+	CBrushRaise();
+
+	//! Class destructor
+	virtual											~CBrushRaise();
+
+	//! Apply the brush to the terrain
+	virtual void									Apply(
+		CGizmo *gizmo,								//!< The gizmo controlling this brush
+		CInput *input,								//!< The input device being used for the brush
+		CTerrain *terrain							//!< The terrain object we want to apply the brush too
+		);
+
+	//! Gets whether the brush is lockable or not
+	virtual bool									IsLockable() const
+	{
+		return false;
+	}
+};
+
+class CBrushDeform : public IBrush {
+
+private:
+
+public:
+	//! Class constructor
+	CBrushDeform();
+
+	//! Class destructor
+	virtual											~CBrushDeform();
+
+	//! Apply the brush to the terrain
+	virtual void									Apply(
+		CGizmo *gizmo,								//!< The gizmo controlling this brush
+		CInput *input,								//!< The input device being used for the brush
+		CTerrain *terrain							//!< The terrain object we want to apply the brush too
+		);
+
+	//! Gets whether the brush is lockable or not
+	virtual bool									IsLockable() const
+	{
+		return true;
+	}
 };

@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\brush\CBrushDeform.cpp" />
+    <ClCompile Include="src\brush\CBrushRaise.cpp" />
     <ClCompile Include="src\ccamera.cpp" />
     <ClCompile Include="src\cgizmo.cpp" />
     <ClCompile Include="src\cinput.cpp" />

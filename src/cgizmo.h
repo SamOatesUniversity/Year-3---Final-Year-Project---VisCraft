@@ -7,7 +7,7 @@
 #include "cinput.h"
 #include "cterrain.h"
 #include "ccamera.h"
-#include "brushes.h"
+#include "brush/IBrush.h"
 
 #include <d3dx11async.h>
 #include <vector>
