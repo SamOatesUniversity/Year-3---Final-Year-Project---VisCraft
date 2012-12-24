@@ -1,4 +1,4 @@
-#include "CBrushDeform.h"
+#include "IBrush.h"
 
 CBrushDeform::CBrushDeform()
 {
@@ -20,16 +20,14 @@ void CBrushDeform::Apply(
 		return;
 
 	const D3DXVECTOR2 mousePos = input->GetMousePosition();
-	const float moveAmount = (mousePos.y - gizmo->DragData().lastY) * 0.025f;
+	const float moveAmount = ((mousePos.y - gizmo->DragData().lastY) * 0.025f) * m_strength;
 
 	if (moveAmount == 0.0f)
 		return;
 
-	static const int size = 2;
-
-	for (int xOffset = -size; xOffset <= size; ++xOffset)
+	for (int xOffset = -m_size; xOffset <= m_size; ++xOffset)
 	{
-		for (int zOffset = -size; zOffset <= size; ++zOffset)
+		for (int zOffset = -m_size; zOffset <= m_size; ++zOffset)
 		{
 			HeightMap *hmap = terrain->GetTerrainVertexAt(gizmo->Position().x + xOffset, gizmo->Position().z + zOffset);
 

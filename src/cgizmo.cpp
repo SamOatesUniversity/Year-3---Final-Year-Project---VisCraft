@@ -18,7 +18,7 @@ CGizmo::CGizmo()
 
 	m_gizmoState = GizmoState::Free;
 
-	m_currentBrush = BrushType::Deform;
+	m_currentBrush = BrushType::Raise;
 	m_brush.resize(BrushType::Noof);
 }
 
@@ -189,6 +189,7 @@ bool CGizmo::Create(
 		return false;
 
 	m_brush[BrushType::Deform] = new CBrushDeform(); 
+	m_brush[BrushType::Raise] = new CBrushRaise();
 
 	return true;
 }
