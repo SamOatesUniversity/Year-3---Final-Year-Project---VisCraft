@@ -54,6 +54,9 @@
     <ClCompile Include="src\brush\CBrushRaise.cpp">
       <Filter>Source Files\brush</Filter>
     </ClCompile>
+    <ClCompile Include="src\brush\CBrushLower.cpp">
+      <Filter>Source Files\brush</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
