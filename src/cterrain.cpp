@@ -483,7 +483,15 @@ HeightMap *CTerrain::GetTerrainVertexAt(
 	const int heightMapSize = static_cast<int>(m_size.x * m_size.y);
 	for (int heightMapIndex = 0; heightMapIndex < heightMapSize; ++heightMapIndex)
 	{
-		const D3DXVECTOR2 currentVec = D3DXVECTOR2(m_heightMap[heightMapIndex].position.x, m_heightMap[heightMapIndex].position.z);
+		const HeightMap hmap = m_heightMap[heightMapIndex];
+
+		if (hmap.position.x - x > 1 || hmap.position.x - x < -1)
+			continue;
+
+		if (hmap.position.z - z > 1 || hmap.position.z - z < -1)
+			continue;
+
+		const D3DXVECTOR2 currentVec = D3DXVECTOR2(hmap.position.x, hmap.position.z);
 		const D3DXVECTOR2 distanceVec = currentVec - lookupVec;
 		const float currentDistance = sqrt((distanceVec.x * distanceVec.x) + (distanceVec.y * distanceVec.y));
 		if (currentDistance < lastDistance)
