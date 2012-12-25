@@ -18,7 +18,7 @@ CGizmo::CGizmo()
 
 	m_gizmoState = GizmoState::Free;
 
-	m_currentBrush = BrushType::Lower;
+	m_currentBrush = BrushType::Raise;
 	m_brush.resize(BrushType::Noof);
 }
 
