@@ -212,7 +212,27 @@ bool CVisCraft::Update()
 	{
 		while (m_input->IsKeyPressed(DIK_F1)) m_input->Update();
 		m_terrain->GetFlag(TERRAIN_FLAG_WIREFRAME) ? m_terrain->DisableFlag(TERRAIN_FLAG_WIREFRAME) : m_terrain->EnableFlag(TERRAIN_FLAG_WIREFRAME);
-	}		
+	}	
+
+	// change brushes
+	// toggle wireframe mode
+	if (m_input->IsKeyPressed(DIK_1) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_1)) m_input->Update();
+		m_gizmo->SetCurrentBrush(BrushType::Raise);
+	}	
+
+	if (m_input->IsKeyPressed(DIK_2) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_2)) m_input->Update();
+		m_gizmo->SetCurrentBrush(BrushType::Lower);
+	}	
+
+	if (m_input->IsKeyPressed(DIK_3) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_3)) m_input->Update();
+		m_gizmo->SetCurrentBrush(BrushType::Deform);
+	}	
 
 	m_camera->Control(m_input);
 

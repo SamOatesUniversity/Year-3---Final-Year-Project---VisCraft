@@ -134,4 +134,7 @@ public:
 								return m_gizmoState;
 							}
 
+	void					SetCurrentBrush(
+								const BrushType::Enum brushType
+							);
 };
