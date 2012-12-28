@@ -19,8 +19,24 @@ private:
 	INuiSensor									*m_nuiSensor;							//!< 
 	BSTR										m_kinectID;								//!< 
 
+	HANDLE										m_nuiProcess;							//!< 
+
+	HANDLE										m_nuiProcessStop;						//!< 
 	HANDLE										m_nextDepthFrameEvent;					//!< 
+
 	HANDLE										m_depthStreamHandle;					//!< 
+
+	RGBQUAD										m_rgbWk[640*480];						//!< 
+
+private:
+
+												//! 
+	static DWORD WINAPI							Nui_ProcessThread(
+													LPVOID pParam						//!< 
+												);
+
+												//! 
+	DWORD WINAPI								Nui_ProcessThread();
 
 public:
 												//! Class constructor
@@ -32,5 +48,13 @@ public:
 	const bool									Create(
 													HWND parent,						//!< Parent window of the kinect debug window
 													HINSTANCE hInstance					//!< 
+												);
+
+												//! 
+	void										Nui_GotDepthAlert();
+
+												//!
+	RGBQUAD										Nui_ShortToQuad_Depth( 
+													USHORT s 
 												);
 };
