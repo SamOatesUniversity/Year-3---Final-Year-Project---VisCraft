@@ -22,6 +22,12 @@
     <Filter Include="Source Files\brush">
       <UniqueIdentifier>{3af308a8-c4c1-4a8f-be0e-41e46c1a699a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\kinect">
+      <UniqueIdentifier>{8d983676-613a-4a06-8dbe-5537f14901ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\kinect">
+      <UniqueIdentifier>{dd037146-be37-46b4-8dc1-5b06c550ed0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -56,6 +62,12 @@
     </ClCompile>
     <ClCompile Include="src\brush\CBrushLower.cpp">
       <Filter>Source Files\brush</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kinect\CKinect.cpp">
+      <Filter>Source Files\kinect</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kinect\DrawDevice.cpp">
+      <Filter>Source Files\kinect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="src\brushes.h">
       <Filter>Header Files\brush</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\CKinect.h">
+      <Filter>Header Files\kinect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\DrawDevice.h">
+      <Filter>Header Files\kinect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

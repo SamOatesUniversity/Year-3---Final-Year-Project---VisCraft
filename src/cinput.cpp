@@ -42,7 +42,7 @@ bool CInput::Create(
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
 
-	::ShowCursor(FALSE);
+	//::ShowCursor(FALSE);
 
 	if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL)))
 		return false;

@@ -43,8 +43,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -100,6 +100,8 @@
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\cshader.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
+    <ClCompile Include="src\kinect\CKinect.cpp" />
+    <ClCompile Include="src\kinect\DrawDevice.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
@@ -118,6 +120,8 @@
     <ClInclude Include="src\cshader.h" />
     <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\helper.h" />
+    <ClInclude Include="src\kinect\CKinect.h" />
+    <ClInclude Include="src\kinect\DrawDevice.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\cviscraft.h" />
   </ItemGroup>

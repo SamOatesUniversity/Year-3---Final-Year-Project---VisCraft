@@ -3,6 +3,7 @@
 */
 #include <windows.h>
 #include "crenderer.h"
+#include "kinect/CKinect.h"
 #include "ccamera.h"
 #include "cterrain.h"
 #include "cshader.h"
@@ -32,6 +33,8 @@ private:
 	char						*m_applicationName;								//!< The applications name
 	HINSTANCE					m_hinstance;									//!< The handle to the application instance
 	HWND						m_hwnd;											//!< The main application window handle
+
+	CKinect						*m_kinect;										//!< The kinect interface class
 
 	CInput						*m_input;										//!< The input handling class instance
 	CRenderer					*m_renderer;									//!< The d3d render class instance
