@@ -19,7 +19,8 @@ CKinect::CKinect() :
 
 CKinect::~CKinect()
 {
-
+	SafeDelete(m_drawDepth);
+	SafeRelease(m_nuiSensor);
 }
 
 const bool CKinect::Create( 
@@ -130,22 +131,22 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 		switch (eventId)
 		{
 		case WAIT_TIMEOUT:
-			OutputDebugString("Event Timeout\r\n");
+			//OutputDebugString("Event Timeout\r\n");
 			continue;
 
 		case WAIT_FAILED:
-			OutputDebugString("Event Failed\r\n");
+			//OutputDebugString("Event Failed\r\n");
 			continue;
 
 		// If the stop event, stop looping and exit
 		case WAIT_OBJECT_0:
 			continueProcessing = false;
-			OutputDebugString("Event: Shutdown Thread\r\n");
+			//OutputDebugString("Event: Shutdown Thread\r\n");
 			continue;
 
 		// Depth event
 		case WAIT_OBJECT_0 + 1:
-			OutputDebugString("Event: Handle Depth\r\n");
+			//OutputDebugString("Event: Handle Depth\r\n");
 			Nui_GotDepthAlert();
 			continue;
 		}
