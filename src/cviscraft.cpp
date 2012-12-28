@@ -194,6 +194,7 @@ void CVisCraft::Release()
 	SafeReleaseDelete(m_terrain);
 	SafeReleaseDelete(m_shader);
 	SafeDelete(m_gizmo);
+	SafeDelete(m_kinect);
 
 	// Remove the window.
 	DestroyWindow(m_hwnd);
