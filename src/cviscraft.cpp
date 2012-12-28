@@ -15,6 +15,7 @@ CVisCraft::CVisCraft() :
 	m_terrain = nullptr;
 	m_shader = nullptr;
 	m_gizmo = nullptr;
+	m_kinect = nullptr;
 }
 
 /*!
@@ -39,6 +40,14 @@ const bool CVisCraft::Create()
 
 	// Initialize the windows api.
 	CreateWindowInternal(screenWidth, screenHeight);
+
+	m_kinect = new CKinect();
+	if (!m_kinect->Create(m_hwnd, m_hinstance))
+	{
+		Release();
+		ASSERT(false, "Failed to create the kinect interface class");
+		return false;
+	}
 
 	// Create the input handling class
 	m_input = new CInput();
