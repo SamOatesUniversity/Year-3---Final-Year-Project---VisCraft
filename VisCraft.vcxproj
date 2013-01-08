@@ -43,8 +43,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

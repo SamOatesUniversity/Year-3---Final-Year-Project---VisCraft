@@ -123,30 +123,22 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 
 		const int eventId = WaitForMultipleObjects( numEvents, hEvents, FALSE, 100 );
 
-		/*std::stringstream buf;
-		 buf << "eventId: " << eventId << "\r\n";
-		 OutputDebugString(buf.str().c_str());*/
-
 		// Process signal events
 		switch (eventId)
 		{
 		case WAIT_TIMEOUT:
-			//OutputDebugString("Event Timeout\r\n");
 			continue;
 
 		case WAIT_FAILED:
-			//OutputDebugString("Event Failed\r\n");
 			continue;
 
 		// If the stop event, stop looping and exit
 		case WAIT_OBJECT_0:
 			continueProcessing = false;
-			//OutputDebugString("Event: Shutdown Thread\r\n");
 			continue;
 
 		// Depth event
 		case WAIT_OBJECT_0 + 1:
-			//OutputDebugString("Event: Handle Depth\r\n");
 			Nui_GotDepthAlert();
 			continue;
 		}
