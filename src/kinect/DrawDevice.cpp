@@ -149,7 +149,7 @@ bool DrawDevice::Draw( BYTE * pBits, unsigned long cbBits )
     {
         return false;
     }
-       
+
     m_pRenderTarget->BeginDraw();
 
     // Draw the bitmap stretched to the size of the window

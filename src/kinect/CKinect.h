@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <NuiApi.h>
 #include "DrawDevice.h"
+#include "chand.h"
 
 #pragma comment(lib, "Kinect10.lib")
 
@@ -27,6 +28,8 @@ private:
 	HANDLE										m_depthStreamHandle;					//!< 
 
 	RGBQUAD										m_rgbWk[640*480];						//!< 
+
+	CHand										*m_hand;								//!< 
 
 private:
 
