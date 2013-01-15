@@ -4,13 +4,50 @@
 #include <NuiApi.h>
 #include <SAM.h>
 
+#include "CDeformableTemplateModel.h"
+
 class CHand {
+private:
+
+	struct HandAreaSamplePoint {
+		enum Enum {
+			Left,
+			Right,
+			Top,
+			Bottom
+		};
+	};
+
+	struct HandState {
+		enum Enum {
+			OpenHand,
+			ClosedFist,
+			Noof
+		};
+	};
+
 private:
 
 	unsigned int									m_frameWidth;									//!< 
 	unsigned int									m_frameHeight;									//!<
 
 	SAM::TVector<float, 2>							m_palm;											//!<
+	SAM::TVector<unsigned int, 4>					m_handArea;										//!< 
+
+	CDeformableTemplateModel						*m_handStateDTM[HandState::Noof];				//!< 	
+
+private:
+
+													//! Try to sample the data down to a smaller area,
+													//! Where the hand could be located
+	bool											SampleToHandArea(
+														RGBQUAD *depthData
+													);
+
+													//! Draw a green box around the sampled hand area for debugging
+	void											DrawHandAreaBounds(
+														RGBQUAD *depthData
+													);
 
 public:
 													//! Class constructor

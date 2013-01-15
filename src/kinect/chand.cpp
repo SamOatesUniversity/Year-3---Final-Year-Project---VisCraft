@@ -20,6 +20,42 @@ bool CHand::Create(
 	m_frameWidth = frameWidth;
 	m_frameHeight = frameHeight;
 
+	m_handStateDTM[HandState::OpenHand] = new CDeformableTemplateModel();
+
+	m_handStateDTM[HandState::ClosedFist] = new CDeformableTemplateModel();
+
+
+	SAM::TVector<float, 2> position;
+	SAM::TVector<BYTE, 3> color;
+	
+	position.Set(16, 16);
+	color.Set(255, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // center of the hand
+
+	position.Set(10, 16);
+	color.Set(255, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // left of the hand (in hand)
+
+	position.Set(22, 16);
+	color.Set(255, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // right of the hand (in hand)
+
+	position.Set(16, 10);
+	color.Set(255, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // above of the hand (in hand)
+
+	position.Set(4, 16);
+	color.Set(0, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // left of the hand (out of hand)
+
+	position.Set(28, 16);
+	color.Set(0, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // right of the hand (out of hand)
+
+	position.Set(16, 4);
+	color.Set(0, 0, 0);
+	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // above of the hand (out of hand)
+
 	return true;
 }
 
@@ -43,28 +79,42 @@ RGBQUAD* CHand::FindFromDepth(
 			depthData[i].rgbGreen = 0;
 			depthData[i].rgbRed = 255;
 		}
-		else
-		{
-			depthData[i].rgbBlue = 0;
-			depthData[i].rgbGreen = 0;
-			depthData[i].rgbRed = 0;
-		}
 	}
 
 	// from the clamped data, try and find a bounding box for the hand
+	if (!SampleToHandArea(depthData))
+		return depthData;
 
-	unsigned int left = m_frameWidth;
+#ifdef _DEBUG
+	// Draw the bounds if we are in debug mode
+	DrawHandAreaBounds(depthData);
+#endif
+
+	// From the hand bounding box, try and find the center of the palm of the hand
+
+
+
+
+	return depthData;
+}
+
+bool CHand::SampleToHandArea(
+		RGBQUAD *depthData
+	)
+{
+	// Start at the opposite extremities
 	unsigned int right = 0;
-
 	unsigned int bottom = 0;
+	unsigned int left = m_frameWidth;
 	unsigned int top = m_frameHeight;
 
+	// spin through all pixel points, moving the bounds accordingly
 	for (unsigned int yPos = 0; yPos < m_frameHeight; ++yPos)
 	{
 		for (unsigned int xPos = 0; xPos < m_frameWidth; ++xPos)
 		{
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			if (depthData[pixel].rgbRed == 0)
+			if (depthData[pixel].rgbRed == depthData[pixel].rgbBlue)
 				continue;
 
 			if (xPos > right) right = xPos;
@@ -73,18 +123,37 @@ RGBQUAD* CHand::FindFromDepth(
 		}
 	}
 
+	// Set the bottom to be the same distance away from the top, as the box is wide
 	bottom = top + (right - left);
 
-	if (left >= right) return depthData;
-	if (top >= bottom) return depthData;
+	// Make sure we have valid extremities
+	if (left >= right) return false;
+	if (top >= bottom) return false;
+	if (bottom > m_frameHeight) return false;
+	if (top < 0) return false;
+	if (right > m_frameWidth) return false;
+	if (left < 0) return false;
 
-	if (bottom > m_frameHeight) return depthData;
-	if (top < 0) return depthData;
-	if (right > m_frameWidth) return depthData;
-	if (left < 0) return depthData;
+	// Update our stored sample location
+	m_handArea.Set(0, 0, 0, 0);
+	m_handArea[HandAreaSamplePoint::Left] = left;
+	m_handArea[HandAreaSamplePoint::Right] = right;
+	m_handArea[HandAreaSamplePoint::Top] = top;
+	m_handArea[HandAreaSamplePoint::Bottom] = bottom;
 
-	// draw the bounds
-	static const int thickness = 2;
+	return true;
+}
+
+void CHand::DrawHandAreaBounds(
+		RGBQUAD *depthData
+	)
+{
+	static const int thickness = 1;
+
+	const unsigned int left = m_handArea[HandAreaSamplePoint::Left];
+	const unsigned int right = m_handArea[HandAreaSamplePoint::Right];
+	const unsigned int top = m_handArea[HandAreaSamplePoint::Top];
+	const unsigned int bottom = m_handArea[HandAreaSamplePoint::Bottom];
 
 	for (unsigned int yPos = top; yPos < bottom; ++yPos)
 	{
@@ -145,10 +214,4 @@ RGBQUAD* CHand::FindFromDepth(
 			depthData[pixel].rgbGreen = 255;
 		}
 	}
-
-	// From the hand bounding box, try and find the center of the palm of the hand
-
-
-	return depthData;
 }
-
