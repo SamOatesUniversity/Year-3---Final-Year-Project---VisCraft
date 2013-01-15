@@ -69,6 +69,9 @@
     <ClCompile Include="src\kinect\DrawDevice.cpp">
       <Filter>Source Files\kinect</Filter>
     </ClCompile>
+    <ClCompile Include="src\kinect\chand.cpp">
+      <Filter>Source Files\kinect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -110,12 +113,6 @@
     <ClInclude Include="src\brush\CBrushLower.h">
       <Filter>Header Files\brush</Filter>
     </ClInclude>
-    <ClInclude Include="src\brush\CBrushSmooth.h">
-      <Filter>Header Files\brush</Filter>
-    </ClInclude>
-    <ClInclude Include="src\brush\CBrushNoise.h">
-      <Filter>Header Files\brush</Filter>
-    </ClInclude>
     <ClInclude Include="src\brushes.h">
       <Filter>Header Files\brush</Filter>
     </ClInclude>
@@ -123,6 +120,9 @@
       <Filter>Header Files\kinect</Filter>
     </ClInclude>
     <ClInclude Include="src\kinect\DrawDevice.h">
+      <Filter>Header Files\kinect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\chand.h">
       <Filter>Header Files\kinect</Filter>
     </ClInclude>
   </ItemGroup>

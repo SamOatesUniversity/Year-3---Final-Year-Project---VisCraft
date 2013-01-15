@@ -15,12 +15,14 @@ CKinect::CKinect() :
 	m_nuiSensor = nullptr;
 	m_drawDepth = nullptr;
 	m_D2DFactory = nullptr;
+	m_hand = nullptr;
 }
 
 CKinect::~CKinect()
 {
 	SafeDelete(m_drawDepth);
 	SafeRelease(m_nuiSensor);
+	SafeDelete(m_hand);
 }
 
 const bool CKinect::Create( 
@@ -71,7 +73,7 @@ const bool CKinect::Create(
 	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 320, 240, 320 * 4))
 		return false;
 
-	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH |  NUI_INITIALIZE_FLAG_USES_COLOR);
+	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH);
 	if (FAILED(initResult))
 		return false;
 
@@ -92,6 +94,9 @@ const bool CKinect::Create(
 	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
 	m_nuiProcess = CreateThread( NULL, 0, Nui_ProcessThread, this, 0, NULL );
 	//
+
+	m_hand = new CHand();
+	m_hand->Create(320, 240);
 
 	ShowWindow(m_hwnd, SW_SHOW);
 
@@ -117,7 +122,7 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 	{
 		
 
-		// Wait for any of the events to be signalled
+		// Wait for any of the events to be signaled
 		static const int numEvents = 2;
 		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent };
 
@@ -182,6 +187,8 @@ void CKinect::Nui_GotDepthAlert( )
 			++pBufferRun;
 			++rgbrun;
 		}
+	
+		m_hand->FindFromDepth(m_rgbWk);		
 
 		m_drawDepth->Draw( (BYTE*) m_rgbWk, frameWidth * frameHeight * 4 );
 	}
