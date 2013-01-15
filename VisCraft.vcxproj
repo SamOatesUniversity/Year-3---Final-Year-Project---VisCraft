@@ -43,15 +43,15 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>E:\University Work\UNI Year Three\Final Year Project\VisCraft\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\University Work\UNI Year Three\Final Year Project\VisCraft\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(IncludePath)</IncludePath>
+    <LibraryPath>.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>E:\University Work\UNI Year Three\Final Year Project\VisCraft\SAM;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\University Work\UNI Year Three\Final Year Project\VisCraft\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
+    <IncludePath>.\SAM;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,6 +102,7 @@
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\cshader.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
+    <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp" />
     <ClCompile Include="src\kinect\chand.cpp" />
     <ClCompile Include="src\kinect\CKinect.cpp" />
     <ClCompile Include="src\kinect\DrawDevice.cpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="src\cshader.h" />
     <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\helper.h" />
+    <ClInclude Include="src\kinect\CDeformableTemplateModel.h" />
     <ClInclude Include="src\kinect\chand.h" />
     <ClInclude Include="src\kinect\CKinect.h" />
     <ClInclude Include="src\kinect\DrawDevice.h" />

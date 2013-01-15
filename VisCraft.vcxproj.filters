@@ -72,6 +72,9 @@
     <ClCompile Include="src\kinect\chand.cpp">
       <Filter>Source Files\kinect</Filter>
     </ClCompile>
+    <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp">
+      <Filter>Source Files\kinect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -123,6 +126,9 @@
       <Filter>Header Files\kinect</Filter>
     </ClInclude>
     <ClInclude Include="src\kinect\chand.h">
+      <Filter>Header Files\kinect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\CDeformableTemplateModel.h">
       <Filter>Header Files\kinect</Filter>
     </ClInclude>
   </ItemGroup>
