@@ -16,6 +16,7 @@ struct HightMapType {
 struct HeightMap
 { 
 	D3DXVECTOR3 position;
+	D3DXVECTOR2 texture;
 	D3DXVECTOR3 normal;
 };
 
@@ -41,6 +42,7 @@ private:
 	struct VertexType
 	{
 		D3DXVECTOR3 position;									//!< The position of the vertex
+		D3DXVECTOR2 texture;									//!< The texture coordinates of the vertex
 		D3DXVECTOR3 normal;										//!< The normal of the vertex
 	};
 
@@ -74,6 +76,11 @@ private:
 
 							//! Calculate the normals of the terrain
 	bool					CalculateNormals(
+								HeightMap *heightMap			//!< The heightmap to calculate the normals of
+							);
+
+							//! Calculate the texture coordinates
+	void					CalculateTextureCoordinates(
 								HeightMap *heightMap			//!< The heightmap to calculate the normals of
 							);
 

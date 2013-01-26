@@ -5,6 +5,7 @@
 */
 #include "crenderer.h"
 #include <d3dx11async.h>
+#include <d3dx11tex.h>
 
 class CShader {
 private:
@@ -33,6 +34,8 @@ private:
 	ID3D11SamplerState				*m_sampleState;				//!< 
 	ID3D11Buffer					*m_matrixBuffer;			//!< 
 	ID3D11Buffer					*m_lightBuffer;				//!< 
+
+	ID3D11ShaderResourceView		*m_texture;					//!< 	
 
 public:
 									//! Class Constructor							

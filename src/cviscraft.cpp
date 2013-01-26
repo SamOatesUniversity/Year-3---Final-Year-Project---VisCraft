@@ -44,9 +44,9 @@ const bool CVisCraft::Create()
 	m_kinect = new CKinect();
 	if (!m_kinect->Create(m_hwnd, m_hinstance))
 	{
-		Release();
+		/*Release();
 		ASSERT(false, "Failed to create the kinect interface class");
-		return false;
+		return false;*/
 	}
 
 	// Create the input handling class
