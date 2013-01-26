@@ -9,7 +9,9 @@ CShader::CShader()
 	m_vertexShader = nullptr;
 	m_lightBuffer = nullptr;
 	m_sampleState = nullptr;
-	m_texture = nullptr;
+
+	for (int textureIndex = 0; textureIndex < TerrainTexture::Noof; ++textureIndex)
+		m_texture[textureIndex] = nullptr;
 }
 
 CShader::~CShader()
@@ -158,11 +160,29 @@ const bool CShader::Create(
 	// Load the terrain texture
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
 			renderer->GetDevice(),
-			"graphics/Terrain Textures/base.dds",
+			"graphics/Terrain Textures/low.dds",
 			NULL, NULL,
-			&m_texture,
+			&m_texture[TerrainTexture::Low],
 			NULL
 			)))
+		return false;
+
+	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
+		renderer->GetDevice(),
+		"graphics/Terrain Textures/medium.dds",
+		NULL, NULL,
+		&m_texture[TerrainTexture::Medium],
+		NULL
+		)))
+		return false;
+
+	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
+		renderer->GetDevice(),
+		"graphics/Terrain Textures/high.dds",
+		NULL, NULL,
+		&m_texture[TerrainTexture::High],
+		NULL
+		)))
 		return false;
 
 	return true;
@@ -170,7 +190,9 @@ const bool CShader::Create(
 
 void CShader::Release()
 {
-	SafeRelease(m_texture);
+	for (int textureIndex = 0; textureIndex < TerrainTexture::Noof; ++textureIndex)
+		SafeRelease(m_texture[textureIndex]);
+
 	SafeRelease(m_vertexShader);
 	SafeRelease(m_pixelShader);
 }
@@ -232,7 +254,9 @@ const bool CShader::Render(
 	m_renderer->GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);	
 
 	// Set shader texture resource in the pixel shader.
-	m_renderer->GetDeviceContext()->PSSetShaderResources(0, 1, &m_texture);
+	m_renderer->GetDeviceContext()->PSSetShaderResources(0, 1, &m_texture[TerrainTexture::Low]);
+	m_renderer->GetDeviceContext()->PSSetShaderResources(1, 1, &m_texture[TerrainTexture::Medium]);
+	m_renderer->GetDeviceContext()->PSSetShaderResources(2, 1, &m_texture[TerrainTexture::High]);
 
 	// Set the vertex input layout.
 	m_renderer->GetDeviceContext()->IASetInputLayout(m_layout);
