@@ -1,14 +1,12 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: terrain.ps
-////////////////////////////////////////////////////////////////////////////////
+// Textures //
+Texture2D lowTexture	: register(t0);
+Texture2D midTexture	: register(t1);
+Texture2D highTexture	: register(t2);
 
-
-/////////////
-// GLOBALS //
-/////////////
-Texture2D terrainTexture;
+// Sample States //
 SamplerState SampleType;
 
+// Light globals //
 cbuffer LightBuffer
 {
     float4 ambientColor;
@@ -17,10 +15,7 @@ cbuffer LightBuffer
     float padding;
 };
 
-
-//////////////
 // TYPEDEFS //
-//////////////
 struct PixelInputType
 {
     float4 position : SV_POSITION;
@@ -34,7 +29,36 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 {
-	float4 textureColor = terrainTexture.Sample(SampleType, input.texcoord);
+	bool colourRender = false;
+
+	float4 lowColor = lowTexture.Sample(SampleType, input.texcoord);
+	float4 midColor = midTexture.Sample(SampleType, input.texcoord);
+	float4 highColor = highTexture.Sample(SampleType, input.texcoord);
+
+	if (colourRender == true)
+	{
+		lowColor = float4(1.0f, 0.0f, 0.0f, 1.0f);
+		midColor = float4(0.0f, 1.0f, 0.0f, 1.0f);
+		highColor = float4(0.0f, 0.0f, 1.0f, 1.0f);
+	}
+
+	float slope = 1.0f - input.normal.y;
+
+	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	if (slope < 0.2)
+	{
+		float blendAmount = slope * 5.0f;
+		textureColor = lerp(lowColor, midColor, blendAmount);
+	}
+	else if ((slope < 0.7) && (slope >= 0.2f))
+	{
+		float blendAmount = (slope - 0.2f) * 2.0f;
+		textureColor = lerp(midColor, highColor, blendAmount);
+	}
+	else 
+	{
+		textureColor = highColor;
+	}
 
     // Set the default output color to the ambient light value for all pixels.
     float4 color = ambientColor;

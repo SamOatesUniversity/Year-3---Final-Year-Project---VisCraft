@@ -13,7 +13,7 @@ protected:
 
 public:
 													//! Class constructor
-													IBrush() : m_size(1), m_strength(1.0f)
+													IBrush() : m_size(10), m_strength(1.0f)
 													{
 
 													}
