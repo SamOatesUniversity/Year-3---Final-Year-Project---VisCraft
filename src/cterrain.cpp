@@ -70,6 +70,8 @@ const bool CTerrain::InitializeBuffers(
 	if (!CalculateNormals(heightMap))
 		return false;
 
+	CalculateTextureCoordinates(heightMap);
+
 	m_indexCount = m_vertexCount = (static_cast<unsigned int>(m_size.x) - 1) * (static_cast<unsigned int>(m_size.y) - 1) * 6;
 
 	VertexType *const vertices = new VertexType[m_vertexCount];
@@ -83,9 +85,9 @@ const bool CTerrain::InitializeBuffers(
 		for(int x = 0; x < (m_size.x - 1); ++x)
 		{
 			const int bottomLeft	= static_cast<int>(m_size.y * z) + x;				
-			const int bottomRight	= static_cast<int>(m_size.y * z) + (x+1);			
-			const int topLeft		= static_cast<int>(m_size.y * (z+1)) + x;			
-			const int topRight		= static_cast<int>(m_size.y * (z+1)) + (x+1);	
+			const int bottomRight	= static_cast<int>(m_size.y * z) + (x + 1);			
+			const int topLeft		= static_cast<int>(m_size.y * (z + 1)) + x;			
+			const int topRight		= static_cast<int>(m_size.y * (z + 1)) + (x + 1);	
 
 			AddVertex(vertices, indices, heightMap[topLeft],		index);
 			AddVertex(vertices, indices, heightMap[topRight],		index);
@@ -164,6 +166,7 @@ void CTerrain::AddVertex(
 	)
 {
 	vertices[index].position = hm.position;
+	vertices[index].texture = hm.texture;
 	vertices[index].normal = hm.normal;
 	indices[index] = index;
 	index++;
@@ -303,6 +306,63 @@ bool CTerrain::CalculateNormals(
 }
 
 /*
+ *	\brief Calculate the texture coordinates
+*/
+void CTerrain::CalculateTextureCoordinates(
+		HeightMap *heightMap							//!< The heightmap to calculate the normals of
+	)
+{
+	static const int TEXTURE_REPEAT = 16;
+
+	// Calculate how much to increment the texture coordinates by.
+	float incrementValue = static_cast<float>(TEXTURE_REPEAT) / static_cast<float>(m_size.x);
+
+	// Calculate how many times to repeat the texture.
+	int incrementCount = static_cast<int>(static_cast<float>(m_size.x) / static_cast<float>(TEXTURE_REPEAT));
+
+	// Initialize the tu and tv coordinate values.
+	float tuCoordinate = 0.0f;
+	float tvCoordinate = 1.0f;
+
+	// Initialize the tu and tv coordinate indexes.
+	int tuCount = 0;
+	int tvCount = 0;
+
+	// Loop through the entire height map and calculate the tu and tv texture coordinates for each vertex.
+	for(int j = 0; j < m_size.y; ++j)
+	{
+		for(int i = 0; i < m_size.x; ++i)
+		{
+			// Store the texture coordinate in the height map.
+			heightMap[static_cast<int>((m_size.y * j) + i)].texture.x = tuCoordinate;
+			heightMap[static_cast<int>((m_size.y * j) + i)].texture.y = tvCoordinate;
+
+			// Increment the tu texture coordinate by the increment value and increment the index by one.
+			tuCoordinate += incrementValue;
+			tuCount++;
+
+			// Check if at the far right end of the texture and if so then start at the beginning again.
+			if (tuCount == incrementCount)
+			{
+				tuCoordinate = 0.0f;
+				tuCount = 0;
+			}
+		}
+
+		// Increment the tv texture coordinate by the increment value and increment the index by one.
+		tvCoordinate -= incrementValue;
+		tvCount++;
+
+		// Check if at the top of the texture and if so then start at the bottom again.
+		if (tvCount == incrementCount)
+		{
+			tvCoordinate = 1.0f;
+			tvCount = 0;
+		}
+	}
+}
+
+/*
  *	\brief Release any resources allocated by the terrain class
 */
 void CTerrain::Release()
@@ -337,14 +397,14 @@ void CTerrain::Update()
 }
 
 /*
- *	\brief Update the buffers from the current heightmap
+ *	\brief Update the buffers from the current height map
 */
 void CTerrain::UpdateHeightMap()
 {
-	//InitializeBuffers(m_heightMap);
-
 	if (!CalculateNormals(m_heightMap))
 		return;
+
+	CalculateTextureCoordinates(m_heightMap);
 
 	D3D11_MAPPED_SUBRESOURCE resource;
 	const HRESULT result = m_renderer->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
