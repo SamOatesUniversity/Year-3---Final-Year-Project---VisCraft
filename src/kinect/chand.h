@@ -3,7 +3,9 @@
 #include <windows.h>
 #include <NuiApi.h>
 #include <SAM.h>
+#include <d3dx9.h>
 
+#include "../helper.h"
 #include "CDeformableTemplateModel.h"
 
 class CHand {
@@ -36,6 +38,8 @@ private:
 
 	CDeformableTemplateModel						*m_handStateDTM[HandState::Noof];				//!< 	
 
+	RGBQUAD											*m_edgeTempBuffer;								//!< 
+
 private:
 
 													//! Try to sample the data down to a smaller area,
@@ -46,6 +50,11 @@ private:
 
 													//! Draw a green box around the sampled hand area for debugging
 	void											DrawHandAreaBounds(
+														RGBQUAD *depthData
+													);
+
+													//! Detect the edges of the hands and display them in white
+	void											DetectHandEdges(
 														RGBQUAD *depthData
 													);
 
