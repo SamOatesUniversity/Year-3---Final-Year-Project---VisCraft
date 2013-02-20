@@ -58,8 +58,8 @@ RGBQUAD* CHand::FindFromDepth(
 		}
 		else
 		{
-			depthData[depthIndex].rgbBlue = 0;
-			depthData[depthIndex].rgbGreen = 0;
+			//depthData[depthIndex].rgbBlue = 0;
+			//depthData[depthIndex].rgbGreen = 0;
 			depthData[depthIndex].rgbRed = 0;
 		}
 	}
@@ -201,6 +201,8 @@ void CHand::DetectHandEdges(
 		RGBQUAD *depthData 
 	)
 {
+	memcpy(m_edgeTempBuffer, depthData, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
+
 	const unsigned int left = m_handArea[HandAreaSamplePoint::Left];
 	const unsigned int right = m_handArea[HandAreaSamplePoint::Right];
 	const unsigned int top = m_handArea[HandAreaSamplePoint::Top];
@@ -226,16 +228,17 @@ void CHand::DetectHandEdges(
 			SAM::TMatrix<float, 3, 3> I;
 			SAM::TMatrix<float, 3, 3> sample;
 
-			/* fetch the 3x3 neighborhood and use the RGB vector's length as intensity value */
-			for (int i=0; i < 3; i++)
+			// fetch the 3x3 neighborhood and use the Red color intensity value
+			for (int sampleOffsetX = 0; sampleOffsetX < 3; ++sampleOffsetX)
 			{
-				for (int j=0; j < 3; j++)
+				for (int sampleOffsetY = 0; sampleOffsetY < 3; ++sampleOffsetY)
 				{
-					unsigned int samplePoint = ((yPos + (j - 1)) * m_frameWidth) + (xPos + (i - 1));
-					I[i][j] = depthData[samplePoint].rgbRed;
+					unsigned int samplePoint = ((yPos + (sampleOffsetY - 1)) * m_frameWidth) + (xPos + (sampleOffsetX - 1));
+					I[sampleOffsetX][sampleOffsetY] = depthData[samplePoint].rgbRed;
 				}
 			}
 
+			// ignore solid color blocks, as they won't contain an edge
 			bool allSame = true;
 			float lastColor = I[0][0];
 			for (int i=0; i < 3; i++)
@@ -253,9 +256,7 @@ void CHand::DetectHandEdges(
 
 			if (allSame)
 			{
-				m_edgeTempBuffer[pixel].rgbRed = 0;
-				m_edgeTempBuffer[pixel].rgbGreen = 0;
-				m_edgeTempBuffer[pixel].rgbBlue = 0;
+				m_edgeTempBuffer[pixel] = depthData[pixel];
 				continue;
 			}
 
@@ -275,5 +276,5 @@ void CHand::DetectHandEdges(
 	}
 
 	memcpy(depthData, m_edgeTempBuffer, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
-	memset(m_edgeTempBuffer, NULL, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
+	//memset(m_edgeTempBuffer, NULL, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
 }
