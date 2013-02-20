@@ -67,17 +67,32 @@ RGBQUAD* CHand::FindFromDepth(
 	// we can presume the user will be between two given points
 	// The two given points should be controlled by an options value
 
-	static const int FAR_POINT = 95;
-	static const int NEAR_POINT = 127;
+	static const int FAR_POINT = 85;
+	static const int NEAR_POINT = 102;
 	static const float SCALER = NEAR_POINT / (NEAR_POINT - FAR_POINT);
+	static const int MID_POINT = FAR_POINT + static_cast<int>((NEAR_POINT - FAR_POINT) / 2);
 
-	for (unsigned int i = 0; i < m_frameWidth * m_frameHeight; ++i)
+
+	const unsigned int frameSize = m_frameWidth * m_frameHeight;
+	for (unsigned int depthIndex = 0; depthIndex < frameSize; ++depthIndex)
 	{
-		if (depthData[i].rgbRed > FAR_POINT && depthData[i].rgbRed < NEAR_POINT)
+		const int depth = depthData[depthIndex].rgbRed;
+		if (depth > FAR_POINT && depth < NEAR_POINT)
 		{
-			depthData[i].rgbBlue = 0;
-			depthData[i].rgbGreen = 0;
-			depthData[i].rgbRed = 255;
+			const int distanceFromMidPoint = depth - MID_POINT;
+
+			const int blueColor = distanceFromMidPoint > 0 ? 0 : -distanceFromMidPoint;
+			const int greenColor = distanceFromMidPoint < 0 ? 0 : distanceFromMidPoint;
+
+			depthData[depthIndex].rgbBlue = static_cast<BYTE>(blueColor * SCALER);
+			depthData[depthIndex].rgbGreen = static_cast<BYTE>(greenColor * SCALER) << 2;
+			depthData[depthIndex].rgbRed = 255 - static_cast<BYTE>((NEAR_POINT - depth) * SCALER);
+		}
+		else
+		{
+			depthData[depthIndex].rgbBlue = 0;
+			depthData[depthIndex].rgbGreen = 0;
+			depthData[depthIndex].rgbRed = 0;
 		}
 	}
 
