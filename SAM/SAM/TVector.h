@@ -127,6 +127,14 @@ namespace SAM
 															m_element[element] = 0;
 													}
 
+													//! Class constructor
+													TVector(TYPE x, TYPE y, TYPE z)
+													{
+														m_element[0] = x;
+														m_element[1] = y;
+														m_element[2] = z;
+													}
+
 													//! Get the X element of the vector
 		const TYPE									&X() const
 													{
@@ -238,6 +246,13 @@ namespace SAM
 														Set(otherVector.X(), otherVector.Y(), otherVector.Z());
 														return *this;
 													}
+
+													//! Dot product this vector against a given vector
+		TYPE										Dot(const TVector<TYPE, 3> &otherVector)
+													{
+														return X() * otherVector.X() + Y() * otherVector.Y() + Z() + otherVector.Z();
+													}
+
 	};
 
 	template <class TYPE>

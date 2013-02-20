@@ -1,7 +1,7 @@
 #include "chand.h"
 
 
-CHand::CHand()
+CHand::CHand() : m_edgeTempBuffer(nullptr)
 {
 	m_frameWidth = 0;
 	m_frameHeight = 0;
@@ -9,7 +9,7 @@ CHand::CHand()
 
 CHand::~CHand()
 {
-
+	SafeArrayDelete(m_edgeTempBuffer);
 }
 
 bool CHand::Create( 
@@ -21,40 +21,9 @@ bool CHand::Create(
 	m_frameHeight = frameHeight;
 
 	m_handStateDTM[HandState::OpenHand] = new CDeformableTemplateModel();
-
 	m_handStateDTM[HandState::ClosedFist] = new CDeformableTemplateModel();
 
-
-	SAM::TVector<float, 2> position;
-	SAM::TVector<BYTE, 3> color;
-	
-	position.Set(16, 16);
-	color.Set(255, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // center of the hand
-
-	position.Set(10, 16);
-	color.Set(255, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // left of the hand (in hand)
-
-	position.Set(22, 16);
-	color.Set(255, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // right of the hand (in hand)
-
-	position.Set(16, 10);
-	color.Set(255, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // above of the hand (in hand)
-
-	position.Set(4, 16);
-	color.Set(0, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // left of the hand (out of hand)
-
-	position.Set(28, 16);
-	color.Set(0, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // right of the hand (out of hand)
-
-	position.Set(16, 4);
-	color.Set(0, 0, 0);
-	m_handStateDTM[HandState::ClosedFist]->AddPoint(position, color, 0); // above of the hand (out of hand)
+	m_edgeTempBuffer = new RGBQUAD[frameWidth * frameHeight];
 
 	return true;
 }
@@ -71,7 +40,6 @@ RGBQUAD* CHand::FindFromDepth(
 	static const int NEAR_POINT = 102;
 	static const float SCALER = NEAR_POINT / (NEAR_POINT - FAR_POINT);
 	static const int MID_POINT = FAR_POINT + static_cast<int>((NEAR_POINT - FAR_POINT) / 2);
-
 
 	const unsigned int frameSize = m_frameWidth * m_frameHeight;
 	for (unsigned int depthIndex = 0; depthIndex < frameSize; ++depthIndex)
@@ -100,15 +68,13 @@ RGBQUAD* CHand::FindFromDepth(
 	if (!SampleToHandArea(depthData))
 		return depthData;
 
+	// From the hand bounding box, perform edge detection
+	DetectHandEdges(depthData);
+
 #ifdef _DEBUG
 	// Draw the bounds if we are in debug mode
 	DrawHandAreaBounds(depthData);
 #endif
-
-	// From the hand bounding box, try and find the center of the palm of the hand
-
-
-
 
 	return depthData;
 }
@@ -129,7 +95,7 @@ bool CHand::SampleToHandArea(
 		for (unsigned int xPos = 0; xPos < m_frameWidth; ++xPos)
 		{
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			if (depthData[pixel].rgbRed == depthData[pixel].rgbBlue)
+			if (depthData[pixel].rgbRed == 0)
 				continue;
 
 			if (xPos > right) right = xPos;
@@ -139,7 +105,7 @@ bool CHand::SampleToHandArea(
 	}
 
 	// Set the bottom to be the same distance away from the top, as the box is wide
-	bottom = top + (right - left);
+	bottom = top + static_cast<int>((right - left) * 1.4f);
 
 	// Make sure we have valid extremities
 	if (left >= right) return false;
@@ -229,4 +195,86 @@ void CHand::DrawHandAreaBounds(
 			depthData[pixel].rgbGreen = 255;
 		}
 	}
+}
+
+void CHand::DetectHandEdges( 
+		RGBQUAD *depthData 
+	)
+{
+	const unsigned int left = m_handArea[HandAreaSamplePoint::Left];
+	const unsigned int right = m_handArea[HandAreaSamplePoint::Right];
+	const unsigned int top = m_handArea[HandAreaSamplePoint::Top];
+	const unsigned int bottom = m_handArea[HandAreaSamplePoint::Bottom];
+
+	for (unsigned int yPos = top + 1; yPos < bottom - 1; ++yPos)
+	{
+		for (unsigned int xPos = left + 1; xPos < right - 1; ++xPos)
+		{
+			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
+
+			SAM::TMatrix<float, 3, 3> G[2];
+
+			G[0][0] = SAM::TVector<float, 3>(1.0f, 2.0f, 1.0f);
+			G[0][1] = SAM::TVector<float, 3>(0.0f, 0.0f, 0.0f);
+			G[0][2] = SAM::TVector<float, 3>(-1.0f, -2.0f, -1.0f);
+
+			G[1][0] = SAM::TVector<float, 3>(1.0f, 0.0f, -1.0f);
+			G[1][1] = SAM::TVector<float, 3>(2.0f, 0.0f, -2.0f);
+			G[1][2] = SAM::TVector<float, 3>(1.0f, 0.0f, -1.0f);
+
+			float cnv[2];
+			SAM::TMatrix<float, 3, 3> I;
+			SAM::TMatrix<float, 3, 3> sample;
+
+			/* fetch the 3x3 neighborhood and use the RGB vector's length as intensity value */
+			for (int i=0; i < 3; i++)
+			{
+				for (int j=0; j < 3; j++)
+				{
+					unsigned int samplePoint = ((yPos + (j - 1)) * m_frameWidth) + (xPos + (i - 1));
+					SAM::TVector<float, 3> color = SAM::TVector<float, 3>(depthData[samplePoint].rgbRed, depthData[samplePoint].rgbGreen, depthData[samplePoint].rgbBlue);
+					I[i][j] = color.Length();
+				}
+			}
+
+			bool allSame = true;
+			float lastColor = I[0][0];
+			for (int i=0; i < 3; i++)
+			{
+				for (int j=0; j < 3; j++)
+				{
+					if (I[i][j] != lastColor)
+					{
+						allSame = false;
+						break;	
+					}
+					lastColor = I[i][j];
+				}
+			}
+
+			if (allSame)
+			{
+				m_edgeTempBuffer[pixel].rgbRed = 0;
+				m_edgeTempBuffer[pixel].rgbGreen = 0;
+				m_edgeTempBuffer[pixel].rgbBlue = 0;
+				continue;
+			}
+
+			/* calculate the convolution values for all the masks */
+			for (int i = 0; i < 2; i++)
+			{
+				float dp3 = G[i][0].Dot(I[0]) + G[i][1].Dot(I[1]) + G[i][2].Dot(I[2]);
+				cnv[i] = dp3 * dp3;
+			}
+
+			BYTE color = static_cast<BYTE>(0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]));
+
+			m_edgeTempBuffer[pixel].rgbRed = 255;
+			m_edgeTempBuffer[pixel].rgbGreen = 255;
+			m_edgeTempBuffer[pixel].rgbBlue = 255;
+		}
+	}
+
+	memcpy(depthData, m_edgeTempBuffer, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
+	memset(m_edgeTempBuffer, NULL, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
 }

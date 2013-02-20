@@ -47,6 +47,18 @@ void SafeDelete(T*& ptr) {
 }
 
 /*!
+ * \brief delete memory and null the pointer
+ */
+template<typename T> 
+void SafeArrayDelete(T*& ptr) {
+	if (ptr) 
+	{
+		delete[] ptr;
+		ptr = nullptr;
+	}
+}
+
+/*!
  * \brief destroy a window and null the pointer
  */
 template<typename T> 

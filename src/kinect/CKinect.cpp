@@ -53,7 +53,7 @@ const bool CKinect::Create(
 		"Kinect Preview",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, 
-		240, 240,
+		640, 480,
 		parent, NULL, hInstance, NULL
 	);
 
@@ -70,7 +70,7 @@ const bool CKinect::Create(
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2DFactory);
 
 	m_drawDepth = new DrawDevice();
-	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 320, 240, 320 * 4))
+	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * 4))
 		return false;
 
 	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH);
@@ -81,7 +81,7 @@ const bool CKinect::Create(
 
 	const HRESULT depthStreeam = m_nuiSensor->NuiImageStreamOpen(
 		NUI_IMAGE_TYPE_DEPTH,
-		NUI_IMAGE_RESOLUTION_320x240,
+		NUI_IMAGE_RESOLUTION_640x480,
 		0,
 		2,
 		m_nextDepthFrameEvent,
@@ -96,7 +96,7 @@ const bool CKinect::Create(
 	//
 
 	m_hand = new CHand();
-	m_hand->Create(320, 240);
+	m_hand->Create(640, 480);
 
 	ShowWindow(m_hwnd, SW_SHOW);
 
