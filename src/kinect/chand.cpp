@@ -54,7 +54,7 @@ RGBQUAD* CHand::FindFromDepth(
 
 			depthData[depthIndex].rgbBlue = static_cast<BYTE>(blueColor * SCALER);
 			depthData[depthIndex].rgbGreen = static_cast<BYTE>(greenColor * SCALER) << 2;
-			depthData[depthIndex].rgbRed = 255 - static_cast<BYTE>((NEAR_POINT - depth) * SCALER);
+			depthData[depthIndex].rgbRed = 255;
 		}
 		else
 		{
@@ -105,7 +105,7 @@ bool CHand::SampleToHandArea(
 	}
 
 	// Set the bottom to be the same distance away from the top, as the box is wide
-	bottom = top + static_cast<int>((right - left) * 1.4f);
+	bottom = top + static_cast<int>((right - left) * 1.3f);
 
 	// Make sure we have valid extremities
 	if (left >= right) return false;
@@ -232,8 +232,7 @@ void CHand::DetectHandEdges(
 				for (int j=0; j < 3; j++)
 				{
 					unsigned int samplePoint = ((yPos + (j - 1)) * m_frameWidth) + (xPos + (i - 1));
-					SAM::TVector<float, 3> color = SAM::TVector<float, 3>(depthData[samplePoint].rgbRed, depthData[samplePoint].rgbGreen, depthData[samplePoint].rgbBlue);
-					I[i][j] = color.Length();
+					I[i][j] = depthData[samplePoint].rgbRed;
 				}
 			}
 
