@@ -2,7 +2,17 @@
 
 #include <windows.h>
 #include <NuiApi.h>
+
+#include <propsys.h>
+#include <wmcodecdsp.h>
+#include <uuids.h>
+
+#include <sapi.h>
+#include <sphelper.h>
+
 #include "DrawDevice.h"
+#include "KinectAudioStream.h"
+#include "CAudioProcessor.h"
 #include "chand.h"
 
 #pragma comment(lib, "Kinect10.lib")
@@ -24,12 +34,20 @@ private:
 
 	HANDLE										m_nuiProcessStop;						//!< 
 	HANDLE										m_nextDepthFrameEvent;					//!< 
+	HANDLE										m_hSpeechEvent;							//!< 
 
 	HANDLE										m_depthStreamHandle;					//!< 
 
 	RGBQUAD										m_rgbWk[640*480];						//!< 
 
 	CHand										*m_hand;								//!< 
+
+	KinectAudioStream							*m_pKinectAudioStream;					//!< Audio stream captured from Kinect.
+	ISpStream									*m_pSpeechStream;						//!< Stream given to speech recognition engine
+	ISpRecognizer								*m_pSpeechRecognizer;					//!< Speech recognizer
+	ISpRecoContext								*m_pSpeechContext;						//!< Speech recognizer context
+	ISpRecoGrammar								*m_pSpeechGrammar;						//!< Speech grammar
+	CAudioProcessor								*m_audioCommandProcessor;				//!< Process audio scemantics
 
 private:
 
@@ -60,4 +78,19 @@ public:
 	RGBQUAD										Nui_ShortToQuad_Depth( 
 													USHORT s 
 												);
+
+												//! 
+	HRESULT										StartSpeechRecognition();
+
+												//! 
+	HRESULT										InitializeAudioStream();
+
+												//! 
+	HRESULT										CreateSpeechRecognizer();
+
+												//! 
+	HRESULT										LoadSpeechGrammar();
+
+												//! 
+	void										ProcessSpeech();
 };

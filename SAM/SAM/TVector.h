@@ -37,6 +37,13 @@ namespace SAM
 															m_element[element] = 0;
 													}
 
+													//! Class constructor
+													TVector(TYPE x, TYPE y)
+													{
+														m_element[0] = x;
+														m_element[1] = y;
+													}
+
 													//! Get the X element of the vector
 		const TYPE									&X() const
 													{
