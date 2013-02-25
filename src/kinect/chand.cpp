@@ -1,6 +1,5 @@
 #include "chand.h"
 
-
 CHand::CHand() : m_edgeTempBuffer(nullptr)
 {
 	m_frameWidth = 0;
@@ -21,7 +20,7 @@ bool CHand::Create(
 	m_frameHeight = frameHeight;
 
 	m_handStateDTM[HandState::OpenHand] = new CDeformableTemplateModel();
-	m_handStateDTM[HandState::ClosedFist] = new CDeformableTemplateModel();
+	m_handStateDTM[HandState::ClosedFist] = new CGestureHandClosed();
 
 	m_edgeTempBuffer = new RGBQUAD[frameWidth * frameHeight];
 
@@ -58,8 +57,6 @@ RGBQUAD* CHand::FindFromDepth(
 		}
 		else
 		{
-			//depthData[depthIndex].rgbBlue = 0;
-			//depthData[depthIndex].rgbGreen = 0;
 			depthData[depthIndex].rgbRed = 0;
 		}
 	}
@@ -70,6 +67,23 @@ RGBQUAD* CHand::FindFromDepth(
 
 	// From the hand bounding box, perform edge detection
 	DetectHandEdges(depthData);
+
+	// Test DTMS on sampled hand data
+	HandState::Enum foundGesture = HandState::Noof;
+	for (int gestureIndex = 0; gestureIndex < HandState::Noof; ++gestureIndex)
+	{
+		if (m_handStateDTM[gestureIndex]->Test(depthData, m_frameWidth, m_frameHeight))
+		{
+			foundGesture = static_cast<HandState::Enum>(gestureIndex);
+			break;
+		}
+	}
+
+	// A DTM was found! do something about it
+	if (foundGesture != HandState::Noof)
+	{
+
+	}
 
 #ifdef _DEBUG
 	// Draw the bounds if we are in debug mode
@@ -224,7 +238,6 @@ void CHand::DetectHandEdges(
 			G[1][1] = SAM::TVector<float, 3>(2.0f, 0.0f, -2.0f);
 			G[1][2] = SAM::TVector<float, 3>(1.0f, 0.0f, -1.0f);
 
-			float cnv[2];
 			SAM::TMatrix<float, 3, 3> I;
 			SAM::TMatrix<float, 3, 3> sample;
 
@@ -254,21 +267,14 @@ void CHand::DetectHandEdges(
 				}
 			}
 
+			// if the sample data is all the same, return the current color
 			if (allSame)
 			{
 				m_edgeTempBuffer[pixel] = depthData[pixel];
 				continue;
 			}
 
-			/* calculate the convolution values for all the masks */
-			for (int i = 0; i < 2; i++)
-			{
-				float dp3 = G[i][0].Dot(I[0]) + G[i][1].Dot(I[1]) + G[i][2].Dot(I[2]);
-				cnv[i] = dp3 * dp3;
-			}
-
-			BYTE color = static_cast<BYTE>(0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]));
-
+			// sample region is most likely an edge
 			m_edgeTempBuffer[pixel].rgbRed = 255;
 			m_edgeTempBuffer[pixel].rgbGreen = 255;
 			m_edgeTempBuffer[pixel].rgbBlue = 255;
@@ -276,5 +282,4 @@ void CHand::DetectHandEdges(
 	}
 
 	memcpy(depthData, m_edgeTempBuffer, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
-	//memset(m_edgeTempBuffer, NULL, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
 }

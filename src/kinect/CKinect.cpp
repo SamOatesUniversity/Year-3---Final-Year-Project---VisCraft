@@ -10,12 +10,14 @@ CKinect::CKinect() :
 	m_nextDepthFrameEvent(NULL),
 	m_depthStreamHandle(NULL),
 	m_nuiProcess(NULL),
-	m_nuiProcessStop(NULL)
+	m_nuiProcessStop(NULL),
+	m_hSpeechEvent(NULL)
 {
 	m_nuiSensor = nullptr;
 	m_drawDepth = nullptr;
 	m_D2DFactory = nullptr;
 	m_hand = nullptr;
+	m_audioCommandProcessor = nullptr;
 }
 
 CKinect::~CKinect()
@@ -23,6 +25,7 @@ CKinect::~CKinect()
 	SafeDelete(m_drawDepth);
 	SafeRelease(m_nuiSensor);
 	SafeDelete(m_hand);
+	SafeDelete(m_audioCommandProcessor);
 }
 
 const bool CKinect::Create( 
@@ -73,7 +76,7 @@ const bool CKinect::Create(
 	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * 4))
 		return false;
 
-	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH);
+	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH | NUI_INITIALIZE_FLAG_USES_AUDIO);
 	if (FAILED(initResult))
 		return false;
 
@@ -93,14 +96,178 @@ const bool CKinect::Create(
 
 	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
 	m_nuiProcess = CreateThread( NULL, 0, Nui_ProcessThread, this, 0, NULL );
-	//
 
 	m_hand = new CHand();
 	m_hand->Create(640, 480);
+	
+	// Audio
+	HRESULT hr = InitializeAudioStream();
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = CreateSpeechRecognizer();
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = LoadSpeechGrammar();
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	hr = StartSpeechRecognition();
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	m_audioCommandProcessor = new CAudioProcessor();
 
 	ShowWindow(m_hwnd, SW_SHOW);
 
 	return true;
+}
+
+HRESULT CKinect::LoadSpeechGrammar()
+{
+	HRESULT hr = m_pSpeechContext->CreateGrammar(1, &m_pSpeechGrammar);
+
+	if (SUCCEEDED(hr))
+	{
+		// Populate recognition grammar from file
+		LPCWSTR file = L"VisCraft-Phrases.grxml";
+		hr = m_pSpeechGrammar->LoadCmdFromFile(file, SPLO_STATIC);
+	}
+
+	return hr;
+}
+
+HRESULT CKinect::CreateSpeechRecognizer()
+{
+	ISpObjectToken *pEngineToken = NULL;
+
+	HRESULT hr = CoCreateInstance(CLSID_SpInprocRecognizer, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpRecognizer), (void**)&m_pSpeechRecognizer);
+
+	if (SUCCEEDED(hr))
+	{
+		m_pSpeechRecognizer->SetInput(m_pSpeechStream, FALSE);
+		hr = SpFindBestToken(SPCAT_RECOGNIZERS, L"Language=409;Kinect=True", NULL, &pEngineToken);
+
+		if (SUCCEEDED(hr))
+		{
+			m_pSpeechRecognizer->SetRecognizer(pEngineToken);
+			hr = m_pSpeechRecognizer->CreateRecoContext(&m_pSpeechContext);
+		}
+	}
+
+	SafeRelease(pEngineToken);
+
+	return hr;
+}
+
+HRESULT CKinect::InitializeAudioStream()
+{
+	INuiAudioBeam*      pNuiAudioSource = NULL;
+	IMediaObject*       pDMO = NULL;
+	IPropertyStore*     pPropertyStore = NULL;
+	IStream*            pStream = NULL;
+
+	// Get the audio source
+	HRESULT hr = m_nuiSensor->NuiGetAudioSource(&pNuiAudioSource);
+	if (SUCCEEDED(hr))
+	{
+		hr = pNuiAudioSource->QueryInterface(IID_IMediaObject, (void**)&pDMO);
+
+		if (SUCCEEDED(hr))
+		{
+			hr = pNuiAudioSource->QueryInterface(IID_IPropertyStore, (void**)&pPropertyStore);
+
+			// Set AEC-MicArray DMO system mode. This must be set for the DMO to work properly.
+			// Possible values are:
+			//   SINGLE_CHANNEL_AEC = 0
+			//   OPTIBEAM_ARRAY_ONLY = 2
+			//   OPTIBEAM_ARRAY_AND_AEC = 4
+			//   SINGLE_CHANNEL_NSAGC = 5
+			PROPVARIANT pvSysMode;
+			PropVariantInit(&pvSysMode);
+			pvSysMode.vt = VT_I4;
+			pvSysMode.lVal = (LONG)(2); // Use OPTIBEAM_ARRAY_ONLY setting. Set OPTIBEAM_ARRAY_AND_AEC instead if you expect to have sound playing from speakers.
+			pPropertyStore->SetValue(MFPKEY_WMAAECMA_SYSTEM_MODE, pvSysMode);
+			PropVariantClear(&pvSysMode);
+
+			// Set DMO output format
+			WAVEFORMATEX wfxOut = {AudioFormat, AudioChannels, AudioSamplesPerSecond, AudioAverageBytesPerSecond, AudioBlockAlign, AudioBitsPerSample, 0};
+			DMO_MEDIA_TYPE mt = {0};
+			MoInitMediaType(&mt, sizeof(WAVEFORMATEX));
+
+			mt.majortype = MEDIATYPE_Audio;
+			mt.subtype = MEDIASUBTYPE_PCM;
+			mt.lSampleSize = 0;
+			mt.bFixedSizeSamples = TRUE;
+			mt.bTemporalCompression = FALSE;
+			mt.formattype = FORMAT_WaveFormatEx;	
+			memcpy(mt.pbFormat, &wfxOut, sizeof(WAVEFORMATEX));
+
+			hr = pDMO->SetOutputType(0, &mt, 0);
+
+			if (SUCCEEDED(hr))
+			{
+				m_pKinectAudioStream = new KinectAudioStream(pDMO);
+
+				hr = m_pKinectAudioStream->QueryInterface(IID_IStream, (void**)&pStream);
+
+				if (SUCCEEDED(hr))
+				{
+					hr = CoCreateInstance(CLSID_SpStream, NULL, CLSCTX_INPROC_SERVER, __uuidof(ISpStream), (void**)&m_pSpeechStream);
+
+					if (SUCCEEDED(hr))
+					{
+						hr = m_pSpeechStream->SetBaseStream(pStream, SPDFID_WaveFormatEx, &wfxOut);
+					}
+				}
+			}
+
+			MoFreeMediaType(&mt);
+		}
+	}
+
+	SafeRelease(pStream);
+	SafeRelease(pPropertyStore);
+	SafeRelease(pDMO);
+	SafeRelease(pNuiAudioSource);
+
+	return hr;
+}
+
+HRESULT CKinect::StartSpeechRecognition()
+{
+	HRESULT hr = m_pKinectAudioStream->StartCapture();
+
+	if (SUCCEEDED(hr))
+	{
+		// Specify that all top level rules in grammar are now active
+		hr = m_pSpeechGrammar->SetRuleState(NULL, NULL, SPRS_ACTIVE);
+
+		// Specify that engine should always be reading audio
+		hr = m_pSpeechRecognizer->SetRecoState(SPRST_ACTIVE_ALWAYS);
+
+		// Specify that we're only interested in receiving recognition events
+		hr = m_pSpeechContext->SetInterest(SPFEI(SPEI_RECOGNITION), SPFEI(SPEI_RECOGNITION));
+
+		// Ensure that engine is recognizing speech and not in paused state
+		m_pSpeechContext->Pause(0);
+		hr = m_pSpeechContext->Resume(0);
+		if (SUCCEEDED(hr))
+		{
+			m_hSpeechEvent = m_pSpeechContext->GetNotifyEventHandle();
+		}
+	}
+
+	return hr;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -123,8 +290,8 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 		
 
 		// Wait for any of the events to be signaled
-		static const int numEvents = 2;
-		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent };
+		static const int numEvents = 3;
+		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent, m_hSpeechEvent };
 
 		const int eventId = WaitForMultipleObjects( numEvents, hEvents, FALSE, 100 );
 
@@ -146,10 +313,59 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 		case WAIT_OBJECT_0 + 1:
 			Nui_GotDepthAlert();
 			continue;
+
+		// Depth event
+		case WAIT_OBJECT_0 + 2:
+			ProcessSpeech();
+			continue;
 		}
 	}
 
 	return 0;
+}
+
+void CKinect::ProcessSpeech()
+{
+	const float ConfidenceThreshold = 0.3f;
+
+	SPEVENT curEvent;
+	ULONG fetched = 0;
+	HRESULT hr = S_OK;
+
+	m_pSpeechContext->GetEvents(1, &curEvent, &fetched);
+
+	while (fetched > 0)
+	{
+		switch (curEvent.eEventId)
+		{
+		case SPEI_RECOGNITION:
+			if (SPET_LPARAM_IS_OBJECT == curEvent.elParamType)
+			{
+				// this is an ISpRecoResult
+				ISpRecoResult* result = reinterpret_cast<ISpRecoResult*>(curEvent.lParam);
+				SPPHRASE* pPhrase = NULL;
+
+				hr = result->GetPhrase(&pPhrase);
+				if (SUCCEEDED(hr))
+				{
+					if ((pPhrase->pProperties != NULL) && (pPhrase->pProperties->pFirstChild != NULL))
+					{
+						const SPPHRASEPROPERTY* pSemanticTag = pPhrase->pProperties->pFirstChild;
+						if (pSemanticTag->SREngineConfidence > ConfidenceThreshold)
+						{
+							m_audioCommandProcessor->Process(pSemanticTag);
+						}
+					}
+					::CoTaskMemFree(pPhrase);
+				}
+			}
+			break;
+		}
+
+		m_pSpeechContext->GetEvents(1, &curEvent, &fetched);
+	}
+
+	return;
 }
 
 void CKinect::Nui_GotDepthAlert( )

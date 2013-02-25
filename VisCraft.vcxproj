@@ -43,8 +43,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(IncludePath)</IncludePath>
-    <LibraryPath>.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SAM.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SAM.lib;Msdmo.lib;dmoguids.lib;amstrmid.lib;avrt.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -102,10 +102,13 @@
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\cshader.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
+    <ClCompile Include="src\kinect\CAudioProcessor.cpp" />
     <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp" />
     <ClCompile Include="src\kinect\chand.cpp" />
     <ClCompile Include="src\kinect\CKinect.cpp" />
     <ClCompile Include="src\kinect\DrawDevice.cpp" />
+    <ClCompile Include="src\kinect\gestures\CGestureHandClosed.cpp" />
+    <ClCompile Include="src\kinect\KinectAudioStream.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
@@ -122,10 +125,13 @@
     <ClInclude Include="src\cshader.h" />
     <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\helper.h" />
+    <ClInclude Include="src\kinect\CAudioProcessor.h" />
     <ClInclude Include="src\kinect\CDeformableTemplateModel.h" />
     <ClInclude Include="src\kinect\chand.h" />
     <ClInclude Include="src\kinect\CKinect.h" />
     <ClInclude Include="src\kinect\DrawDevice.h" />
+    <ClInclude Include="src\kinect\gestures\CGestureHandClosed.h" />
+    <ClInclude Include="src\kinect\KinectAudioStream.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\cviscraft.h" />
   </ItemGroup>

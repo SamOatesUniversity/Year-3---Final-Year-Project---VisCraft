@@ -28,6 +28,18 @@
     <Filter Include="Header Files\kinect">
       <UniqueIdentifier>{dd037146-be37-46b4-8dc1-5b06c550ed0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\kinect\gestures">
+      <UniqueIdentifier>{c5f13194-fbdc-4c4c-8833-cad903dce9f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\kinect\gestures">
+      <UniqueIdentifier>{6ef4e8b7-94cf-4495-912e-61b440aa6dec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\kinect\audio">
+      <UniqueIdentifier>{ec785698-7f1b-447c-8e3d-f3f414c630a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\kinect\audio">
+      <UniqueIdentifier>{e568fb0e-0113-4da0-9ef0-b3d8c7556b16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -74,6 +86,15 @@
     </ClCompile>
     <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp">
       <Filter>Source Files\kinect</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kinect\gestures\CGestureHandClosed.cpp">
+      <Filter>Source Files\kinect\gestures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kinect\KinectAudioStream.cpp">
+      <Filter>Source Files\kinect\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kinect\CAudioProcessor.cpp">
+      <Filter>Source Files\kinect\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="src\kinect\CDeformableTemplateModel.h">
       <Filter>Header Files\kinect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\gestures\CGestureHandClosed.h">
+      <Filter>Header Files\kinect\gestures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\KinectAudioStream.h">
+      <Filter>Header Files\kinect\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\CAudioProcessor.h">
+      <Filter>Header Files\kinect\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

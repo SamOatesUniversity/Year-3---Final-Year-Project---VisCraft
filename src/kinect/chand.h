@@ -7,6 +7,7 @@
 
 #include "../helper.h"
 #include "CDeformableTemplateModel.h"
+#include "gestures/CGestureHandClosed.h"
 
 class CHand {
 private:
