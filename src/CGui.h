@@ -8,8 +8,21 @@ class CGui {
 
 private:
 
+	struct TextOverlay {
+		enum Enum {
+			Listening,
+			Noof
+		};
+	};
+
+private:
+
 	CBitmap								*m_overlay;
+	CBitmap								*m_textOverlay[TextOverlay::Noof];
+
 	CTextureShader						*m_textureShader;
+
+	bool								m_visible;
 
 public:
 										//! 
@@ -31,5 +44,9 @@ public:
 											D3DXMATRIX projectionMatrix		//!< 
 										);
 
+										//! 
+	void								SetVisible( 
+											bool visible 
+										);
 
 };

@@ -1,9 +1,11 @@
 #include "CAudioProcessor.h"
 
 
-CAudioProcessor::CAudioProcessor() : m_saidViscraft(false)
+CAudioProcessor::CAudioProcessor(
+		CGui *gui
+	) : m_saidViscraft(false)
 {
-
+	m_gui = gui;
 }
 
 CAudioProcessor::~CAudioProcessor()
@@ -27,6 +29,7 @@ void CAudioProcessor::Process(
 	{
 		{L"VISCRAFT", AudioPhrases::VisCraft},
 		{L"EXIT", AudioPhrases::ExitApplication},
+		{L"CANCEL", AudioPhrases::Cancel},
 	};
 
 	AudioPhrases::Enum action = AudioPhrases::Noof;
@@ -41,7 +44,6 @@ void CAudioProcessor::Process(
 	// unknown phrase
 	if (action == AudioPhrases::Noof) 
 	{
-		m_saidViscraft = false;
 		return;
 	}
 
@@ -49,6 +51,7 @@ void CAudioProcessor::Process(
 	if (action == AudioPhrases::VisCraft)
 	{
 		m_saidViscraft = true;
+		m_gui->SetVisible(true);
 	}
 	else if (m_saidViscraft)
 	{
@@ -56,11 +59,17 @@ void CAudioProcessor::Process(
 		{
 			exit(0);
 		}
+		else if (action == AudioPhrases::Cancel)
+		{
+			m_saidViscraft = false;
+			m_gui->SetVisible(false);
+		}
 	}
 
 
 	if (action != AudioPhrases::VisCraft)
 	{
 		m_saidViscraft = false;
+		m_gui->SetVisible(false);
 	}
 }

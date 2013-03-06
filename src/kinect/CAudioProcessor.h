@@ -1,6 +1,7 @@
 #pragma  once
 
 #include <sapi.h>
+#include "../CGui.h"
 
 class CAudioProcessor {
 
@@ -9,15 +10,19 @@ private:
 		enum Enum {
 			VisCraft,
 			ExitApplication,
+			Cancel,
 			Noof
 		};
 	};
 private:
 
 	bool									m_saidViscraft;
+	CGui									*m_gui;
 
 public:
-											CAudioProcessor();
+											CAudioProcessor(
+												CGui *gui	
+											);
 
 											~CAudioProcessor();
 

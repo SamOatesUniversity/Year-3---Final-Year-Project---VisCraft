@@ -15,6 +15,8 @@
 #include "CAudioProcessor.h"
 #include "chand.h"
 
+#include "../CGui.h"
+
 #pragma comment(lib, "Kinect10.lib")
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -68,7 +70,8 @@ public:
 
 	const bool									Create(
 													HWND parent,						//!< Parent window of the kinect debug window
-													HINSTANCE hInstance					//!< 
+													HINSTANCE hInstance,				//!< 
+													CGui *gui							//!< 
 												);
 
 												//! 

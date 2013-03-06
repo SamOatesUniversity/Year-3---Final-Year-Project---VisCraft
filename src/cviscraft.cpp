@@ -41,23 +41,6 @@ const bool CVisCraft::Create()
 	// Initialize the windows api.
 	CreateWindowInternal(screenWidth, screenHeight);
 
-	//m_kinect = new CKinect();
-	//if (!m_kinect->Create(m_hwnd, m_hinstance))
-	{
-		/*Release();
-		ASSERT(false, "Failed to create the kinect interface class");
-		return false;*/
-	}
-
-	// Create the input handling class
-	m_input = new CInput();
-	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
-	{
-		Release();
-		ASSERT(false, "Failed to create input class");
-		return false;
-	}
-
 	// Create the d3d renderer class
 	m_renderer = new CRenderer();
 	if (!m_renderer->Create(m_hwnd, screenWidth, screenHeight))
@@ -102,6 +85,23 @@ const bool CVisCraft::Create()
 	{
 		Release();
 		ASSERT(false, "Failed to create gui");
+		return false;
+	}
+
+	m_kinect = new CKinect();
+	if (!m_kinect->Create(m_hwnd, m_hinstance, m_gui))
+	{
+		/*Release();
+		ASSERT(false, "Failed to create the kinect interface class");
+		return false;*/
+	}
+
+	// Create the input handling class
+	m_input = new CInput();
+	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
+	{
+		Release();
+		ASSERT(false, "Failed to create input class");
 		return false;
 	}
 
@@ -321,7 +321,13 @@ const bool CVisCraft::RenderGraphics()
 
 	m_renderer->EnableZBuffer(false);
 	m_renderer->EnableAlphaBlending(true);
-	m_gui->Render(m_renderer, worldMatrix, viewMatrix, orthoMatrix);
+
+	D3DXMATRIX screenMatrix;
+	D3DXMatrixIdentity(&screenMatrix);
+	D3DXMatrixTranslation(&screenMatrix, m_camera->GetPosition().x, m_camera->GetPosition().y, m_camera->GetPosition().z + 1.0f);
+
+	m_gui->Render(m_renderer, screenMatrix, viewMatrix, orthoMatrix);
+
 	m_renderer->EnableAlphaBlending(false);
 	m_renderer->EnableZBuffer(true);
 
