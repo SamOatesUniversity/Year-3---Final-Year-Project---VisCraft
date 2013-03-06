@@ -2,16 +2,19 @@
   <rule id="rootRule">
     <one-of>
       <item>
+        <tag>VISCRAFT</tag>
+        <one-of>
+          <item> vis </item>
+          <item> viz </item>
+          <item> craft </item>
+        </one-of>
+      </item>
+      <item>
         <tag>EXIT</tag>
         <one-of>
           <item> exit </item>
           <item> quit </item>
-          <item> fuck off </item>
-		  <item> hide the porn </item>
-        </one-of>
-		<tag>TYRONE</tag>
-        <one-of>
-          <item> what is tyrone </item>
+          <item> close </item>
         </one-of>
       </item>
     </one-of>
