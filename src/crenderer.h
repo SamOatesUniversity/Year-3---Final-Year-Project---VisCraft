@@ -103,5 +103,10 @@ public:
 									bool enable
 								);
 
+								//! Enable or disable alpha blending
+	void						EnableAlphaBlending(
+									bool enable
+								);
+
 };
 

@@ -270,12 +270,12 @@ const bool CRenderer::Create(
 		return false;
 
 	// Modify the description to create an alpha disabled blend state description.
-	blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
+	//blendStateDescription.RenderTarget[0].BlendEnable = FALSE;
 
 	// Create the second blend state using the description.
-	if (FAILED(m_device->CreateBlendState(&blendStateDescription, &m_alphaDisableBlendingState)))
-		return false;
-
+	//if (FAILED(m_device->CreateBlendState(&blendStateDescription, &m_alphaDisableBlendingState)))
+	//	return false;
+	
 	return true;
 }
 
@@ -344,6 +344,16 @@ void CRenderer::GetProjectionMatrix(
 }
 
 /*!
+ * \brief Get the orthographic matrix
+ */
+void CRenderer::GetOrthoMatrix( 
+	D3DXMATRIX &orthoMatrix 
+	)
+{
+	orthoMatrix = m_orthoMatrix;
+}
+
+/*!
  * \brief Get the devices viewport
  */
 D3D11_VIEWPORT CRenderer::GetViewPort()
@@ -364,10 +374,20 @@ void CRenderer::EnableZBuffer(
 	}
 }
 
-void CRenderer::GetOrthoMatrix( 
-		D3DXMATRIX &orthoMatrix 
+void CRenderer::EnableAlphaBlending( 
+		bool enable 
 	)
 {
-	orthoMatrix = m_orthoMatrix;
+	float blendFactor[4];
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	if (enable) {
+		m_deviceContext->OMSetBlendState(m_alphaEnableBlendingState, blendFactor, 0xffffffff);
+	} else {
+		m_deviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
+	}
 }
 

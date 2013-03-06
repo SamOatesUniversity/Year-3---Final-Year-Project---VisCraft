@@ -320,7 +320,9 @@ const bool CVisCraft::RenderGraphics()
 	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix, m_camera);
 
 	m_renderer->EnableZBuffer(false);
+	m_renderer->EnableAlphaBlending(true);
 	m_gui->Render(m_renderer, worldMatrix, viewMatrix, orthoMatrix);
+	m_renderer->EnableAlphaBlending(false);
 	m_renderer->EnableZBuffer(true);
 
 	// Present the rendered scene to the screen.
