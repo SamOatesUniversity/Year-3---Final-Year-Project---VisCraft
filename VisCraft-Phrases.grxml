@@ -17,6 +17,12 @@
           <item> close </item>
         </one-of>
       </item>
+	  <item>
+        <tag>CANCEL</tag>
+        <one-of>
+          <item> cancel </item>
+        </one-of>
+      </item>
     </one-of>
   </rule>
 </grammar>

@@ -43,7 +43,9 @@ private:
 	bool							UpdateBuffers(
 										ID3D11DeviceContext *deviceContext, 
 										int x, 
-										int y
+										int y,
+										int w,
+										int h
 									);
 
 									//! Render the buffers
@@ -85,7 +87,9 @@ public:
 	const bool						Render(
 										ID3D11DeviceContext *deviceContext, 
 										int x, 
-										int y
+										int y,
+										int w = -1,
+										int h = -1
 									);
 
 									//! Get the index count

@@ -30,7 +30,8 @@ CKinect::~CKinect()
 
 const bool CKinect::Create( 
 		HWND parent,									//!< Parent window of the kinect debug window
-		HINSTANCE hInstance								//!< 
+		HINSTANCE hInstance,							//!< 
+		CGui *gui										//!<
 	)
 {
 	WNDCLASSEX wc;
@@ -125,7 +126,7 @@ const bool CKinect::Create(
 		return false;
 	}
 
-	m_audioCommandProcessor = new CAudioProcessor();
+	m_audioCommandProcessor = new CAudioProcessor(gui);
 
 	ShowWindow(m_hwnd, SW_SHOW);
 

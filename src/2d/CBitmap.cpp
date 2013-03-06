@@ -62,11 +62,16 @@ void CBitmap::Destroy()
 const bool CBitmap::Render( 
 	ID3D11DeviceContext *deviceContext, 
 	int x, 
-	int y 
+	int y,
+	int w,
+	int h
 	)
 {
+	if (w == -1) w = m_bitmapWidth;
+	if (h == -1) h = m_bitmapHeight;
+
 	// Re-build the dynamic vertex buffer for rendering to possibly a different location on the screen.
-	const bool updateResult = UpdateBuffers(deviceContext, x, y);
+	const bool updateResult = UpdateBuffers(deviceContext, x, y, w, h);
 	if(!updateResult)
 	{
 		return false;
@@ -192,7 +197,9 @@ void CBitmap::DestroyBuffers()
 bool CBitmap::UpdateBuffers( 
 		ID3D11DeviceContext *deviceContext, 
 		int x, 
-		int y 
+		int y,
+		int w,
+		int h
 	)
 {
 	// If the position we are rendering this bitmap to has not changed then don't update the vertex buffer since it
@@ -210,13 +217,13 @@ bool CBitmap::UpdateBuffers(
 	float left = static_cast<float>((m_screenWidth / 2) * -1) + static_cast<float>(x);
 
 	// Calculate the screen coordinates of the right side of the bitmap.
-	float right = left + static_cast<float>(m_bitmapWidth);
+	float right = left + static_cast<float>(w);
 
 	// Calculate the screen coordinates of the top of the bitmap.
 	float top = static_cast<float>(m_screenHeight / 2) - static_cast<float>(y);
 
 	// Calculate the screen coordinates of the bottom of the bitmap.
-	float bottom = top - static_cast<float>(m_bitmapHeight);
+	float bottom = top - static_cast<float>(h);
 
 	// Create the vertex array.
 	VertexType *const vertices = new VertexType[m_vertexCount];
