@@ -7,12 +7,14 @@ class CAudioProcessor {
 private:
 	struct AudioPhrases {
 		enum Enum {
+			VisCraft,
 			ExitApplication,
-			Tyrone,
 			Noof
 		};
 	};
 private:
+
+	bool									m_saidViscraft;
 
 public:
 											CAudioProcessor();

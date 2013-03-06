@@ -41,8 +41,8 @@ const bool CVisCraft::Create()
 	// Initialize the windows api.
 	CreateWindowInternal(screenWidth, screenHeight);
 
-	m_kinect = new CKinect();
-	if (!m_kinect->Create(m_hwnd, m_hinstance))
+	//m_kinect = new CKinect();
+	//if (!m_kinect->Create(m_hwnd, m_hinstance))
 	{
 		/*Release();
 		ASSERT(false, "Failed to create the kinect interface class");
@@ -93,6 +93,15 @@ const bool CVisCraft::Create()
 	{
 		Release();
 		ASSERT(false, "Failed to create gizmo");
+		return false;
+	}
+
+	// Create the gui
+	m_gui = new CGui();
+	if (!m_gui->Create(m_renderer))
+	{
+		Release();
+		ASSERT(false, "Failed to create gui");
 		return false;
 	}
 
@@ -296,10 +305,11 @@ const bool CVisCraft::RenderGraphics()
 	m_renderer->BeginScene(0.0f, 0.4f, 0.8f);
 
 	// Get the world, view, projection matrices from the camera and Direct3D objects.
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	m_renderer->GetWorldMatrix(worldMatrix);
 	m_camera->GetViewMatrix(viewMatrix);
 	m_renderer->GetProjectionMatrix(projectionMatrix);
+	m_renderer->GetOrthoMatrix(orthoMatrix);
 
 	// Render the terrain buffers.
 	m_terrain->Update();
@@ -308,6 +318,10 @@ const bool CVisCraft::RenderGraphics()
 		return false;
 
 	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix, m_camera);
+
+	m_renderer->EnableZBuffer(false);
+	m_gui->Render(m_renderer, worldMatrix, viewMatrix, orthoMatrix);
+	m_renderer->EnableZBuffer(true);
 
 	// Present the rendered scene to the screen.
 	m_renderer->EndScene();

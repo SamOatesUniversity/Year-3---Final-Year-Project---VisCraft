@@ -223,6 +223,9 @@ const bool CRenderer::Create(
 	// Initialize the world matrix to the identity matrix.
 	D3DXMatrixIdentity(&m_worldMatrix);
 
+	// Create an orthographic projection matrix for 2D rendering.
+	D3DXMatrixOrthoLH(&m_orthoMatrix, static_cast<float>(screenWidth), static_cast<float>(screenHeight), 0.1f, 1000.0f);
+
 	// Clear the second depth stencil state before setting the parameters.
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
@@ -350,17 +353,21 @@ D3D11_VIEWPORT CRenderer::GetViewPort()
 	return m_viewport;
 }
 
-/*!
- * \brief Get the devices viewport
- */
-D3D10_VIEWPORT CRenderer::GetViewPortD3D10() const
+void CRenderer::EnableZBuffer( 
+		bool enable 
+	)
 {
-	D3D10_VIEWPORT viewportD3D10;
-	viewportD3D10.TopLeftX = static_cast<UINT>(m_viewport.TopLeftX);
-	viewportD3D10.TopLeftY = static_cast<UINT>(m_viewport.TopLeftY);
-	viewportD3D10.Width = static_cast<UINT>(m_viewport.Width);
-	viewportD3D10.Height = static_cast<UINT>(m_viewport.Height);
-	viewportD3D10.MinDepth = m_viewport.MinDepth;
-	viewportD3D10.MaxDepth = m_viewport.MaxDepth;
-	return viewportD3D10;
+	if (enable) {
+		m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
+	} else {
+		m_deviceContext->OMSetDepthStencilState(m_depthDisabledStencilState, 1);
+	}
 }
+
+void CRenderer::GetOrthoMatrix( 
+		D3DXMATRIX &orthoMatrix 
+	)
+{
+	orthoMatrix = m_orthoMatrix;
+}
+

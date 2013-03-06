@@ -93,11 +93,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\2d\CBitmap.cpp" />
+    <ClCompile Include="src\2d\CTexture.cpp" />
+    <ClCompile Include="src\2d\CTextureShader.cpp" />
     <ClCompile Include="src\brush\CBrushDeform.cpp" />
     <ClCompile Include="src\brush\CBrushLower.cpp" />
     <ClCompile Include="src\brush\CBrushRaise.cpp" />
     <ClCompile Include="src\ccamera.cpp" />
     <ClCompile Include="src\cgizmo.cpp" />
+    <ClCompile Include="src\CGui.cpp" />
     <ClCompile Include="src\cinput.cpp" />
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\cshader.cpp" />
@@ -113,6 +117,9 @@
     <ClCompile Include="src\cviscraft.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\2d\CBitmap.h" />
+    <ClInclude Include="src\2d\CTexture.h" />
+    <ClInclude Include="src\2d\CTextureShader.h" />
     <ClInclude Include="src\brushes.h" />
     <ClInclude Include="src\brush\CBrushDeform.h" />
     <ClInclude Include="src\brush\CBrushLower.h" />
@@ -120,6 +127,7 @@
     <ClInclude Include="src\brush\IBrush.h" />
     <ClInclude Include="src\ccamera.h" />
     <ClInclude Include="src\cgizmo.h" />
+    <ClInclude Include="src\CGui.h" />
     <ClInclude Include="src\cinput.h" />
     <ClInclude Include="src\crenderer.h" />
     <ClInclude Include="src\cshader.h" />
@@ -138,6 +146,8 @@
   <ItemGroup>
     <None Include="shaders\gizmo.ps" />
     <None Include="shaders\gizmo.vs" />
+    <None Include="shaders\GUI\texture.ps" />
+    <None Include="shaders\GUI\texture.vs" />
     <None Include="shaders\terrain_diffuse.ps" />
     <None Include="shaders\terrain_diffuse.vs" />
   </ItemGroup>

@@ -40,6 +40,15 @@
     <Filter Include="Source Files\kinect\audio">
       <UniqueIdentifier>{e568fb0e-0113-4da0-9ef0-b3d8c7556b16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\2D">
+      <UniqueIdentifier>{c6a55dad-da39-4a11-af3d-1b587dbc03a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\2D">
+      <UniqueIdentifier>{897eb975-af49-406c-b3f2-a2bbbd42022f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\GUI">
+      <UniqueIdentifier>{66d56a26-a9c5-491f-ac5a-5b6bbaaa76c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -95,6 +104,18 @@
     </ClCompile>
     <ClCompile Include="src\kinect\CAudioProcessor.cpp">
       <Filter>Source Files\kinect\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="src\2d\CBitmap.cpp">
+      <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\2d\CTexture.cpp">
+      <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\2d\CTextureShader.cpp">
+      <Filter>Source Files\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CGui.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +182,18 @@
     <ClInclude Include="src\kinect\CAudioProcessor.h">
       <Filter>Header Files\kinect\audio</Filter>
     </ClInclude>
+    <ClInclude Include="src\2d\CBitmap.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\2d\CTexture.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\2d\CTextureShader.h">
+      <Filter>Header Files\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CGui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\terrain_diffuse.ps">
@@ -174,6 +207,12 @@
     </None>
     <None Include="shaders\gizmo.vs">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\GUI\texture.ps">
+      <Filter>Shaders\GUI</Filter>
+    </None>
+    <None Include="shaders\GUI\texture.vs">
+      <Filter>Shaders\GUI</Filter>
     </None>
   </ItemGroup>
 </Project>

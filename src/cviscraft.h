@@ -10,7 +10,7 @@
 #include "helper.h"
 #include "cinput.h"
 #include "cgizmo.h"
-
+#include "CGui.h"
 
 /**
 	Defines and Globals
@@ -43,6 +43,7 @@ private:
 	CShader						*m_shader;										//!< The shader we want to render the scene with
 
 	CGizmo						*m_gizmo;										//!< The xform gizmo
+	CGui						*m_gui;											//!< The gui
 
 private:
 								//! Render the current state of the world scene to the window

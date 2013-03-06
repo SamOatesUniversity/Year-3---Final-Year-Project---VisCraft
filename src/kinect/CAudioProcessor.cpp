@@ -1,7 +1,7 @@
 #include "CAudioProcessor.h"
 
 
-CAudioProcessor::CAudioProcessor()
+CAudioProcessor::CAudioProcessor() : m_saidViscraft(false)
 {
 
 }
@@ -25,8 +25,8 @@ void CAudioProcessor::Process(
 
 	static const SpeechTagToAction Map[] =
 	{
+		{L"VISCRAFT", AudioPhrases::VisCraft},
 		{L"EXIT", AudioPhrases::ExitApplication},
-		{L"TYRONE", AudioPhrases::Tyrone},
 	};
 
 	AudioPhrases::Enum action = AudioPhrases::Noof;
@@ -39,16 +39,28 @@ void CAudioProcessor::Process(
 	}
 
 	// unknown phrase
-	if (action == AudioPhrases::Noof)
+	if (action == AudioPhrases::Noof) 
+	{
+		m_saidViscraft = false;
 		return;
+	}
 
 	// handle phrase
-	if (action == AudioPhrases::ExitApplication)
+	if (action == AudioPhrases::VisCraft)
 	{
-		exit(0);
+		m_saidViscraft = true;
 	}
-	else if (action == AudioPhrases::Tyrone)
+	else if (m_saidViscraft)
 	{
-		ShellExecute(NULL, "open", "http://lmgtfy.com/?q=Tyrone+is+a+girl", NULL, NULL, SW_SHOWMAXIMIZED);
+		if (action == AudioPhrases::ExitApplication)
+		{
+			exit(0);
+		}
+	}
+
+
+	if (action != AudioPhrases::VisCraft)
+	{
+		m_saidViscraft = false;
 	}
 }

@@ -35,6 +35,7 @@ private:
 
 	D3DXMATRIX					m_projectionMatrix;						//!< The projection matrix
 	D3DXMATRIX					m_worldMatrix;							//!< The world matrix
+	D3DXMATRIX					m_orthoMatrix;							//!< 
 
 	ID3D11DepthStencilState		*m_depthDisabledStencilState;			//!< The disabled death stencil state
 	ID3D11BlendState			*m_alphaEnableBlendingState;			//!< The enabled alpa blend state
@@ -77,6 +78,11 @@ public:
 									D3DXMATRIX &projectionMatrix		//!< Reference of the projection matrix
 								);
 
+								//! Get the orthographic matrix
+	void						GetOrthoMatrix( 
+									D3DXMATRIX &orthoMatrix 
+								);
+
 								//! Get the d3d11 device
 	inline ID3D11Device			*GetDevice()
 								{
@@ -92,7 +98,10 @@ public:
 								//! Get the devices viewport
 	D3D11_VIEWPORT				GetViewPort();
 
-								//! Get the devices viewport in a D3D10 structure
-	D3D10_VIEWPORT				GetViewPortD3D10() const;
+								//! Enable or disable the zbuffer
+	void						EnableZBuffer(
+									bool enable
+								);
+
 };
 
