@@ -91,9 +91,9 @@ const bool CVisCraft::Create()
 	m_kinect = new CKinect();
 	if (!m_kinect->Create(m_hwnd, m_hinstance, m_gui))
 	{
-		/*Release();
+		Release();
 		ASSERT(false, "Failed to create the kinect interface class");
-		return false;*/
+		return false;
 	}
 
 	// Create the input handling class
@@ -104,6 +104,11 @@ const bool CVisCraft::Create()
 		ASSERT(false, "Failed to create input class");
 		return false;
 	}
+
+	// Bring the window up on the screen and set it as main focus.
+	ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
+	SetForegroundWindow(m_hwnd);
+	SetFocus(m_hwnd);
 
 	return true;
 }
@@ -121,6 +126,9 @@ void CVisCraft::CreateWindowInternal(
 
 	// Give the application a name.
 	m_applicationName = "VisCraft";
+
+	// Create the splash screen loading banner, as initializing d3d11 + kinnect + audio takes some time
+
 
 	// Setup the windows class with default settings.
 	WNDCLASSEX wc;
@@ -156,11 +164,6 @@ void CVisCraft::CreateWindowInternal(
 		posX, posY, 
 		width, height, 
 		NULL, NULL, m_hinstance, NULL);
-
-	// Bring the window up on the screen and set it as main focus.
-	ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
-	SetForegroundWindow(m_hwnd);
-	SetFocus(m_hwnd);
 
 	return;
 }
