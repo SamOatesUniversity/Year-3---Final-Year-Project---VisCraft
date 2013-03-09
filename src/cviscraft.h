@@ -11,6 +11,7 @@
 #include "cinput.h"
 #include "cgizmo.h"
 #include "CGui.h"
+#include "../resource/resource.h"
 
 /**
 	Defines and Globals
@@ -33,6 +34,9 @@ private:
 	char						*m_applicationName;								//!< The applications name
 	HINSTANCE					m_hinstance;									//!< The handle to the application instance
 	HWND						m_hwnd;											//!< The main application window handle
+
+	HWND						m_splashhwnd;									//!< 
+	HBITMAP						m_spashBitmap;									//!< 
 
 	CKinect						*m_kinect;										//!< The kinect interface class
 
@@ -81,4 +85,7 @@ public:
 									WPARAM wParam,								//!< 
 									LPARAM lParam								//!< 
 								);
+
+								//! 
+	bool						CreateSplashScreen();
 };

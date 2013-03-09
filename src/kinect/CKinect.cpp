@@ -52,12 +52,12 @@ const bool CKinect::Create(
 		return false;
 
 	m_hwnd = CreateWindowEx(
-		WS_EX_CLIENTEDGE,
+		WS_EX_TOPMOST,
 		"KinectPreviewClass",
 		"Kinect Preview",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 
-		640, 480,
+		WS_POPUP,
+		7, 30, 
+		240, 180,
 		parent, NULL, hInstance, NULL
 	);
 
@@ -288,8 +288,6 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 	bool continueProcessing = true;
 	while ( continueProcessing )
 	{
-		
-
 		// Wait for any of the events to be signaled
 		static const int numEvents = 3;
 		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent, m_hSpeechEvent };
