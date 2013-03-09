@@ -7,7 +7,9 @@
 CVisCraft::CVisCraft() : 
 	m_applicationName(NULL),
 	m_hinstance(NULL),
-	m_hwnd(NULL)
+	m_hwnd(NULL),
+	m_splashhwnd(NULL),
+	m_spashBitmap(NULL)
 {
 	m_input = nullptr;
 	m_renderer = nullptr;
@@ -109,6 +111,8 @@ const bool CVisCraft::Create()
 	ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
+	DestroyWindow(m_splashhwnd);
+	
 
 	return true;
 }
@@ -127,8 +131,8 @@ void CVisCraft::CreateWindowInternal(
 	// Give the application a name.
 	m_applicationName = "VisCraft";
 
-	// Create the splash screen loading banner, as initializing d3d11 + kinnect + audio takes some time
-
+	// Create the splash screen loading banner, as initializing d3d11 + kinect + audio takes some time
+	CreateSplashScreen();
 
 	// Setup the windows class with default settings.
 	WNDCLASSEX wc;
@@ -277,6 +281,45 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 		LPARAM lParam
 	)
 {
+	if (hwnd == m_splashhwnd)
+	{
+		HDC hDC;
+		PAINTSTRUCT ps;
+		RECT area;
+		BITMAP bm;
+
+		switch (message)
+		{
+		case WM_PAINT:
+			{
+				if (m_spashBitmap == NULL) {
+					m_spashBitmap = LoadBitmap(m_hinstance, MAKEINTRESOURCE(IDB_BITMAP_SPLASHSCREEN));
+				}
+
+				hDC = ::BeginPaint(m_splashhwnd, &ps);
+				::GetClientRect(m_splashhwnd, &area);
+
+				HDC hdcMem = CreateCompatibleDC(hDC);
+				HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, m_spashBitmap);
+
+				GetObject(m_spashBitmap, sizeof(bm), &bm);
+				BitBlt(hDC, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+				SelectObject(hdcMem, hbmOld);
+				DeleteDC(hdcMem);
+			}
+			break;
+		case WM_CLOSE:
+		case WM_DESTROY:
+			{
+				DeleteObject(m_spashBitmap);
+			}
+			break;
+		}
+
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}	
+
 	switch (message)
 	{
 	case WM_MOUSEMOVE:
@@ -293,6 +336,13 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 			m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
 		}
 		break;
+
+	case WM_CLOSE:
+	case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			return FALSE;
+		}
 	}
 
 	return DefWindowProc(hwnd, message, wParam, lParam);
@@ -340,6 +390,53 @@ const bool CVisCraft::RenderGraphics()
 	return true;
 }
 
+bool CVisCraft::CreateSplashScreen()
+{
+	WNDCLASSEX wc;
+	wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	wc.lpfnWndProc   = WindowsProcedure;
+	wc.cbClsExtra    = 0;
+	wc.cbWndExtra    = 0;
+	wc.hInstance     = m_hinstance;
+	wc.hIcon		 = LoadIcon(NULL, IDI_WINLOGO);
+	wc.hIconSm       = wc.hIcon;
+	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
+	wc.lpszMenuName  = NULL;
+	wc.lpszClassName = "SplashScreenClass";
+	wc.cbSize        = sizeof(WNDCLASSEX);
+
+	if (!RegisterClassEx(&wc))
+		return false;
+
+	m_splashhwnd = CreateWindowEx(
+		WS_EX_TOPMOST,
+		"SplashScreenClass",
+		"",
+		WS_POPUP,
+		(GetSystemMetrics(SM_CXSCREEN) / 2) - 320, (GetSystemMetrics(SM_CYSCREEN) / 2) - 240,
+		640, 480,
+		NULL, NULL, m_hinstance, NULL
+		);
+
+	if (m_splashhwnd == NULL)
+		return false;
+
+	ShowWindow(m_splashhwnd, SW_SHOW);
+	SetForegroundWindow(m_splashhwnd);
+	SetFocus(m_splashhwnd);
+
+	// Handle the windows messages.
+	MSG msg;
+	while(::PeekMessage(&msg, m_splashhwnd, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	return true;
+}
+
 /*!
  * \brief
  * \return
@@ -351,15 +448,5 @@ LRESULT CALLBACK WindowsProcedure(
 		LPARAM lparam
 	)
 {
-	switch(umessage)
-	{
-	case WM_CLOSE:
-	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return FALSE;
-		}
-	}
-
 	return VisCraftPtr->MessageHandler(hwnd, umessage, wparam, lparam);
 }
