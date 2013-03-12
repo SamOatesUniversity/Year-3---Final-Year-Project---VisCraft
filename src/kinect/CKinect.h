@@ -15,6 +15,8 @@
 #include "CAudioProcessor.h"
 #include "chand.h"
 
+#include <vld.h>
+
 #include "../CGui.h"
 
 #pragma comment(lib, "Kinect10.lib")
@@ -73,6 +75,9 @@ public:
 													HINSTANCE hInstance,				//!< 
 													CGui *gui							//!< 
 												);
+
+												//! Destroy the kinect
+	void										Destroy();
 
 												//! 
 	void										Nui_GotDepthAlert();

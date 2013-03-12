@@ -283,3 +283,11 @@ void CHand::DetectHandEdges(
 
 	memcpy(depthData, m_edgeTempBuffer, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
 }
+
+void CHand::Release()
+{
+	for (int gestureIndex = 0; gestureIndex < HandState::Noof; ++gestureIndex)
+	{
+		SafeDelete(m_handStateDTM[gestureIndex]);
+	}
+}

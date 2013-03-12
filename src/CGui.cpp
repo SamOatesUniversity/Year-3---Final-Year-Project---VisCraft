@@ -77,3 +77,19 @@ void CGui::SetVisible(
 {
 	m_visible = visible;
 }
+
+void CGui::Release()
+{
+	m_overlay->Destroy();
+	SafeDelete(m_overlay);
+
+	for (unsigned int textOverlayIndex = 0; textOverlayIndex < TextOverlay::Noof; ++textOverlayIndex)
+	{
+		m_textOverlay[textOverlayIndex]->Destroy();
+		SafeDelete(m_textOverlay[textOverlayIndex]);
+	}
+
+	m_textureShader->Destroy();
+	SafeDelete(m_textureShader);
+		
+}
