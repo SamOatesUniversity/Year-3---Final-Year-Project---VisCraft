@@ -204,6 +204,9 @@ void CVisCraft::Run()
  */
 void CVisCraft::Release()
 {
+	ShowWindow(m_hwnd, SW_HIDE);
+	m_kinect->Destroy();
+	
 	SafeReleaseDelete(m_input);
 	SafeReleaseDelete(m_renderer);
 	SafeDelete(m_camera);
@@ -211,6 +214,7 @@ void CVisCraft::Release()
 	SafeReleaseDelete(m_shader);
 	SafeDelete(m_gizmo);
 	SafeDelete(m_kinect);
+	SafeReleaseDelete(m_gui);
 
 	// Remove the window.
 	DestroyWindow(m_hwnd);

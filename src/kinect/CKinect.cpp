@@ -24,8 +24,9 @@ CKinect::~CKinect()
 {
 	SafeDelete(m_drawDepth);
 	SafeRelease(m_nuiSensor);
-	SafeDelete(m_hand);
+	SafeReleaseDelete(m_hand);
 	SafeDelete(m_audioCommandProcessor);
+	SafeDelete(m_pKinectAudioStream);
 }
 
 const bool CKinect::Create( 
@@ -278,8 +279,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 DWORD WINAPI CKinect::Nui_ProcessThread(LPVOID param)
 {
-	CKinect *const kinect = reinterpret_cast<CKinect*>(param);
-	return kinect->Nui_ProcessThread();
+	CKinect *kinect = reinterpret_cast<CKinect*>(param);
+	DWORD result = kinect->Nui_ProcessThread();
+	return result;
 }
 
 DWORD WINAPI CKinect::Nui_ProcessThread()
@@ -435,4 +437,12 @@ RGBQUAD CKinect::Nui_ShortToQuad_Depth(
 	color.rgbBlue  = intensity >> g_IntensityShiftByPlayerB[Player];
 
 	return color;
+}
+
+void CKinect::Destroy()
+{
+	SetEvent(m_nuiProcessStop);
+	m_pKinectAudioStream->StopCapture();
+	ShowWindow(m_hwnd, SW_HIDE);
+	Sleep(100); // I know this is bad, but it give kinect time to free everything.
 }

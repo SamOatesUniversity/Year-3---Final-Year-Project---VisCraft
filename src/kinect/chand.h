@@ -72,6 +72,9 @@ public:
 														int frameHeight
 													);
 
+													//! 
+	void											Release();
+
 													//! Try and find a hand from the depth image
 	RGBQUAD*										FindFromDepth(
 														RGBQUAD *depthData	

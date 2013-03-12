@@ -37,6 +37,9 @@ public:
 										);
 
 										//! 
+	void								Release();
+
+										//! 
 	const bool							Render(
 											CRenderer *render,				//!< 
 											D3DXMATRIX worldMatrix,			//!< 
