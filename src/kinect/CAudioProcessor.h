@@ -11,6 +11,10 @@ private:
 			VisCraft,
 			ExitApplication,
 			Cancel,
+			Brushes,
+			BrushRaise,
+			BrushLower,
+			BrushDeform,
 			Noof
 		};
 	};

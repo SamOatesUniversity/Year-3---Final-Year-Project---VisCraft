@@ -326,3 +326,13 @@ void CBitmap::ReleaseTexture()
 		m_texture = 0;
 	}
 }
+
+const int CBitmap::GetWidth() const
+{
+	return m_bitmapWidth;
+}
+
+const int CBitmap::GetHeight() const
+{
+	return m_bitmapHeight;
+}

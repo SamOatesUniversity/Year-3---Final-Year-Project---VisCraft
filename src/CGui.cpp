@@ -4,9 +4,11 @@ CGui::CGui()
 {
 	m_visible = false;
 	m_overlay = nullptr;
+	m_state = GuiState::MainMenu;
 
-	for (unsigned int textOverlayIndex = 0; textOverlayIndex < TextOverlay::Noof; ++textOverlayIndex)
+	for (unsigned int textOverlayIndex = 0; textOverlayIndex < TextOverlay::Noof; ++textOverlayIndex) {
 		m_textOverlay[textOverlayIndex] = nullptr;
+	}
 }
 
 CGui::~CGui()
@@ -24,8 +26,26 @@ const bool CGui::Create(
 		return false;
 	}
 
-	m_textOverlay[TextOverlay::Listening] = new CBitmap();
-	if (!m_textOverlay[TextOverlay::Listening]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/listening.png", 256, 64))
+	m_textOverlay[TextOverlay::MainMenu] = new CBitmap();
+	if (!m_textOverlay[TextOverlay::MainMenu]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/main_menu.png", 512, 128))
+	{
+		return false;
+	}
+
+	m_textOverlay[TextOverlay::Brushes] = new CBitmap();
+	if (!m_textOverlay[TextOverlay::Brushes]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes.png", 512, 128))
+	{
+		return false;
+	}
+
+	m_textOverlay[TextOverlay::File] = new CBitmap();
+	if (!m_textOverlay[TextOverlay::File]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/main_menu.png", 512, 128))
+	{
+		return false;
+	}
+
+	m_textOverlay[TextOverlay::About] = new CBitmap();
+	if (!m_textOverlay[TextOverlay::About]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/main_menu.png", 512, 128))
 	{
 		return false;
 	}
@@ -60,12 +80,43 @@ const bool CGui::Render(
 	if (!m_textureShader->Render(render->GetDeviceContext(), m_overlay->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_overlay->GetTexture()))
 		return false;
 
-	for (unsigned int textOverlayIndex = 0; textOverlayIndex < TextOverlay::Noof; ++textOverlayIndex)
+	switch (m_state) 
 	{
-		m_textOverlay[textOverlayIndex]->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - 128), screenHeight - 128 - 32);
+		case GuiState::MainMenu:
+		{
+			CBitmap *const overlay = m_textOverlay[TextOverlay::MainMenu];
+			overlay->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (overlay->GetWidth() * 0.5f)), screenHeight - 256 + (static_cast<int>((256 - overlay->GetHeight()) * 0.5f )));
+			if (!m_textureShader->Render(render->GetDeviceContext(), overlay->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, overlay->GetTexture()))
+				return false;
+		}
+		break;
 
-		if (!m_textureShader->Render(render->GetDeviceContext(), m_textOverlay[textOverlayIndex]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_textOverlay[textOverlayIndex]->GetTexture()))
-			return false;
+		case GuiState::Brushes:
+		{
+			CBitmap *const overlay = m_textOverlay[TextOverlay::Brushes];
+			overlay->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (overlay->GetWidth() * 0.5f)), screenHeight - 256 + (static_cast<int>((256 - overlay->GetHeight()) * 0.5f )));
+			if (!m_textureShader->Render(render->GetDeviceContext(), overlay->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, overlay->GetTexture()))
+				return false;
+		}
+		break;
+
+		case GuiState::File:
+		{
+			CBitmap *const overlay = m_textOverlay[TextOverlay::File];
+			overlay->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (overlay->GetWidth() * 0.5f)), screenHeight - 256 + (static_cast<int>((256 - overlay->GetHeight()) * 0.5f )));
+			if (!m_textureShader->Render(render->GetDeviceContext(), overlay->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, overlay->GetTexture()))
+				return false;
+		}
+		break;
+
+		case GuiState::About:
+		{
+			CBitmap *const overlay = m_textOverlay[TextOverlay::About];
+			overlay->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (overlay->GetWidth() * 0.5f)), screenHeight - 256 + (static_cast<int>((256 - overlay->GetHeight()) * 0.5f )));
+			if (!m_textureShader->Render(render->GetDeviceContext(), overlay->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, overlay->GetTexture()))
+				return false;
+		}
+		break;
 	}
 
 	return true;
@@ -90,6 +141,17 @@ void CGui::Release()
 	}
 
 	m_textureShader->Destroy();
-	SafeDelete(m_textureShader);
-		
+	SafeDelete(m_textureShader);		
+}
+
+void CGui::SetState( 
+		GuiState::Enum newState /*!< */ 
+	)
+{
+	m_state = newState;
+}
+
+GuiState::Enum CGui::GetState() const
+{
+	return m_state;
 }

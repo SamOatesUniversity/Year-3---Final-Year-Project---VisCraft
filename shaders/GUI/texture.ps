@@ -28,5 +28,11 @@ float4 TexturePixelShader(PixelInputType input) : SV_TARGET
     // Sample the pixel color from the texture using the sampler at this texture coordinate location.
     float4 textureColor = shaderTexture.Sample(SampleType, input.tex);
 
+	// pngs seem to put full white as alpha transparent? so jut presume i never use white in any of my graphics.
+	// dumb i know... Could convert graphics to a different format, but this is quicker
+	if (textureColor.x == 1.0f && textureColor.y == 1.0f && textureColor.z == 1.0f) {
+		textureColor = float4(0, 0, 0, 0);
+	}
+
     return textureColor;
 }
