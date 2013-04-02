@@ -19,9 +19,6 @@ bool CHand::Create(
 	m_frameWidth = frameWidth;
 	m_frameHeight = frameHeight;
 
-	m_handStateDTM[HandState::OpenHand] = new CDeformableTemplateModel();
-	m_handStateDTM[HandState::ClosedFist] = new CGestureHandClosed();
-
 	m_edgeTempBuffer = new RGBQUAD[frameWidth * frameHeight];
 
 	return true;
@@ -67,23 +64,6 @@ RGBQUAD* CHand::FindFromDepth(
 
 	// From the hand bounding box, perform edge detection
 	DetectHandEdges(depthData);
-
-	// Test DTMS on sampled hand data
-	HandState::Enum foundGesture = HandState::Noof;
-	for (int gestureIndex = 0; gestureIndex < HandState::Noof; ++gestureIndex)
-	{
-		if (m_handStateDTM[gestureIndex]->Test(depthData, m_frameWidth, m_frameHeight))
-		{
-			foundGesture = static_cast<HandState::Enum>(gestureIndex);
-			break;
-		}
-	}
-
-	// A DTM was found! do something about it
-	if (foundGesture != HandState::Noof)
-	{
-
-	}
 
 #ifdef _DEBUG
 	// Draw the bounds if we are in debug mode
@@ -136,6 +116,9 @@ bool CHand::SampleToHandArea(
 	m_handArea[HandAreaSamplePoint::Top] = top;
 	m_handArea[HandAreaSamplePoint::Bottom] = bottom;
 
+	int widthOfHand = right - left;
+	m_handState = widthOfHand > 70 ? HandState::OpenHand : HandState::ClosedFist;
+		
 	return true;
 }
 
@@ -161,7 +144,12 @@ void CHand::DrawHandAreaBounds(
 			if (xPos <= 0) continue;
 			
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			depthData[pixel].rgbGreen = 255;
+			
+			if (m_handState == HandState::OpenHand) {
+				depthData[pixel].rgbGreen = 255;
+			} else {
+				depthData[pixel].rgbBlue = 255;
+			}
 		}
 	}
 
@@ -176,7 +164,12 @@ void CHand::DrawHandAreaBounds(
 			if (xPos <= 0) continue;
 
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			depthData[pixel].rgbGreen = 255;
+			
+			if (m_handState == HandState::OpenHand) {
+				depthData[pixel].rgbGreen = 255;
+			} else {
+				depthData[pixel].rgbBlue = 255;
+			}
 		}
 	}
 
@@ -191,7 +184,12 @@ void CHand::DrawHandAreaBounds(
 			if (yPos <= 0) continue;
 
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			depthData[pixel].rgbGreen = 255;
+			
+			if (m_handState == HandState::OpenHand) {
+				depthData[pixel].rgbGreen = 255;
+			} else {
+				depthData[pixel].rgbBlue = 255;
+			}
 		}
 	}
 
@@ -206,7 +204,12 @@ void CHand::DrawHandAreaBounds(
 			if (yPos <= 0) continue;
 
 			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			depthData[pixel].rgbGreen = 255;
+
+			if (m_handState == HandState::OpenHand) {
+				depthData[pixel].rgbGreen = 255;
+			} else {
+				depthData[pixel].rgbBlue = 255;
+			}
 		}
 	}
 }
@@ -286,8 +289,5 @@ void CHand::DetectHandEdges(
 
 void CHand::Release()
 {
-	for (int gestureIndex = 0; gestureIndex < HandState::Noof; ++gestureIndex)
-	{
-		SafeDelete(m_handStateDTM[gestureIndex]);
-	}
+
 }

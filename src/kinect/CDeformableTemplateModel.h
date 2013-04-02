@@ -4,6 +4,15 @@
 #include <SAM.h>
 #include <vector>
 
+struct HandAreaSamplePoint {
+	enum Enum {
+		Left,
+		Right,
+		Top,
+		Bottom
+	};
+};
+
 class CDeformableTemplateModel {
 private:
 
@@ -49,7 +58,18 @@ public:
 																		//! Test the DTM against a buffer of data
 	bool																Test(
 																			RGBQUAD *data,
-																			const unsigned int bufferWidth,
-																			const unsigned int bufferHeight
+																			unsigned int width,
+																			unsigned int height,
+																			SAM::TVector<unsigned int, 4> &area
+																		);
+	
+																		//! 
+	void																DrawBox(
+																			RGBQUAD *data,
+																			unsigned int w,
+																			unsigned int h,
+																			unsigned int x, 
+																			unsigned int y, 
+																			unsigned int t  
 																		);
 };

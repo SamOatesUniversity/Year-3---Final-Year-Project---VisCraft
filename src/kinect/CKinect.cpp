@@ -58,7 +58,7 @@ const bool CKinect::Create(
 		"Kinect Preview",
 		WS_POPUP,
 		7, 30, 
-		240, 180,
+		640, 480,
 		parent, NULL, hInstance, NULL
 	);
 
