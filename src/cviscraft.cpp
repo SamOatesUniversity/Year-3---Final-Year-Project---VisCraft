@@ -1,6 +1,8 @@
 
 #include "cviscraft.h"
 
+CVisCraft* CVisCraft::m_instance = nullptr;
+
 /*!
  * \brief The constructor
  */
@@ -18,6 +20,8 @@ CVisCraft::CVisCraft() :
 	m_shader = nullptr;
 	m_gizmo = nullptr;
 	m_kinect = nullptr;
+
+	m_running = false;
 }
 
 /*!
@@ -34,7 +38,7 @@ CVisCraft::~CVisCraft()
  */
 const bool CVisCraft::Create()
 {
-	VisCraftPtr = this;
+	m_instance = this;
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
 	int screenWidth = 0;
@@ -113,6 +117,7 @@ const bool CVisCraft::Create()
 	SetFocus(m_hwnd);
 	DestroyWindow(m_splashhwnd);
 	
+	m_running = true;
 
 	return true;
 }
@@ -182,7 +187,7 @@ void CVisCraft::Run()
 	ZeroMemory(&msg, sizeof(MSG));
 
 	// Loop until there is a quit message from the window or the user.
-	while (true)
+	while (m_running)
 	{
 		// Handle the windows messages.
 		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -224,7 +229,7 @@ void CVisCraft::Release()
 	m_hinstance = NULL;
 
 	// Release the pointer to this class.
-	VisCraftPtr = NULL;
+	m_instance = nullptr;
 }
 
 /*!
@@ -452,5 +457,5 @@ LRESULT CALLBACK WindowsProcedure(
 		LPARAM lparam
 	)
 {
-	return VisCraftPtr->MessageHandler(hwnd, umessage, wparam, lparam);
+	return CVisCraft::GetInstance()->MessageHandler(hwnd, umessage, wparam, lparam);
 }

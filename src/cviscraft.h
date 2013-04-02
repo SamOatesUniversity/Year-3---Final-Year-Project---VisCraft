@@ -14,12 +14,6 @@
 #include "../resource/resource.h"
 
 /**
-	Defines and Globals
-*/
-
-static class CVisCraft*	VisCraftPtr = nullptr;
-
-/**
 	Function prototypes
 */
 
@@ -29,6 +23,9 @@ static LRESULT CALLBACK WindowsProcedure(HWND, UINT, WPARAM, LPARAM);
 	VisCraft class deceleration
 */
 class CVisCraft {
+
+private:
+	static CVisCraft*			m_instance;
 
 private:
 	char						*m_applicationName;								//!< The applications name
@@ -48,6 +45,8 @@ private:
 
 	CGizmo						*m_gizmo;										//!< The xform gizmo
 	CGui						*m_gui;											//!< The gui
+
+	bool						m_running;										//!< Is the application currently running?
 
 private:
 								//! Render the current state of the world scene to the window
@@ -88,4 +87,15 @@ public:
 
 								//! 
 	bool						CreateSplashScreen();
+
+								//! 
+	void						Close() 
+								{
+									m_running = false;
+								}
+
+	static CVisCraft			*GetInstance() 
+								{
+									return m_instance;
+								}
 };

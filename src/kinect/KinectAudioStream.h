@@ -180,7 +180,7 @@ public:
 
 private:
     // Number of audio buffers (chunks of overall ring buffer) used to capture Kinect audio data
-    static const UINT NumBuffers = 20;
+    static const UINT NumBuffers = 32;
     typedef std::stack<CStaticMediaBuffer*> BufferPool;
     typedef std::queue<CStaticMediaBuffer*> CircularBufferQueue;
     

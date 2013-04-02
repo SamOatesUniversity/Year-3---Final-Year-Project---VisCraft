@@ -1,5 +1,5 @@
 #include "CAudioProcessor.h"
-
+#include "../cviscraft.h"
 
 CAudioProcessor::CAudioProcessor(
 		CGui *gui
@@ -38,6 +38,7 @@ void CAudioProcessor::Process(
 		if (wcscmp(Map[actionIndex].pszSpeechTag, tag) == NULL)
 		{
 			action = Map[actionIndex].action;
+			break;
 		}
 	}
 
@@ -57,7 +58,7 @@ void CAudioProcessor::Process(
 	{
 		if (action == AudioPhrases::ExitApplication)
 		{
-			exit(0);
+			CVisCraft::GetInstance()->Close();
 		}
 		else if (action == AudioPhrases::Cancel)
 		{
