@@ -1,4 +1,6 @@
 #include "chand.h"
+#include "../cviscraft.h"
+#include "../cgizmo.h"
 
 CHand::CHand() : m_edgeTempBuffer(nullptr)
 {
@@ -69,7 +71,7 @@ RGBQUAD* CHand::FindFromDepth(
 	// Draw the bounds if we are in debug mode
 	DrawHandAreaBounds(depthData);
 #endif
-
+	
 	return depthData;
 }
 
@@ -117,7 +119,13 @@ bool CHand::SampleToHandArea(
 	m_handArea[HandAreaSamplePoint::Bottom] = bottom;
 
 	int widthOfHand = right - left;
+	int heightOfHand = bottom - top;
+	float xPos = left + (widthOfHand * 0.5f);
+	float yPos = top + (heightOfHand * 0.5f);
+
 	m_handState = widthOfHand > 70 ? HandState::OpenHand : HandState::ClosedFist;
+
+	m_palm = D3DXVECTOR2(xPos, yPos);
 		
 	return true;
 }
@@ -290,4 +298,13 @@ void CHand::DetectHandEdges(
 void CHand::Release()
 {
 
+}
+
+const D3DXVECTOR2 CHand::GetHandPosition()
+{
+	static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
+	D3DXVECTOR2 result = center - m_palm;
+	result.x = 1000 - (result.x * 10.0f);
+	result.y = 823 - (result.y * 1.0f);
+	return result;
 }

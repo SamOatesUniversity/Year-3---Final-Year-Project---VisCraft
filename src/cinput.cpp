@@ -73,7 +73,7 @@ void CInput::Release()
 	// Release the main interface to direct input.
 	SafeRelease(m_directInput);
 
-	::ShowCursor(TRUE);
+	::ShowCursor(FALSE);
 }
 
 /*!

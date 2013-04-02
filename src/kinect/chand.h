@@ -25,13 +25,15 @@ private:
 	unsigned int									m_frameWidth;									//!< 
 	unsigned int									m_frameHeight;									//!<
 
-	SAM::TVector<float, 2>							m_palm;											//!<
+	D3DXVECTOR2										m_palm;											//!<
+
 	SAM::TVector<unsigned int, 4>					m_handArea;										//!< 
 	HandState::Enum									m_handState;
 
 	CDeformableTemplateModel						*m_handStateDTM[HandState::Noof];				//!< 	
 
 	RGBQUAD											*m_edgeTempBuffer;								//!< 
+
 
 private:
 
@@ -72,4 +74,6 @@ public:
 														RGBQUAD *depthData	
 													);
 
+													//! 
+	const D3DXVECTOR2								GetHandPosition();
 };

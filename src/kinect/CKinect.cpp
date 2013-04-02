@@ -446,3 +446,8 @@ void CKinect::Destroy()
 	ShowWindow(m_hwnd, SW_HIDE);
 	Sleep(100); // I know this is bad, but it give kinect time to free everything.
 }
+
+const D3DXVECTOR2 CKinect::GetHandPosition()
+{
+	return m_hand->GetHandPosition();
+}

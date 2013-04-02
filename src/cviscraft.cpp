@@ -271,7 +271,7 @@ bool CVisCraft::Update()
 
 	m_camera->Control(m_input);
 
-	m_gizmo->Control(m_input, m_terrain, m_camera);
+	m_gizmo->Control(m_input, m_terrain, m_camera, m_kinect);
 
 	if (!RenderGraphics())
 		return false;
@@ -343,6 +343,12 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 	case WM_RBUTTONDOWN:
 		{
 			m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
+		}
+		break;
+
+	case WM_LBUTTONUP:
+		{
+			m_gizmo->SetInputType(InputType::Mouse);
 		}
 		break;
 
