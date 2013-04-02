@@ -15,6 +15,11 @@ private:
 			BrushRaise,
 			BrushLower,
 			BrushDeform,
+			File,
+			FileNew,
+			FileOpen,
+			FileSave,
+			About,
 			Noof
 		};
 	};

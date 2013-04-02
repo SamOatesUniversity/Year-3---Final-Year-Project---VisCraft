@@ -31,6 +31,9 @@ union TerrainFlags
 	{
 		unsigned int wireframe : 1;								//!< Should the terrain render in wireframe mode
 		#define TERRAIN_FLAG_WIREFRAME		0x01
+
+		unsigned int locked : 1;
+		#define TERRAIN_FLAG_LOCK			0x02
 	};
 
 	unsigned int allflags;
@@ -136,9 +139,10 @@ public:
 							//! 
 	bool					GetFlag(
 								unsigned int flag
-							) 
+							) const
 							{
-								return (m_flags.allflags & flag) == 1;
+								unsigned int res = m_flags.allflags & flag;
+								return res != 0;
 							}
 
 							//! Gets the terrain vertex at a given x and z location
@@ -152,4 +156,7 @@ public:
 								const float x,														//!< The x coord to look up the y from
 								const float z														//!< The z coord to look up the y from
 							) const;
+
+							//! Reset the terrain
+	void					Reset();
 };

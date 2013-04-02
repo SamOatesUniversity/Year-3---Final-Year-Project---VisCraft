@@ -446,6 +446,36 @@ bool CVisCraft::CreateSplashScreen()
 	return true;
 }
 
+void CVisCraft::NewTerrain()
+{
+	m_terrain->Reset();
+}
+
+void CVisCraft::OpenTerrain()
+{
+	m_terrain->EnableFlag(TERRAIN_FLAG_LOCK);
+
+	char fileName[MAX_PATH] = "";
+
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = m_hwnd;
+	ofn.lpstrFilter = "Bitmap Files (*.bmp)\0*.bmp\0\0";
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = "";
+
+	BOOL result = GetOpenFileName(&ofn);
+	if (result == TRUE) {
+		m_terrain->LoadHeightMap(fileName);
+	}
+
+	m_terrain->DisableFlag(TERRAIN_FLAG_LOCK);
+}
+
 /*!
  * \brief
  * \return

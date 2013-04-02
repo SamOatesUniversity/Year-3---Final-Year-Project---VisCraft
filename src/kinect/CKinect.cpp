@@ -327,7 +327,7 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 
 void CKinect::ProcessSpeech()
 {
-	const float ConfidenceThreshold = 0.3f;
+	static const float ConfidenceThreshold = 0.15f;
 
 	SPEVENT curEvent;
 	ULONG fetched = 0;

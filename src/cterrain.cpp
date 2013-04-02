@@ -488,8 +488,11 @@ const bool CTerrain::LoadHeightMap(
 
 	fclose(file);
 
+	// free the old buffers
+	Release();
+
 	// get the image data into a height map array
-	HeightMap *const heightMap = new HeightMap[static_cast<int>(m_size.x * m_size.y)];
+	m_heightMap = new HeightMap[static_cast<int>(m_size.x * m_size.y)];
 	
 	unsigned int y = 0;
 
@@ -501,26 +504,20 @@ const bool CTerrain::LoadHeightMap(
 			const float height = image[y] * 0.1f;
 
 			const int index = static_cast<int>(m_size.y * z) + x;
-			heightMap[index].position.x = static_cast<float>(x);
-			heightMap[index].position.y = height;
-			heightMap[index].position.z = static_cast<float>(z);
+			m_heightMap[index].position.x = static_cast<float>(x);
+			m_heightMap[index].position.y = height;
+			m_heightMap[index].position.z = static_cast<float>(z);
 
 			y += 3;
 		}
 	}
 
-	// free the old buffers
-	Release();
-
 	// load in the height map data to our buffers
-	if (!InitializeBuffers(heightMap))
+	if (!InitializeBuffers(m_heightMap))
 	{
 		delete[] image;
 		return false;
 	}
-
-	SafeDelete(m_heightMap);
-	m_heightMap = heightMap;
 
 	delete[] image;
 
@@ -543,6 +540,10 @@ HeightMap *CTerrain::GetTerrainVertexAt(
 	const int heightMapSize = static_cast<int>(m_size.x * m_size.y);
 	for (int heightMapIndex = 0; heightMapIndex < heightMapSize; ++heightMapIndex)
 	{
+		if (GetFlag(TERRAIN_FLAG_LOCK)) {
+			return nullptr;
+		}
+
 		const HeightMap hmap = m_heightMap[heightMapIndex];
 
 		if (hmap.position.x - x > 1 || hmap.position.x - x < -1)
@@ -572,5 +573,25 @@ const float CTerrain::GetTerrainHeightAt(
 		const float z										//!< The z coord to look up the y from 
 	) const
 {
-	return GetTerrainVertexAt(x, z)->position.y;
+	HeightMap *point = GetTerrainVertexAt(x, z);
+	if (point == nullptr) {
+		return 0.0f;
+	}
+	return point->position.y;
+}
+
+void CTerrain::Reset()
+{
+	for (int z = 0; z < m_size.y; ++z)
+	{
+		for (int x = 0; x < m_size.x; ++x)
+		{
+			const int index = static_cast<int>(m_size.y * z) + x;
+			m_heightMap[index].position.x = static_cast<float>(x);
+			m_heightMap[index].position.y = 0.0f;
+			m_heightMap[index].position.z = static_cast<float>(z);
+		}
+	}
+
+	UpdateHeightMap();
 }

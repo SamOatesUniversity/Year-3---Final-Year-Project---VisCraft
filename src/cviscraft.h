@@ -106,4 +106,9 @@ public:
 									return m_gizmo;
 								}
 
+								//! 
+	void						NewTerrain();
+
+								//!
+	void						OpenTerrain();
 };

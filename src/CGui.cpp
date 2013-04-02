@@ -39,7 +39,7 @@ const bool CGui::Create(
 	}
 
 	m_textOverlay[TextOverlay::File] = new CBitmap();
-	if (!m_textOverlay[TextOverlay::File]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/main_menu.png", 512, 128))
+	if (!m_textOverlay[TextOverlay::File]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/file.png", 512, 128))
 	{
 		return false;
 	}
