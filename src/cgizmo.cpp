@@ -14,12 +14,14 @@ CGizmo::CGizmo()
 	m_matrixBuffer = nullptr;
 	m_gizmoBuffer = nullptr;
 
-	m_position = D3DXVECTOR3(0, 4, 0);
+	m_position = D3DXVECTOR3(0, 0, 0);
 
 	m_gizmoState = GizmoState::Free;
 
 	m_currentBrush = BrushType::Raise;
 	m_brush.resize(BrushType::Noof);
+
+	m_inputType = InputType::Kinect;
 }
 
 /*
@@ -287,7 +289,8 @@ void CGizmo::Render(
 void CGizmo::Control( 
 		CInput *input,									//!< 
 		CTerrain *terrain,								//!<
-		CCamera *camera									//!< 
+		CCamera *camera,								//!< 
+		CKinect *kinect									//!< 
 	)
 {
 	if (terrain->GetFlag(TERRAIN_FLAG_LOCK) == true) {
@@ -296,68 +299,110 @@ void CGizmo::Control(
 
 	IBrush *const brush = m_brush[m_currentBrush];	
 
-	if (brush->IsLockable())
+	if (m_inputType == InputType::Mouse)
 	{
-		if (input->IsMouseDown(MouseButton::Right))
+		if (brush->IsLockable())
 		{
-			if (m_gizmoState != GizmoState::Locked)
+			if (input->IsMouseDown(MouseButton::Right))
 			{
-				m_dragData.startMousePosition = input->GetMousePosition();
-				m_dragData.lastY = m_dragData.startMousePosition.y;
-				m_gizmoState = GizmoState::Locked;
-			}		
-		}
-		else
-		{
-			if (m_gizmoState == GizmoState::Locked)
-			{
-				::SetCursorPos(
-					static_cast<int>(m_dragData.startMousePosition.x), 
-					static_cast<int>(m_dragData.startMousePosition.y)
-					);
+				if (m_gizmoState != GizmoState::Locked)
+				{
+					m_dragData.startMousePosition = input->GetMousePosition();
+					m_dragData.lastY = m_dragData.startMousePosition.y;
+					m_gizmoState = GizmoState::Locked;
+				}		
 			}
-			m_gizmoState = GizmoState::Free;
+			else
+			{
+				if (m_gizmoState == GizmoState::Locked)
+				{
+					::SetCursorPos(
+						static_cast<int>(m_dragData.startMousePosition.x), 
+						static_cast<int>(m_dragData.startMousePosition.y)
+						);
+				}
+				m_gizmoState = GizmoState::Free;
+			}
+		}
+
+		if (m_gizmoState == GizmoState::Free)
+		{
+			const D3DXVECTOR2 mousePos = input->GetMousePosition();
+
+			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
+
+			D3DXMATRIX projection;
+			m_renderer->GetProjectionMatrix(projection);
+
+			D3DXMATRIX view;
+			camera->GetViewMatrix(view);
+
+			D3DXVECTOR3 ray;
+			ray.x = ( ( ( 2.1f * mousePos.x ) / viewport.Width ) - 1 ) / projection._11;
+			ray.y = -( ( ( 2.1f * mousePos.y ) / viewport.Height ) - 1 ) / projection._22;
+			ray.z = 1.0f;
+
+			D3DXMATRIX inverseView;
+			D3DXMatrixInverse(&inverseView, NULL, &view);
+
+			D3DXVECTOR3 rayOrigin, rayDirection;
+			rayDirection.x = ray.x * inverseView._11 + ray.y * inverseView._21 + ray.z * inverseView._31;
+			rayDirection.y = ray.x * inverseView._12 + ray.y * inverseView._22 + ray.z * inverseView._32;
+			rayDirection.z = ray.x * inverseView._13 + ray.y * inverseView._23 + ray.z * inverseView._33;
+			rayOrigin.x = inverseView._41;
+			rayOrigin.y = inverseView._42;
+			rayOrigin.z = inverseView._43;
+
+			const D3DXVECTOR3 floorNorm = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+			const float distance = -(D3DXVec3Dot(&floorNorm, &rayOrigin) / D3DXVec3Dot(&floorNorm, &rayDirection));
+
+			m_position.x = rayOrigin.x + (rayDirection.x * distance);
+			m_position.z = rayOrigin.z + (rayDirection.z * distance);
+			m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
+		}
+
+		brush->Apply(this, input, terrain);
+	}
+	else if (m_inputType == InputType::Kinect)
+	{
+		if (m_gizmoState == GizmoState::Free)
+		{
+			const D3DXVECTOR2 mousePos = kinect->GetHandPosition();
+
+			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
+
+			D3DXMATRIX projection;
+			m_renderer->GetProjectionMatrix(projection);
+
+			D3DXMATRIX view;
+			camera->GetViewMatrix(view);
+
+			D3DXVECTOR3 ray;
+			ray.x = ( ( ( 2.1f * mousePos.x ) / viewport.Width ) - 1 ) / projection._11;
+			ray.y = -( ( ( 2.1f * mousePos.y ) / viewport.Height ) - 1 ) / projection._22;
+			ray.z = 1.0f;
+
+			D3DXMATRIX inverseView;
+			D3DXMatrixInverse(&inverseView, NULL, &view);
+
+			D3DXVECTOR3 rayOrigin, rayDirection;
+			rayDirection.x = ray.x * inverseView._11 + ray.y * inverseView._21 + ray.z * inverseView._31;
+			rayDirection.y = ray.x * inverseView._12 + ray.y * inverseView._22 + ray.z * inverseView._32;
+			rayDirection.z = ray.x * inverseView._13 + ray.y * inverseView._23 + ray.z * inverseView._33;
+			rayOrigin.x = inverseView._41;
+			rayOrigin.y = inverseView._42;
+			rayOrigin.z = inverseView._43;
+
+			const D3DXVECTOR3 floorNorm = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+			const float distance = -(D3DXVec3Dot(&floorNorm, &rayOrigin) / D3DXVec3Dot(&floorNorm, &rayDirection));
+
+			m_position.x = rayOrigin.x + (rayDirection.x * distance);
+			m_position.z = rayOrigin.z + (rayDirection.z * distance);
+			m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
 		}
 	}
-
-	if (m_gizmoState == GizmoState::Free)
-	{
-		const D3DXVECTOR2 mousePos = input->GetMousePosition();
-
-		D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
-
-		D3DXMATRIX projection;
-		m_renderer->GetProjectionMatrix(projection);
-
-		D3DXMATRIX view;
-		camera->GetViewMatrix(view);
-
-		D3DXVECTOR3 ray;
-		ray.x = ( ( ( 2.1f * mousePos.x ) / viewport.Width ) - 1 ) / projection._11;
-		ray.y = -( ( ( 2.1f * mousePos.y ) / viewport.Height ) - 1 ) / projection._22;
-		ray.z = 1.0f;
-
-		D3DXMATRIX inverseView;
-		D3DXMatrixInverse(&inverseView, NULL, &view);
-
-		D3DXVECTOR3 rayOrigin, rayDirection;
-		rayDirection.x = ray.x * inverseView._11 + ray.y * inverseView._21 + ray.z * inverseView._31;
-		rayDirection.y = ray.x * inverseView._12 + ray.y * inverseView._22 + ray.z * inverseView._32;
-		rayDirection.z = ray.x * inverseView._13 + ray.y * inverseView._23 + ray.z * inverseView._33;
-		rayOrigin.x = inverseView._41;
-		rayOrigin.y = inverseView._42;
-		rayOrigin.z = inverseView._43;
-
-		const D3DXVECTOR3 floorNorm = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-
-		const float distance = -(D3DXVec3Dot(&floorNorm, &rayOrigin) / D3DXVec3Dot(&floorNorm, &rayDirection));
-
-		m_position.x = rayOrigin.x + (rayDirection.x * distance);
-		m_position.z = rayOrigin.z + (rayDirection.z * distance);
-		m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
-	}
-
-	brush->Apply(this, input, terrain);
 }
 
 void CGizmo::SetCurrentBrush( 

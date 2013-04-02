@@ -8,6 +8,7 @@
 #include "cterrain.h"
 #include "ccamera.h"
 #include "brush/IBrush.h"
+#include "kinect/CKinect.h"
 
 #include <d3dx11async.h>
 #include <vector>
@@ -26,6 +27,14 @@ struct BrushType {
 		Lower,
 		Smooth,
 		Noise,
+		Noof
+	};
+};
+
+struct InputType {
+	enum Enum {
+		Mouse,
+		Kinect,
 		Noof
 	};
 };
@@ -80,6 +89,8 @@ private:
 	BrushType::Enum			m_currentBrush;						//!< The currently active brush
 	std::vector<IBrush*>	m_brush;							//!< A list of all the avaluble brushes
 
+	InputType::Enum			m_inputType;						//!< 
+
 private:
 
 public:
@@ -106,7 +117,8 @@ public:
 	void					Control( 
 								CInput *input,						//!< 
 								CTerrain *terrain,					//!< 
-								CCamera *camera						//!< 
+								CCamera *camera,					//!< 
+								CKinect *kinect						//!< 
 							);
 
 							//! 
@@ -129,12 +141,22 @@ public:
 								return m_dragData;
 							}
 
+							//!
 	GizmoState::Enum		GetGizmoState() const
 							{
 								return m_gizmoState;
 							}
 
+							//! 
 	void					SetCurrentBrush(
 								const BrushType::Enum brushType
 							);
+
+							//! 
+	void					SetInputType(
+								InputType::Enum inputType
+							)
+							{
+								m_inputType = inputType;
+							}
 };

@@ -101,4 +101,7 @@ public:
 
 												//! 
 	void										ProcessSpeech();
+
+												//! 
+	const D3DXVECTOR2							GetHandPosition();
 };
