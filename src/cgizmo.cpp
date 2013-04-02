@@ -290,6 +290,10 @@ void CGizmo::Control(
 		CCamera *camera									//!< 
 	)
 {
+	if (terrain->GetFlag(TERRAIN_FLAG_LOCK) == true) {
+		return;
+	}
+
 	IBrush *const brush = m_brush[m_currentBrush];	
 
 	if (brush->IsLockable())

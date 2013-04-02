@@ -7,6 +7,9 @@
           <item> vis </item>
           <item> viz </item>
           <item> craft </item>
+		  <item> app </item>
+		  <item> kinect </item>
+		  <item> xbox </item>
         </one-of>
       </item>
       <item>
@@ -54,6 +57,38 @@
         <one-of>
           <item> deform </item>
 		  <item> form </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>FILE</tag>
+        <one-of>
+          <item> file </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>FILE-NEW</tag>
+        <one-of>
+          <item> new </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>FILE-OPEN</tag>
+        <one-of>
+          <item> open </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>FILE-SAVE</tag>
+        <one-of>
+          <item> save </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>ABOUT</tag>
+        <one-of>
+          <item> about </item>
+		  <item> info </item>
+		  <item> information </item>
         </one-of>
       </item>
     </one-of>

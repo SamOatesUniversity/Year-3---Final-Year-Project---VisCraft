@@ -34,6 +34,11 @@ void CAudioProcessor::Process(
 		{L"BRUSH-RAISE", AudioPhrases::BrushRaise},
 		{L"BRUSH-LOWER", AudioPhrases::BrushLower},
 		{L"BRUSH-DEFORM", AudioPhrases::BrushDeform},
+		{L"FILE", AudioPhrases::File},
+		{L"FILE-NEW", AudioPhrases::FileNew},
+		{L"FILE-OPEN", AudioPhrases::FileOpen},
+		{L"FILE-SAVE", AudioPhrases::FileSave},
+		{L"ABOUT", AudioPhrases::About},
 	};
 
 	AudioPhrases::Enum action = AudioPhrases::Noof;
@@ -70,13 +75,21 @@ void CAudioProcessor::Process(
 
 		if (m_gui->GetState() == GuiState::MainMenu)
 		{
-			if (action == AudioPhrases::ExitApplication && m_gui->GetState() == GuiState::MainMenu)
+			if (action == AudioPhrases::ExitApplication)
 			{
 				CVisCraft::GetInstance()->Close();
 			}
 			else if (action == AudioPhrases::Brushes)
 			{
 				m_gui->SetState(GuiState::Brushes);
+			}
+			else if (action == AudioPhrases::File)
+			{
+				m_gui->SetState(GuiState::File);
+			}
+			else if (action == AudioPhrases::About)
+			{
+				ShellExecute(NULL, "open", "http://www.samoatesgames.com", NULL, NULL, SW_SHOWMAXIMIZED);
 			}
 			return;
 		}
@@ -99,7 +112,7 @@ void CAudioProcessor::Process(
 				handled = true;
 				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Deform);
 			}
-
+			
 			if (handled) 
 			{
 				m_saidViscraft = false;
@@ -108,5 +121,35 @@ void CAudioProcessor::Process(
 			return;
 		}
 
+		if (m_gui->GetState() == GuiState::File)
+		{
+			bool handled = false;
+			if (action == AudioPhrases::FileNew)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->NewTerrain();
+			}
+			else if (action == AudioPhrases::FileOpen)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->OpenTerrain();
+			}
+			else if (action == AudioPhrases::FileSave)
+			{
+				handled = true;
+			}
+			else if (action == AudioPhrases::ExitApplication)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->Close();
+			}
+			
+			if (handled) 
+			{
+				m_saidViscraft = false;
+				m_gui->SetVisible(false);
+			}
+			return;
+		}
 	}
 }
