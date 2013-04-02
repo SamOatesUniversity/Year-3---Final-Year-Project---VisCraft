@@ -12,19 +12,10 @@
 class CHand {
 private:
 
-	struct HandAreaSamplePoint {
-		enum Enum {
-			Left,
-			Right,
-			Top,
-			Bottom
-		};
-	};
-
 	struct HandState {
 		enum Enum {
-			OpenHand,
 			ClosedFist,
+			OpenHand,
 			Noof
 		};
 	};
@@ -36,6 +27,7 @@ private:
 
 	SAM::TVector<float, 2>							m_palm;											//!<
 	SAM::TVector<unsigned int, 4>					m_handArea;										//!< 
+	HandState::Enum									m_handState;
 
 	CDeformableTemplateModel						*m_handStateDTM[HandState::Noof];				//!< 	
 
