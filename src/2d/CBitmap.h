@@ -98,5 +98,11 @@ public:
 									//! Get the texture resource
 	ID3D11ShaderResourceView		*GetTexture() const;
 
+									//! Get the width of the bitmap
+	const int						GetWidth() const;
+
+									//! Get the height of the bitmap
+	const int						GetHeight() const;
+
 
 };

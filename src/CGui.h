@@ -4,13 +4,26 @@
 #include "2d/CBitmap.h"
 #include "2d/CTextureShader.h"
 
+struct GuiState {
+	enum Enum {
+		MainMenu,
+		Brushes,
+		File,
+		About,
+		Noof
+	};
+};
+
 class CGui {
 
 private:
 
 	struct TextOverlay {
 		enum Enum {
-			Listening,
+			MainMenu,
+			Brushes,
+			File,
+			About,
 			Noof
 		};
 	};
@@ -23,6 +36,8 @@ private:
 	CTextureShader						*m_textureShader;
 
 	bool								m_visible;
+
+	GuiState::Enum						m_state;
 
 public:
 										//! 
@@ -52,4 +67,11 @@ public:
 											bool visible 
 										);
 
+										//!
+	void								SetState(
+											GuiState::Enum newState			//!< 
+										);
+
+										//! 
+	GuiState::Enum						GetState() const;
 };

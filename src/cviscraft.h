@@ -94,8 +94,16 @@ public:
 									m_running = false;
 								}
 
+								//!
 	static CVisCraft			*GetInstance() 
 								{
 									return m_instance;
 								}
+
+								//! 
+	CGizmo						*GetGizmo() const 
+								{
+									return m_gizmo;
+								}
+
 };

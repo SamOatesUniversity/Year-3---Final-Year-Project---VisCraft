@@ -30,6 +30,10 @@ void CAudioProcessor::Process(
 		{L"VISCRAFT", AudioPhrases::VisCraft},
 		{L"EXIT", AudioPhrases::ExitApplication},
 		{L"CANCEL", AudioPhrases::Cancel},
+		{L"BRUSHES", AudioPhrases::Brushes},
+		{L"BRUSH-RAISE", AudioPhrases::BrushRaise},
+		{L"BRUSH-LOWER", AudioPhrases::BrushLower},
+		{L"BRUSH-DEFORM", AudioPhrases::BrushDeform},
 	};
 
 	AudioPhrases::Enum action = AudioPhrases::Noof;
@@ -53,24 +57,56 @@ void CAudioProcessor::Process(
 	{
 		m_saidViscraft = true;
 		m_gui->SetVisible(true);
+		m_gui->SetState(GuiState::MainMenu);
 	}
 	else if (m_saidViscraft)
 	{
-		if (action == AudioPhrases::ExitApplication)
-		{
-			CVisCraft::GetInstance()->Close();
-		}
-		else if (action == AudioPhrases::Cancel)
+		if (action == AudioPhrases::Cancel)
 		{
 			m_saidViscraft = false;
 			m_gui->SetVisible(false);
+			return;
 		}
-	}
 
+		if (m_gui->GetState() == GuiState::MainMenu)
+		{
+			if (action == AudioPhrases::ExitApplication && m_gui->GetState() == GuiState::MainMenu)
+			{
+				CVisCraft::GetInstance()->Close();
+			}
+			else if (action == AudioPhrases::Brushes)
+			{
+				m_gui->SetState(GuiState::Brushes);
+			}
+			return;
+		}
 
-	if (action != AudioPhrases::VisCraft)
-	{
-		m_saidViscraft = false;
-		m_gui->SetVisible(false);
+		if (m_gui->GetState() == GuiState::Brushes)
+		{
+			bool handled = false;
+			if (action == AudioPhrases::BrushRaise)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Raise);
+			}
+			else if (action == AudioPhrases::BrushLower)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Lower);
+			}
+			else if (action == AudioPhrases::BrushDeform)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Deform);
+			}
+
+			if (handled) 
+			{
+				m_saidViscraft = false;
+				m_gui->SetVisible(false);
+			}
+			return;
+		}
+
 	}
 }
