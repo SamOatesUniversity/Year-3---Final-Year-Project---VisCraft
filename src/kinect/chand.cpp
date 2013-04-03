@@ -24,8 +24,7 @@ bool CHand::Create(
 
 	m_edgeTempBuffer = new RGBQUAD[frameWidth * frameHeight];
 
-	CVisCraft *const inst = CVisCraft::GetInstance();
-	m_lastPosition = inst->GetWindowDimension();
+	m_lastPosition = CVisCraft::GetInstance()->GetWindowDimension();
 	m_lastPosition.x *= 0.5f;
 	m_lastPosition.y *= 0.75f;
 
@@ -312,11 +311,34 @@ const D3DXVECTOR2 CHand::GetHandPosition()
 {
 	if (m_handState != HandState::NotFound)
 	{
-		static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
+		static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.7f);
 		D3DXVECTOR2 differnce = (center - m_palm);
-		differnce.x = differnce.x * 0.05f;
-		differnce.y = differnce.y * 0.01f;
-		m_lastPosition = m_lastPosition - differnce;
+		differnce.x = differnce.x * 0.025f;
+		differnce.y = differnce.y * 0.025f;
+
+		const float sqrLen = (differnce.x*differnce.x + differnce.y*differnce.y);
+		if (sqrLen > 1.0f) {
+			differnce.y = differnce.y * 0.5f;
+			m_lastPosition = m_lastPosition - differnce;
+
+			const D3DXVECTOR2 windowSize = CVisCraft::GetInstance()->GetWindowDimension();
+
+			if (m_lastPosition.x < windowSize.x * 0.1f) {
+				m_lastPosition.x = windowSize.x * 0.1f;
+			}
+
+			if (m_lastPosition.x > windowSize.x * 0.9f) {
+				m_lastPosition.x = windowSize.x * 0.9f;
+			}
+
+			if (m_lastPosition.y < windowSize.y * 0.5f) {
+				m_lastPosition.y = windowSize.y * 0.5f;
+			}
+
+			if (m_lastPosition.y > windowSize.y * 0.9f) {
+				m_lastPosition.y = windowSize.y * 0.9f;
+			}
+		}
 	}
 
 	return m_lastPosition;
