@@ -388,7 +388,7 @@ void CGizmo::Control(
 
 		if (m_gizmoState == GizmoState::Free)
 		{
-			const D3DXVECTOR2 mousePos = kinect->GetHandPosition();
+			D3DXVECTOR2 mousePos = kinect->GetHandPosition();
 
 			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
 
