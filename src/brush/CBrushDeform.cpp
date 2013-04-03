@@ -45,3 +45,12 @@ void CBrushDeform::Apply(
 	terrain->UpdateHeightMap();
 	gizmo->DragData().lastY = mousePos.y;
 }
+
+void CBrushDeform::Apply( 
+	CGizmo *gizmo,					//!< The gizmo controlling this brush
+	CKinect *kinect,				//!< The input device being used for the brush 
+	CTerrain *terrain				//!< The terrain object we want to apply the brush too 
+	)
+{
+
+}

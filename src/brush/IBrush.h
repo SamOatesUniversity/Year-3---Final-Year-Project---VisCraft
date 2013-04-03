@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../cgizmo.h"
+#include "../kinect/CKinect.h"
 
 class IBrush {
 
@@ -28,6 +29,13 @@ public:
 														CTerrain *terrain							//!< The terrain object we want to apply the brush too
 													) = 0;
 
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CKinect *kinect,							//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													) = 0;
+
 													//! Gets whether the brush is lockable or not
 	virtual bool									IsLockable() const = 0;
 };
@@ -47,6 +55,13 @@ public:
 	virtual void									Apply(
 														CGizmo *gizmo,								//!< The gizmo controlling this brush
 														CInput *input,								//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
+
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CKinect *kinect,							//!< The input device being used for the brush
 														CTerrain *terrain							//!< The terrain object we want to apply the brush too
 													);
 
@@ -75,6 +90,13 @@ public:
 														CTerrain *terrain							//!< The terrain object we want to apply the brush too
 													);
 
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CKinect *kinect,							//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
+
 													//! Gets whether the brush is lockable or not
 	virtual bool									IsLockable() const
 													{
@@ -97,6 +119,13 @@ public:
 	virtual void									Apply(
 														CGizmo *gizmo,								//!< The gizmo controlling this brush
 														CInput *input,								//!< The input device being used for the brush
+														CTerrain *terrain							//!< The terrain object we want to apply the brush too
+													);
+
+													//! Apply the brush to the terrain
+	virtual void									Apply(
+														CGizmo *gizmo,								//!< The gizmo controlling this brush
+														CKinect *kinect,							//!< The input device being used for the brush
 														CTerrain *terrain							//!< The terrain object we want to apply the brush too
 													);
 

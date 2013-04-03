@@ -32,6 +32,9 @@ private:
 	HINSTANCE					m_hinstance;									//!< The handle to the application instance
 	HWND						m_hwnd;											//!< The main application window handle
 
+	int							m_screenWidth;									//!< The current width of the main window
+	int							m_screenHeight;									//!< The current height of the main window
+
 	HWND						m_splashhwnd;									//!< 
 	HBITMAP						m_spashBitmap;									//!< 
 
@@ -111,4 +114,7 @@ public:
 
 								//!
 	void						OpenTerrain();
+
+								//! 
+	D3DXVECTOR2					GetWindowDimension() const;
 };

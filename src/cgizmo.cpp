@@ -366,6 +366,26 @@ void CGizmo::Control(
 	}
 	else if (m_inputType == InputType::Kinect)
 	{
+		if (brush->IsLockable())
+		{
+			if (kinect->GetHandState() == HandState::ClosedFist)
+			{
+				if (m_gizmoState != GizmoState::Locked)
+				{
+					m_dragData.startMousePosition = kinect->GetHandPosition();
+					m_dragData.lastY = m_dragData.startMousePosition.y;
+					m_gizmoState = GizmoState::Locked;
+				}		
+			}
+			else if (kinect->GetHandState() == HandState::OpenHand)
+			{
+				if (m_gizmoState == GizmoState::Locked)
+				{
+					m_gizmoState = GizmoState::Free;
+				}
+			}
+		}
+
 		if (m_gizmoState == GizmoState::Free)
 		{
 			const D3DXVECTOR2 mousePos = kinect->GetHandPosition();
@@ -402,6 +422,8 @@ void CGizmo::Control(
 			m_position.z = rayOrigin.z + (rayDirection.z * distance);
 			m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
 		}
+
+		brush->Apply(this, kinect, terrain);
 	}
 }
 
