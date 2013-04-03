@@ -6,6 +6,7 @@ CHand::CHand() : m_edgeTempBuffer(nullptr)
 {
 	m_frameWidth = 0;
 	m_frameHeight = 0;
+	m_handState = HandState::NotFound;
 }
 
 CHand::~CHand()
@@ -22,6 +23,11 @@ bool CHand::Create(
 	m_frameHeight = frameHeight;
 
 	m_edgeTempBuffer = new RGBQUAD[frameWidth * frameHeight];
+
+	CVisCraft *const inst = CVisCraft::GetInstance();
+	m_lastPosition = inst->GetWindowDimension();
+	m_lastPosition.x *= 0.5f;
+	m_lastPosition.y *= 0.75f;
 
 	return true;
 }
@@ -61,8 +67,10 @@ RGBQUAD* CHand::FindFromDepth(
 	}
 
 	// from the clamped data, try and find a bounding box for the hand
-	if (!SampleToHandArea(depthData))
+	if (!SampleToHandArea(depthData)) {
+		m_handState = HandState::NotFound;
 		return depthData;
+	}
 
 	// From the hand bounding box, perform edge detection
 	DetectHandEdges(depthData);
@@ -302,9 +310,19 @@ void CHand::Release()
 
 const D3DXVECTOR2 CHand::GetHandPosition()
 {
-	static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
-	D3DXVECTOR2 result = center - m_palm;
-	result.x = 1000 - (result.x * 10.0f);
-	result.y = 823 - (result.y * 1.0f);
-	return result;
+	if (m_handState != HandState::NotFound)
+	{
+		static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
+		D3DXVECTOR2 differnce = (center - m_palm);
+		differnce.x = differnce.x * 0.05f;
+		differnce.y = differnce.y * 0.01f;
+		m_lastPosition = m_lastPosition - differnce;
+	}
+
+	return m_lastPosition;
+}
+
+HandState::Enum CHand::GetHandState() const
+{
+	return m_handState;
 }

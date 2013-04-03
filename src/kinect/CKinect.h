@@ -104,4 +104,7 @@ public:
 
 												//! 
 	const D3DXVECTOR2							GetHandPosition();
+
+												//! Get the current hand state
+	HandState::Enum								GetHandState() const;
 };

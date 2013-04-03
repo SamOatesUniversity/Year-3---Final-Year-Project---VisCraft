@@ -451,3 +451,8 @@ const D3DXVECTOR2 CKinect::GetHandPosition()
 {
 	return m_hand->GetHandPosition();
 }
+
+HandState::Enum CKinect::GetHandState() const
+{
+	return m_hand->GetHandState();
+}

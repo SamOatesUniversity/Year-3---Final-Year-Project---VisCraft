@@ -41,15 +41,15 @@ const bool CVisCraft::Create()
 	m_instance = this;
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
-	int screenWidth = 0;
-	int screenHeight = 0;
+	m_screenWidth = 0;
+	m_screenHeight = 0;
 
 	// Initialize the windows api.
-	CreateWindowInternal(screenWidth, screenHeight);
+	CreateWindowInternal(m_screenWidth, m_screenHeight);
 
 	// Create the d3d renderer class
 	m_renderer = new CRenderer();
-	if (!m_renderer->Create(m_hwnd, screenWidth, screenHeight))
+	if (!m_renderer->Create(m_hwnd, m_screenWidth, m_screenHeight))
 	{
 		Release();
 		ASSERT(false, "Failed to create renderer");
@@ -104,7 +104,7 @@ const bool CVisCraft::Create()
 
 	// Create the input handling class
 	m_input = new CInput();
-	if (!m_input->Create(m_hinstance, m_hwnd, screenWidth, screenHeight))
+	if (!m_input->Create(m_hinstance, m_hwnd, m_screenWidth, m_screenHeight))
 	{
 		Release();
 		ASSERT(false, "Failed to create input class");
@@ -480,6 +480,11 @@ void CVisCraft::OpenTerrain()
 	}
 
 	m_terrain->DisableFlag(TERRAIN_FLAG_LOCK);
+}
+
+D3DXVECTOR2 CVisCraft::GetWindowDimension() const
+{
+	return D3DXVECTOR2(static_cast<FLOAT>(m_screenWidth), static_cast<FLOAT>(m_screenHeight));
 }
 
 /*!
