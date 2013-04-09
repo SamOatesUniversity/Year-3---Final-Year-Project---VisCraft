@@ -53,6 +53,8 @@ private:
 	ISpRecoGrammar								*m_pSpeechGrammar;						//!< Speech grammar
 	CAudioProcessor								*m_audioCommandProcessor;				//!< Process audio scemantics
 
+	bool										m_isRunning;							//!< The running state of the processing thread
+
 private:
 
 												//! 

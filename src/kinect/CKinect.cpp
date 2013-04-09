@@ -11,7 +11,8 @@ CKinect::CKinect() :
 	m_depthStreamHandle(NULL),
 	m_nuiProcess(NULL),
 	m_nuiProcessStop(NULL),
-	m_hSpeechEvent(NULL)
+	m_hSpeechEvent(NULL),
+	m_isRunning(false)
 {
 	m_nuiSensor = nullptr;
 	m_drawDepth = nullptr;
@@ -96,9 +97,6 @@ const bool CKinect::Create(
 	if (FAILED(depthStreeam))
 		return false;
 
-	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
-	m_nuiProcess = CreateThread( NULL, 0, Nui_ProcessThread, this, 0, NULL );
-
 	m_hand = new CHand();
 	m_hand->Create(640, 480);
 	
@@ -128,6 +126,9 @@ const bool CKinect::Create(
 	}
 
 	m_audioCommandProcessor = new CAudioProcessor(gui);
+
+	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
+	m_nuiProcess = CreateThread( NULL, 0, Nui_ProcessThread, this, 0, NULL );
 
 	ShowWindow(m_hwnd, SW_SHOW);
 
@@ -287,8 +288,8 @@ DWORD WINAPI CKinect::Nui_ProcessThread(LPVOID param)
 DWORD WINAPI CKinect::Nui_ProcessThread()
 {
 	// Main thread loop
-	bool continueProcessing = true;
-	while ( continueProcessing )
+	m_isRunning = true;
+	while (m_isRunning)
 	{
 		// Wait for any of the events to be signaled
 		static const int numEvents = 3;
@@ -307,7 +308,7 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 
 		// If the stop event, stop looping and exit
 		case WAIT_OBJECT_0:
-			continueProcessing = false;
+			m_isRunning = false;
 			continue;
 
 		// Depth event
@@ -442,9 +443,11 @@ RGBQUAD CKinect::Nui_ShortToQuad_Depth(
 void CKinect::Destroy()
 {
 	SetEvent(m_nuiProcessStop);
-	m_pKinectAudioStream->StopCapture();
 	ShowWindow(m_hwnd, SW_HIDE);
-	Sleep(100); // I know this is bad, but it give kinect time to free everything.
+	do {
+		Sleep(10);
+	} while (m_isRunning);
+	m_pKinectAudioStream->StopCapture();
 }
 
 const D3DXVECTOR2 CKinect::GetHandPosition()
