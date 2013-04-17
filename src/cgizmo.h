@@ -42,6 +42,7 @@ struct InputType {
 class CGizmo {
 
 friend class IBrush;
+friend class CVisCraft;
 
 private:
 

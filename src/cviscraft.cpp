@@ -116,6 +116,8 @@ const bool CVisCraft::Create()
 	SetFocus(m_hwnd);
 	DestroyWindow(m_splashhwnd);
 	
+	::ShowCursor(FALSE);
+
 	m_running = true;
 
 	return true;

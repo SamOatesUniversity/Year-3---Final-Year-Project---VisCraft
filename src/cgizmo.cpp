@@ -1,4 +1,5 @@
 #include "cgizmo.h"
+#include "cviscraft.h"
 
 /*
  *	\brief Class constructor
@@ -332,7 +333,41 @@ void CGizmo::Control(
 
 		if (m_gizmoState == GizmoState::Free)
 		{
-			const D3DXVECTOR2 mousePos = input->GetMousePosition();
+			D3DXVECTOR2 mousePos = input->GetMousePosition();
+
+			CVisCraft *vis = CVisCraft::GetInstance();
+			D3DXVECTOR2 screensize = vis->GetWindowDimension();
+
+			int xpanDirection = 0;
+			int ypanDirection = 0;
+
+			if (mousePos.x < screensize.x * 0.1f)
+			{
+				mousePos.x = screensize.x * 0.1f;
+				xpanDirection = -1; 
+			} else if (mousePos.x > screensize.x - (screensize.x * 0.1f))
+			{
+				mousePos.x = screensize.x - (screensize.x * 0.1f);
+				xpanDirection = 1; 
+			}
+
+			if (mousePos.y < screensize.y * 0.6f)
+			{
+				mousePos.y = screensize.y * 0.6f;
+				ypanDirection = 1; 
+			} else if (mousePos.y > screensize.y - (screensize.y * 0.1f))
+			{
+				mousePos.y = screensize.y - (screensize.y * 0.1f);
+				ypanDirection = -1; 
+			}
+
+			if (xpanDirection != 0 || ypanDirection != 0)
+			{
+				D3DXVECTOR3 campos = camera->GetPosition();
+				campos.x += xpanDirection * 0.5f;
+				campos.z += ypanDirection * 0.5f;
+				camera->SetPosition(campos.x, campos.y, campos.z);
+			}
 
 			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
 
@@ -400,6 +435,40 @@ void CGizmo::Control(
 		if (m_gizmoState == GizmoState::Free)
 		{
 			D3DXVECTOR2 mousePos = kinect->GetHandPosition();
+
+			CVisCraft *vis = CVisCraft::GetInstance();
+			D3DXVECTOR2 screensize = vis->GetWindowDimension();
+
+			int xpanDirection = 0;
+			int ypanDirection = 0;
+
+			if (mousePos.x < screensize.x * 0.1f)
+			{
+				mousePos.x = screensize.x * 0.1f;
+				xpanDirection = -1; 
+			} else if (mousePos.x > screensize.x - (screensize.x * 0.1f))
+			{
+				mousePos.x = screensize.x - (screensize.x * 0.1f);
+				xpanDirection = 1; 
+			}
+
+			if (mousePos.y < screensize.y * 0.6f)
+			{
+				mousePos.y = screensize.y * 0.6f;
+				ypanDirection = 1; 
+			} else if (mousePos.y > screensize.y - (screensize.y * 0.1f))
+			{
+				mousePos.y = screensize.y - (screensize.y * 0.1f);
+				ypanDirection = -1; 
+			}
+
+			if (xpanDirection != 0 || ypanDirection != 0)
+			{
+				D3DXVECTOR3 campos = camera->GetPosition();
+				campos.x += xpanDirection * 0.5f;
+				campos.z += ypanDirection * 0.5f;
+				camera->SetPosition(campos.x, campos.y, campos.z);
+			}
 
 			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();
 
