@@ -320,24 +320,6 @@ const D3DXVECTOR2 CHand::GetHandPosition()
 		if (sqrLen > 1.0f) {
 			differnce.y = differnce.y * 0.5f;
 			m_lastPosition = m_lastPosition - differnce;
-
-			const D3DXVECTOR2 windowSize = CVisCraft::GetInstance()->GetWindowDimension();
-
-			if (m_lastPosition.x < windowSize.x * 0.1f) {
-				m_lastPosition.x = windowSize.x * 0.1f;
-			}
-
-			if (m_lastPosition.x > windowSize.x * 0.9f) {
-				m_lastPosition.x = windowSize.x * 0.9f;
-			}
-
-			if (m_lastPosition.y < windowSize.y * 0.5f) {
-				m_lastPosition.y = windowSize.y * 0.5f;
-			}
-
-			if (m_lastPosition.y > windowSize.y * 0.9f) {
-				m_lastPosition.y = windowSize.y * 0.9f;
-			}
 		}
 	}
 
