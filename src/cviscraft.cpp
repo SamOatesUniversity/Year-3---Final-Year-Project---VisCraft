@@ -20,6 +20,7 @@ CVisCraft::CVisCraft() :
 	m_shader = nullptr;
 	m_gizmo = nullptr;
 	m_kinect = nullptr;
+	m_gui = nullptr;
 
 	m_running = false;
 }
@@ -29,7 +30,7 @@ CVisCraft::CVisCraft() :
  */
 CVisCraft::~CVisCraft() 
 {
-	ASSERT(!m_input || !m_renderer || !m_camera || !m_terrain || !m_shader, "Release has not been called before the deletion of a VisCraft object.\nTHIS WILL LEAK MEMORY!");
+	VISASSERT(!m_input || !m_renderer || !m_camera || !m_terrain || !m_shader, "Release has not been called before the deletion of a VisCraft object.\nTHIS WILL LEAK MEMORY!");
 }
 
 /*!
@@ -45,14 +46,16 @@ const bool CVisCraft::Create()
 	m_screenHeight = 0;
 
 	// Initialize the windows api.
-	CreateWindowInternal(m_screenWidth, m_screenHeight);
+	if (!CreateWindowInternal(m_screenWidth, m_screenHeight))
+	{
+		return false;
+	}
 
 	// Create the d3d renderer class
 	m_renderer = new CRenderer();
 	if (!m_renderer->Create(m_hwnd, m_screenWidth, m_screenHeight))
 	{
-		Release();
-		ASSERT(false, "Failed to create renderer");
+		VISASSERT(false, "Failed to create renderer");
 		return false;
 	}
 
@@ -62,8 +65,7 @@ const bool CVisCraft::Create()
 	m_terrain = new CTerrain();
 	if (!m_terrain->Create(m_renderer))
 	{
-		Release();
-		ASSERT(false, "Failed to create terrain class");
+		VISASSERT(false, "Failed to create terrain class");
 		return false;
 	}
 
@@ -72,16 +74,14 @@ const bool CVisCraft::Create()
 	m_shader = new CShader();
 	if (!m_shader->Create(m_renderer))
 	{
-		Release();
-		ASSERT(false, "Failed to create/load shaders");
+		VISASSERT(false, "Failed to create/load shaders");
 		return false;
 	}
 
 	m_gizmo = new CGizmo();
 	if (!m_gizmo->Create(m_renderer))
 	{
-		Release();
-		ASSERT(false, "Failed to create gizmo");
+		VISASSERT(false, "Failed to create gizmo");
 		return false;
 	}
 
@@ -89,16 +89,14 @@ const bool CVisCraft::Create()
 	m_gui = new CGui();
 	if (!m_gui->Create(m_renderer))
 	{
-		Release();
-		ASSERT(false, "Failed to create gui");
+		VISASSERT(false, "Failed to create gui");
 		return false;
 	}
 
 	m_kinect = new CKinect();
 	if (!m_kinect->Create(m_hwnd, m_hinstance, m_gui))
 	{
-		Release();
-		ASSERT(false, "Failed to create the kinect interface class");
+		VISASSERT(false, "Failed to create the kinect interface class");
 		return false;
 	}
 
@@ -106,8 +104,7 @@ const bool CVisCraft::Create()
 	m_input = new CInput();
 	if (!m_input->Create(m_hinstance, m_hwnd, m_screenWidth, m_screenHeight))
 	{
-		Release();
-		ASSERT(false, "Failed to create input class");
+		VISASSERT(false, "Failed to create input class");
 		return false;
 	}
 
@@ -125,7 +122,7 @@ const bool CVisCraft::Create()
 /*!
  * \brief Create the window we will render on
  */
-void CVisCraft::CreateWindowInternal( 
+bool CVisCraft::CreateWindowInternal( 
 		int& width, 
 		int& height 
 )
@@ -174,7 +171,13 @@ void CVisCraft::CreateWindowInternal(
 		width, height, 
 		NULL, NULL, m_hinstance, NULL);
 
-	return;
+	if (m_hwnd == nullptr)
+	{
+		VISASSERT(false, "Failed to create internal render window.");
+		return false;
+	}
+
+	return true;
 }
 
 /*!
@@ -210,7 +213,10 @@ void CVisCraft::Run()
 void CVisCraft::Release()
 {
 	ShowWindow(m_hwnd, SW_HIDE);
-	m_kinect->Destroy();
+	if (m_kinect != nullptr) 
+	{
+		m_kinect->Destroy();
+	}
 	
 	SafeReleaseDelete(m_input);
 	SafeReleaseDelete(m_renderer);
@@ -223,6 +229,7 @@ void CVisCraft::Release()
 
 	// Remove the window.
 	DestroyWindow(m_hwnd);
+	DestroyWindow(m_splashhwnd);
 
 	// Remove the application instance.
 	UnregisterClass(m_applicationName, m_hinstance);
@@ -322,6 +329,8 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 		case WM_DESTROY:
 			{
 				DeleteObject(m_spashBitmap);
+				m_spashBitmap = NULL;
+				return FALSE;
 			}
 			break;
 		}
@@ -329,38 +338,49 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}	
 
-	switch (message)
+	if (m_hwnd == NULL || hwnd == m_hwnd)
 	{
-	case WM_MOUSEMOVE:
+		switch (message)
 		{
-			const int x = (short)LOWORD(lParam);
-			const int y = (short)HIWORD(lParam);
-			m_input->SetMousePosition(x, y);
-		}
-		break;
+		case WM_MOUSEMOVE:
+			{
+				const int x = (short)LOWORD(lParam);
+				const int y = (short)HIWORD(lParam);
+				m_input->SetMousePosition(x, y);
+			}
+			break;
 
-	case WM_RBUTTONUP:
-	case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDOWN:
+			{
+				m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
+			}
+			break;
+
+		case WM_LBUTTONUP:
+			{
+				m_gizmo->SetInputType(InputType::Mouse);
+			}
+			break;
+
+		case WM_CLOSE:
+		case WM_DESTROY:
+			{
+				PostQuitMessage(0);
+				m_hwnd = NULL;
+				return FALSE;
+			}
+		}
+
+		if (m_hwnd == NULL)
 		{
-			m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
+			return DefWindowProc(hwnd, message, wParam, lParam);
 		}
-		break;
 
-	case WM_LBUTTONUP:
-		{
-			m_gizmo->SetInputType(InputType::Mouse);
-		}
-		break;
+		return FALSE; //DefWindowProc(hwnd, message, wParam, lParam);
+	}	
 
-	case WM_CLOSE:
-	case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return FALSE;
-		}
-	}
-
-	return DefWindowProc(hwnd, message, wParam, lParam);
+	return FALSE; //DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 /*!
@@ -425,7 +445,7 @@ bool CVisCraft::CreateSplashScreen()
 		return false;
 
 	m_splashhwnd = CreateWindowEx(
-		WS_EX_TOPMOST,
+		WS_EX_OVERLAPPEDWINDOW,
 		"SplashScreenClass",
 		"",
 		WS_POPUP,

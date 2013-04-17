@@ -56,7 +56,7 @@ private:
 	bool						Update();		
 
 								//! Create the window we will render on
-	void						CreateWindowInternal(
+	bool						CreateWindowInternal(
 									int& width,									//!< A refernce for what the width of the window will be
 									int& height									//!< A refernce for what the height of the window will be
 								);

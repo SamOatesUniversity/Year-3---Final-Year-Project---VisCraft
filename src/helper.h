@@ -14,19 +14,19 @@
 */
 
 #ifndef NDEBUG
-	#define ASSERT(condition, message) \
+	#define VISASSERT(condition, message) \
 	do { \
 		if (!(condition)) { \
 			std::stringstream msg; \
 			msg << "Assert Failed: \"" #condition "\"\n In " << __FILE__ \
 				<< "(" << __LINE__ << ")\n \"" << message << "\"\nBreak into debugger?"; \
-			if (MessageBox(NULL, msg.str().c_str(), "Assert Failed", MB_YESNO | MB_ICONERROR) == IDYES) { \
+			if (::MessageBox(NULL, msg.str().c_str(), "Assert Failed", MB_YESNO | MB_ICONERROR) == IDYES) { \
 				DebugBreak(); \
 			} \
 		} \
 	} while (false)
 #else
-	#define ASSERT(condition, message) do { } while (false)
+	#define VISASSERT(condition, message) do { } while (false)
 #endif
 
 

@@ -453,21 +453,21 @@ const bool CTerrain::LoadHeightMap(
 	FILE *file = nullptr;
 	if (fopen_s(&file, heightmapLocation, "rb") != 0)
 	{
-		ASSERT(false, "Failed to open the heightmap file");
+		VISASSERT(false, "Failed to open the heightmap file");
 		return false;
 	}
 
 	BITMAPFILEHEADER fileHeader;
 	if(fread(&fileHeader, sizeof(BITMAPFILEHEADER), 1, file) != 1)
 	{
-		ASSERT(false, "Failed to read heightmap header");
+		VISASSERT(false, "Failed to read heightmap header");
 		return false;
 	}
 
 	BITMAPINFOHEADER fileInfo;
 	if(fread(&fileInfo, sizeof(BITMAPINFOHEADER), 1, file) != 1)
 	{
-		ASSERT(false, "Failed to read heightmap info header");
+		VISASSERT(false, "Failed to read heightmap info header");
 		return false;
 	}
 
@@ -481,7 +481,7 @@ const bool CTerrain::LoadHeightMap(
 
 	if (fread(image, 1, imageSize, file) != imageSize)
 	{
-		ASSERT(false, "Failed to read image data");
+		VISASSERT(false, "Failed to read image data");
 		delete[] image;
 		return false;
 	}
