@@ -365,6 +365,12 @@ void CGizmo::Control(
 			m_position.x = rayOrigin.x + (rayDirection.x * distance);
 			m_position.z = rayOrigin.z + (rayDirection.z * distance);
 			m_position.y = terrain->GetTerrainHeightAt(m_position.x, m_position.z);
+
+			const D3DXVECTOR2 terrainSize = terrain->GetSize();
+
+			m_position.x = m_position.x < 0 ? 0 : m_position.x > terrainSize.x - 1 ? terrainSize.x - 1 : m_position.x;
+			m_position.z = m_position.z < 0 ? 0 : m_position.z > terrainSize.y - 1 ? terrainSize.y - 1 :  m_position.z;
+
 		}
 
 		brush->Apply(this, input, terrain);

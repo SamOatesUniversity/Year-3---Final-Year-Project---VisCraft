@@ -159,4 +159,7 @@ public:
 
 							//! Reset the terrain
 	void					Reset();
+
+							//! Get the size of the terrain
+	const D3DXVECTOR2		GetSize();
 };
