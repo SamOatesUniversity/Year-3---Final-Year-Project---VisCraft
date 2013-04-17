@@ -297,8 +297,15 @@ void CGizmo::Render(
 	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// move to the position, but offset the y coordinate by one, to compensate for it been drawn around 0, 0, 0 local space
-	D3DXMatrixTranslation(&worldMatrix, m_position.x, m_position.y + 1.0f, m_position.z); 
+
+	IBrush *const brush = m_brush[m_currentBrush];
+
+	D3DXMATRIX xformmat, scalemat;
+	D3DXMatrixTranslation(&xformmat, m_position.x, m_position.y + 2.0f, m_position.z); 
+	D3DXMatrixScaling(&scalemat, static_cast<float>(brush->GetSize()) * 0.4f, 1.0f, static_cast<float>(brush->GetSize()) * 0.4f);
 	
+	D3DXMatrixMultiply (&worldMatrix, &scalemat, &xformmat);
+
 	// Transpose the matrices to prepare them for the shader.
 	D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
@@ -598,4 +605,9 @@ void CGizmo::SetCurrentBrush(
 	)
 {
 	m_currentBrush = brushType;
+}
+
+IBrush *CGizmo::GetCurrentBrush()
+{
+	return m_brush[m_currentBrush];
 }

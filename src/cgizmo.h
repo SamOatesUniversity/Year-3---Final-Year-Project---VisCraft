@@ -162,4 +162,7 @@ public:
 							{
 								m_inputType = inputType;
 							}
+
+							//! Get the active brush
+	IBrush					*GetCurrentBrush();
 };
