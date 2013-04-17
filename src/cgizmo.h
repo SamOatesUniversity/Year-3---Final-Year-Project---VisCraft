@@ -94,7 +94,7 @@ private:
 
 private:
 
-	void					LoadGizmoMesh();
+	bool					LoadGizmoMesh();
 
 public:
 							//! Class constructor
