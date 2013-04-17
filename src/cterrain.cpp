@@ -14,7 +14,7 @@ CTerrain::CTerrain()
 	m_indexBuffer = nullptr;
 	m_heightMap = nullptr;
 
-	m_size = D3DXVECTOR2(256, 256);
+	m_size = D3DXVECTOR2(128, 128);
 }
 
 /*
@@ -312,13 +312,14 @@ void CTerrain::CalculateTextureCoordinates(
 		HeightMap *heightMap							//!< The heightmap to calculate the normals of
 	)
 {
-	static const int TEXTURE_REPEAT = 16;
+	static const int TEXTURE_REPEAT = static_cast<int>(m_size.x * 0.5f);
 
 	// Calculate how much to increment the texture coordinates by.
 	float incrementValue = static_cast<float>(TEXTURE_REPEAT) / static_cast<float>(m_size.x);
 
 	// Calculate how many times to repeat the texture.
-	int incrementCount = static_cast<int>(static_cast<float>(m_size.x) / static_cast<float>(TEXTURE_REPEAT));
+	float temp = static_cast<float>(m_size.x) / static_cast<float>(TEXTURE_REPEAT);
+	int incrementCount = static_cast<int>(temp);
 
 	// Initialize the tu and tv coordinate values.
 	float tuCoordinate = 0.0f;
@@ -334,15 +335,16 @@ void CTerrain::CalculateTextureCoordinates(
 		for(int i = 0; i < m_size.x; ++i)
 		{
 			// Store the texture coordinate in the height map.
-			heightMap[static_cast<int>((m_size.y * j) + i)].texture.x = tuCoordinate;
-			heightMap[static_cast<int>((m_size.y * j) + i)].texture.y = tvCoordinate;
+			int vert = static_cast<int>((m_size.y * j) + i);
+			heightMap[vert].texture.x = tuCoordinate;
+			heightMap[vert].texture.y = tvCoordinate;
 
 			// Increment the tu texture coordinate by the increment value and increment the index by one.
 			tuCoordinate += incrementValue;
 			tuCount++;
 
 			// Check if at the far right end of the texture and if so then start at the beginning again.
-			if (tuCount == incrementCount)
+			if (tuCoordinate >= 1.0f)
 			{
 				tuCoordinate = 0.0f;
 				tuCount = 0;
@@ -404,7 +406,7 @@ void CTerrain::UpdateHeightMap()
 	if (!CalculateNormals(m_heightMap))
 		return;
 
-	CalculateTextureCoordinates(m_heightMap);
+	//CalculateTextureCoordinates(m_heightMap);
 
 	D3D11_MAPPED_SUBRESOURCE resource;
 	const HRESULT result = m_renderer->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
@@ -534,7 +536,7 @@ HeightMap *CTerrain::GetTerrainVertexAt(
 {
 	D3DXVECTOR2 lookupVec = D3DXVECTOR2(x, z);
 
-	int closestVertIndex = 0;
+	int closestVertIndex = -1;
 	float lastDistance = m_size.x * m_size.y;
 
 	const int heightMapSize = static_cast<int>(m_size.x * m_size.y);
@@ -560,6 +562,11 @@ HeightMap *CTerrain::GetTerrainVertexAt(
 			lastDistance = currentDistance;
 			closestVertIndex = heightMapIndex;
 		}
+	}
+
+	if (closestVertIndex == -1) 
+	{
+		return nullptr;
 	}
 
 	return &m_heightMap[closestVertIndex];
@@ -594,4 +601,9 @@ void CTerrain::Reset()
 	}
 
 	UpdateHeightMap();
+}
+
+const D3DXVECTOR2 CTerrain::GetSize()
+{
+	return m_size;
 }

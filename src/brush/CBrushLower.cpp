@@ -24,6 +24,10 @@ void CBrushLower::Apply(
 		for (int zOffset = -m_size; zOffset <= m_size; ++zOffset)
 		{
 			HeightMap *hmap = terrain->GetTerrainVertexAt(gizmo->Position().x + xOffset, gizmo->Position().z + zOffset);
+			if (hmap == nullptr)
+			{
+				continue;
+			}
 
 			float scale = 1;
 			if (xOffset < 0) scale += -xOffset; else scale += xOffset;
@@ -53,6 +57,10 @@ void CBrushLower::Apply(
 		for (int zOffset = -m_size; zOffset <= m_size; ++zOffset)
 		{
 			HeightMap *hmap = terrain->GetTerrainVertexAt(gizmo->Position().x + xOffset, gizmo->Position().z + zOffset);
+			if (hmap == nullptr)
+			{
+				continue;
+			}
 
 			float scale = 1;
 			if (xOffset < 0) scale += -xOffset; else scale += xOffset;
