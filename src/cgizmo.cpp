@@ -297,6 +297,11 @@ void CGizmo::Control(
 		return;
 	}
 
+	if (kinect == nullptr)
+	{
+		m_inputType = InputType::Mouse;
+	}
+
 	IBrush *const brush = m_brush[m_currentBrush];	
 
 	if (m_inputType == InputType::Mouse)
