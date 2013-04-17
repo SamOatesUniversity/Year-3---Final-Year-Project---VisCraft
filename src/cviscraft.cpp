@@ -280,6 +280,20 @@ bool CVisCraft::Update()
 		m_gizmo->SetCurrentBrush(BrushType::Deform);
 	}	
 
+	if (m_input->IsKeyPressed(DIK_UPARROW) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_UPARROW)) m_input->Update();
+		IBrush *brush = m_gizmo->GetCurrentBrush();
+		brush->SetSize(brush->GetSize() + 1);
+	}	
+
+	if (m_input->IsKeyPressed(DIK_DOWNARROW) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_DOWNARROW)) m_input->Update();
+		IBrush *brush = m_gizmo->GetCurrentBrush();
+		brush->SetSize(brush->GetSize() - 1);
+	}	
+
 	m_camera->Control(m_input);
 
 	m_gizmo->Control(m_input, m_terrain, m_camera, m_kinect);

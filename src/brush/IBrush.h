@@ -14,7 +14,7 @@ protected:
 
 public:
 													//! Class constructor
-													IBrush() : m_size(2), m_strength(1.0f)
+													IBrush() : m_size(3), m_strength(1.0f)
 													{
 
 													}
@@ -38,6 +38,19 @@ public:
 
 													//! Gets whether the brush is lockable or not
 	virtual bool									IsLockable() const = 0;
+
+													//! Get the size of the brush
+	int												GetSize() const
+													{
+														return m_size;
+													}
+
+													//! Set the size of the brush
+	void											SetSize(int size)
+													{
+														m_size = size > 5 ? 5 : size < 1 ? 1 : size;
+													}
+
 };
 
 class CBrushDeform : public IBrush {
