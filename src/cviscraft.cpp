@@ -96,8 +96,10 @@ const bool CVisCraft::Create()
 	m_kinect = new CKinect();
 	if (!m_kinect->Create(m_hwnd, m_hinstance, m_gui))
 	{
-		VISASSERT(false, "Failed to create the kinect interface class");
-		return false;
+		//VISASSERT(false, "Failed to create the kinect interface class");
+		//return false;
+		SafeDelete(m_kinect);
+		::MessageBox(NULL, "Failed to Initialize the Kinect!", "VisCraft", MB_OK);
 	}
 
 	// Create the input handling class
@@ -338,49 +340,39 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}	
 
-	if (m_hwnd == NULL || hwnd == m_hwnd)
+	switch (message)
 	{
-		switch (message)
+	case WM_MOUSEMOVE:
 		{
-		case WM_MOUSEMOVE:
-			{
-				const int x = (short)LOWORD(lParam);
-				const int y = (short)HIWORD(lParam);
-				m_input->SetMousePosition(x, y);
-			}
-			break;
-
-		case WM_RBUTTONUP:
-		case WM_RBUTTONDOWN:
-			{
-				m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
-			}
-			break;
-
-		case WM_LBUTTONUP:
-			{
-				m_gizmo->SetInputType(InputType::Mouse);
-			}
-			break;
-
-		case WM_CLOSE:
-		case WM_DESTROY:
-			{
-				PostQuitMessage(0);
-				m_hwnd = NULL;
-				return FALSE;
-			}
+			const int x = (short)LOWORD(lParam);
+			const int y = (short)HIWORD(lParam);
+			m_input->SetMousePosition(x, y);
 		}
+		break;
 
-		if (m_hwnd == NULL)
+	case WM_RBUTTONUP:
+	case WM_RBUTTONDOWN:
 		{
-			return DefWindowProc(hwnd, message, wParam, lParam);
+			m_input->SetMouseButton(MouseButton::Right, message == WM_RBUTTONDOWN);
 		}
+		break;
 
-		return FALSE; //DefWindowProc(hwnd, message, wParam, lParam);
-	}	
+	case WM_LBUTTONUP:
+		{
+			m_gizmo->SetInputType(InputType::Mouse);
+		}
+		break;
 
-	return FALSE; //DefWindowProc(hwnd, message, wParam, lParam);
+	case WM_CLOSE:
+	case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			m_hwnd = NULL;
+			return FALSE;
+		}
+	}
+
+	return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 /*!
