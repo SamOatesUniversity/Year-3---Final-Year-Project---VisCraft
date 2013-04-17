@@ -24,8 +24,8 @@ CInput::CInput() :
  */
 CInput::~CInput()
 {
-	ASSERT(!m_keyboard, "Release has not been called before the deletion of a CInput object");
-	ASSERT(!m_directInput, "Release has not been called before the deletion of a CInput object");
+	VISASSERT(!m_keyboard, "Release has not been called before the deletion of a CInput object");
+	VISASSERT(!m_directInput, "Release has not been called before the deletion of a CInput object");
 }
 
 /*!

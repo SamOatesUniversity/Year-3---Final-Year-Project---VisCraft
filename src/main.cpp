@@ -19,6 +19,9 @@ int WINAPI WinMain(
 	CVisCraft *const visCraft = new CVisCraft();
 	if (!visCraft->Create()) 
 	{
+		MessageBox(NULL, "Something has failed to initialize on startup. Please check the log", "VisCraft Failed to Launch", MB_OK | MB_ICONERROR);
+
+		visCraft->Release();
 		delete visCraft;
 		return FALSE;
 	}

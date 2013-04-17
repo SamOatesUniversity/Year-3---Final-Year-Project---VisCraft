@@ -131,17 +131,26 @@ void CGui::SetVisible(
 
 void CGui::Release()
 {
-	m_overlay->Destroy();
-	SafeDelete(m_overlay);
+	if (m_overlay != nullptr)
+	{
+		m_overlay->Destroy();
+		SafeDelete(m_overlay);
+	}
 
 	for (unsigned int textOverlayIndex = 0; textOverlayIndex < TextOverlay::Noof; ++textOverlayIndex)
 	{
-		m_textOverlay[textOverlayIndex]->Destroy();
-		SafeDelete(m_textOverlay[textOverlayIndex]);
+		if (m_textOverlay[textOverlayIndex] != nullptr)
+		{
+			m_textOverlay[textOverlayIndex]->Destroy();
+			SafeDelete(m_textOverlay[textOverlayIndex]);
+		}
 	}
 
-	m_textureShader->Destroy();
-	SafeDelete(m_textureShader);		
+	if (m_textureShader != nullptr)
+	{
+		m_textureShader->Destroy();
+		SafeDelete(m_textureShader);	
+	}	
 }
 
 void CGui::SetState( 

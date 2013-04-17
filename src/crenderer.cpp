@@ -97,7 +97,7 @@ const bool CRenderer::Create(
 		);
 	if (FAILED(result))
 	{
-		ASSERT(false, "Failed to create d3d device and swap chain");
+		VISASSERT(false, "Failed to create d3d device and swap chain");
 		return false;
 	}
 
