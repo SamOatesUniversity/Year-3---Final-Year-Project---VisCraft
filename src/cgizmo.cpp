@@ -39,16 +39,68 @@ CGizmo::~CGizmo()
 	}
 }
 
-/*
- *	\brief Create the gizmo
-*/
-bool CGizmo::Create( 
-		CRenderer *renderer						//!< Pointer to the renderer
-	)
+void CGizmo::LoadGizmoMesh()
 {
-	m_renderer = renderer;
+	std::ifstream objFile;
+	objFile.open("gizmo.obj", std::ios_base::in);
 
-	m_indexCount = m_vertexCount = 3;
+	struct Face {
+		float position[3];
+		float normal[3];
+	};
+	std::vector<Face> faces;
+	std::vector<D3DXVECTOR3> verts, vertNorms;
+
+	std::string line;
+	while (std::getline(objFile, line))
+	{
+		std::vector<std::string> tokens;
+		std::istringstream iss(line);
+		std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter<std::vector<std::string> >(tokens));
+
+		if (tokens.empty())
+		{
+			continue;
+		}
+
+		if (tokens[0] == "v")
+		{
+			D3DXVECTOR3 newVert;
+			newVert.x = static_cast<float>(::atof(tokens[1].c_str()));
+			newVert.y = static_cast<float>(::atof(tokens[2].c_str()));
+			newVert.z = static_cast<float>(::atof(tokens[3].c_str()));
+			verts.push_back(newVert);
+		}
+		else if (tokens[0] == "vn")
+		{
+			D3DXVECTOR3 newVertNormal;
+			newVertNormal.x = static_cast<float>(::atof(tokens[1].c_str()));
+			newVertNormal.y = static_cast<float>(::atof(tokens[2].c_str()));
+			newVertNormal.z = static_cast<float>(::atof(tokens[3].c_str()));
+			vertNorms.push_back(newVertNormal);
+		}
+		else if (tokens[0] == "f")
+		{
+			Face newFace;
+
+			for (int tokenIndex = 1; tokenIndex <= 3; ++tokenIndex)
+			{
+				std::string part = tokens[tokenIndex];
+				std::string posPart = part.substr(0, part.find('/'));
+				std::string normPart = part.substr(part.rfind('/') + 1);
+
+				newFace.position[tokenIndex - 1] = static_cast<float>(::atof(posPart.c_str())) - 1;
+				newFace.normal[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
+			}
+
+			faces.push_back(newFace);
+		}
+	}
+
+	objFile.close();
+
+	m_vertexCount = verts.size();
+	m_indexCount = faces.size() * 3;
 
 	// Create the vertex array.
 	CGizmo::Vertex *const vertices = new CGizmo::Vertex[m_vertexCount];
@@ -56,15 +108,22 @@ bool CGizmo::Create(
 	// Create the index array.
 	unsigned long *const indices = new unsigned long[m_indexCount];
 
-	// Load the vertex array with data.
-	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);		// Bottom left.
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);		// Top middle.
-	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);		// Bottom right.
+	int vertIndex = 0;
+	for (D3DXVECTOR3 vert : verts)
+	{
+		vertices[vertIndex++].position = vert;
+	}
 
 	// Load the index array with data.
-	indices[0] = 0;  // Bottom left.
-	indices[1] = 1;  // Top middle.
-	indices[2] = 2;  // Bottom right.
+	int indIndex = 0;
+	for (unsigned int faceIndex = 0; faceIndex < faces.size(); ++faceIndex)
+	{
+		indices[indIndex]		= static_cast<unsigned int>(faces[faceIndex].position[0]);  
+		indices[indIndex + 1]	= static_cast<unsigned int>(faces[faceIndex].position[1]);  
+		indices[indIndex + 2]	= static_cast<unsigned int>(faces[faceIndex].position[2]); 
+		indIndex += 3;
+	}
+
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC vertexBufferDesc;
@@ -86,7 +145,7 @@ bool CGizmo::Create(
 	{
 		delete[] vertices;
 		delete[] indices;
-		return false;
+		return;
 	}
 
 	// Set up the description of the static index buffer.
@@ -109,12 +168,24 @@ bool CGizmo::Create(
 	{
 		delete[] vertices;
 		delete[] indices;
-		return false;
+		return;
 	}
 
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete[] vertices;
 	delete[] indices;
+
+}
+
+/*
+ *	\brief Create the gizmo
+*/
+bool CGizmo::Create( 
+		CRenderer *renderer						//!< Pointer to the renderer
+	)
+{
+	m_renderer = renderer;
+	LoadGizmoMesh();
 
 	// Compile the vertex shader code.
 	HRESULT result;
@@ -259,10 +330,12 @@ void CGizmo::Render(
 	// color based upon gizmo state
 	if (m_gizmoState == GizmoState::Free)
 	{
+		// green
 		gizmoDataPtr->color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 	}
 	else
 	{
+		// red
 		gizmoDataPtr->color = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
