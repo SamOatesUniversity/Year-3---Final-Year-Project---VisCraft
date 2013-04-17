@@ -19,6 +19,7 @@ CKinect::CKinect() :
 	m_D2DFactory = nullptr;
 	m_hand = nullptr;
 	m_audioCommandProcessor = nullptr;
+	m_pKinectAudioStream = nullptr;
 }
 
 CKinect::~CKinect()
@@ -447,7 +448,11 @@ void CKinect::Destroy()
 	do {
 		Sleep(10);
 	} while (m_isRunning);
-	m_pKinectAudioStream->StopCapture();
+
+	if (m_pKinectAudioStream != nullptr) 
+	{
+		m_pKinectAudioStream->StopCapture();
+	}
 }
 
 const D3DXVECTOR2 CKinect::GetHandPosition()

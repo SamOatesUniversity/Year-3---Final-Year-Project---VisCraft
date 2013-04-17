@@ -15,7 +15,7 @@
 #include "CAudioProcessor.h"
 #include "chand.h"
 
-#include <vld.h>
+//#include <vld.h>
 
 #include "../CGui.h"
 
