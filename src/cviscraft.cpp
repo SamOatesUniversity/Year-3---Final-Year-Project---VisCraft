@@ -318,9 +318,26 @@ bool CVisCraft::Update()
 		brush->SetSize(brush->GetSize() - 1);
 	}	
 
+	if (m_input->IsKeyPressed(DIK_TAB) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_TAB)) m_input->Update();
+		m_gui->SetVisible(!m_gui->IsVisible());
+	}
+
+	if (m_gui->IsVisible() && m_gizmo->GetInputType() == InputType::Mouse)
+	{
+		if (m_input->IsMouseDown(MouseButton::Left))
+		{
+			m_gui->HandleMouseInput(m_input->GetMousePosition());
+			m_input->SetMouseButton(MouseButton::Left, false);
+		}
+	}
+
 	m_camera->Control(m_input);
 
-	m_gizmo->Control(m_input, m_terrain, m_camera, m_kinect);
+	if (!m_gui->IsVisible()) {
+		m_gizmo->Control(m_input, m_terrain, m_camera, m_kinect);
+	}
 
 	if (!RenderGraphics())
 		return false;
@@ -398,8 +415,10 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 		break;
 
 	case WM_LBUTTONUP:
+	case WM_LBUTTONDOWN:
 		{
 			m_gizmo->SetInputType(InputType::Mouse);
+			m_input->SetMouseButton(MouseButton::Left, message == WM_LBUTTONDOWN);
 		}
 		break;
 
@@ -537,6 +556,31 @@ void CVisCraft::OpenTerrain()
 D3DXVECTOR2 CVisCraft::GetWindowDimension() const
 {
 	return D3DXVECTOR2(static_cast<FLOAT>(m_screenWidth), static_cast<FLOAT>(m_screenHeight));
+}
+
+void CVisCraft::SaveTerrain()
+{
+	m_terrain->EnableFlag(TERRAIN_FLAG_LOCK);
+
+	char fileName[MAX_PATH] = "";
+
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = m_hwnd;
+	ofn.lpstrFilter = "Bitmap Files (*.bmp)\0*.bmp\0\0";
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = "";
+
+	BOOL result = GetSaveFileName(&ofn);
+	if (result == TRUE) {
+		m_terrain->SaveHeightMap(fileName);
+	}
+
+	m_terrain->DisableFlag(TERRAIN_FLAG_LOCK);
 }
 
 /*!

@@ -82,6 +82,12 @@ public:
 										);
 
 										//!
+	const bool							IsVisible() const
+										{
+											return m_visible;
+										}
+
+										//!
 	void								SetState(
 											GuiState::Enum newState			//!< 
 										);
@@ -92,5 +98,10 @@ public:
 										//! 
 	void								SetActiveBrush(
 											BrushType::Enum newBrush
+										);
+
+										//! 
+	void								HandleMouseInput( 
+											const D3DXVECTOR2 mousePosition 
 										);
 };

@@ -168,4 +168,14 @@ public:
 								D3DXVECTOR2 position, 
 								int area 
 							);
+
+	void					SaveHeightMap( 
+								char* fileName 
+							);
+
+							//! 
+	const float				GetLowestTerrainPoint();
+
+							//!
+	const float				GetHighestTerrainPoint();
 };

@@ -1,4 +1,5 @@
 #include "cterrain.h"
+#include <fstream>
 
 /*
  *	\brief Class constructor
@@ -503,7 +504,7 @@ const bool CTerrain::LoadHeightMap(
 	{
 		for (int x = 0; x < m_size.x; ++x)
 		{
-			const float height = image[y] * 0.1f;
+			const float height = image[y];
 
 			const int index = static_cast<int>(m_size.y * z) + x;
 			m_heightMap[index].position.x = static_cast<float>(x);
@@ -632,4 +633,102 @@ float CTerrain::CalculateAverageTerrainHeight(
 	}
 
 	return height / count;	
+}
+
+void CTerrain::SaveHeightMap( 
+		char* fileName 
+	)
+{
+
+	const int size = static_cast<int>(m_size.x * m_size.y) * 3;
+
+	BITMAPFILEHEADER bmfh;
+	BITMAPINFOHEADER info;
+	memset ( &bmfh, 0, sizeof (BITMAPFILEHEADER ) );
+	memset ( &info, 0, sizeof (BITMAPINFOHEADER ) );
+
+	bmfh.bfType = 0x4d42;       // 0x4d42 = 'BM'
+	bmfh.bfReserved1 = 0;
+	bmfh.bfReserved2 = 0;
+	bmfh.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + size;
+	bmfh.bfOffBits = 0x36;
+
+	info.biSize = sizeof(BITMAPINFOHEADER);
+	info.biWidth = static_cast<LONG>(m_size.x);
+	info.biHeight = static_cast<LONG>(m_size.y);
+	info.biPlanes = 1;	
+	info.biBitCount = 24;
+	info.biCompression = BI_RGB;	
+	info.biSizeImage = 0;
+	info.biXPelsPerMeter = 0x0ec4;  
+	info.biYPelsPerMeter = 0x0ec4;     
+	info.biClrUsed = 0;	
+	info.biClrImportant = 0; 	
+
+	HANDLE file = CreateFile(fileName , GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (NULL == file)
+	{
+		CloseHandle (file);
+		return;
+	}
+
+	unsigned long bwritten;
+	if (WriteFile (file, &bmfh, sizeof ( BITMAPFILEHEADER ), &bwritten, NULL ) == false)
+	{	
+		CloseHandle(file);
+		return;
+	}
+
+	if (WriteFile(file, &info, sizeof ( BITMAPINFOHEADER ), &bwritten, NULL) == false)
+	{	
+		CloseHandle(file);
+		return;
+	}
+
+	const float min = GetLowestTerrainPoint(); 
+	const float max = GetHighestTerrainPoint(); 
+
+	BYTE *fileBuffer = new BYTE[size];
+
+	for (int terrainIndex = 0; terrainIndex < size; terrainIndex += 3)
+	{
+		HeightMap *hmap = &m_heightMap[terrainIndex / 3];
+		const BYTE color = static_cast<BYTE>((hmap->position.y - min));
+		fileBuffer[terrainIndex] = fileBuffer[terrainIndex+1] = fileBuffer[terrainIndex+2] = color;
+	}
+	
+	if (WriteFile(file, fileBuffer, size, &bwritten, NULL ) == false)
+	{	
+		CloseHandle(file);
+		return;
+	}
+	delete fileBuffer;
+
+	CloseHandle(file);
+}
+
+const float CTerrain::GetLowestTerrainPoint()
+{
+	float lowest = 0;
+	for (int terrainIndex = 0; terrainIndex < m_size.x * m_size.y; ++terrainIndex)
+	{
+		if (m_heightMap[terrainIndex].position.y < lowest)
+		{
+			lowest = m_heightMap[terrainIndex].position.y;
+		}
+	}
+	return lowest;
+}
+
+const float CTerrain::GetHighestTerrainPoint()
+{
+	float highest = 0;
+	for (int terrainIndex = 0; terrainIndex < m_size.x * m_size.y; ++terrainIndex)
+	{
+		if (m_heightMap[terrainIndex].position.y > highest)
+		{
+			highest = m_heightMap[terrainIndex].position.y;
+		}
+	}
+	return highest;
 }

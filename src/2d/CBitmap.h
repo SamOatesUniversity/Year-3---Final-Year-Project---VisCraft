@@ -104,5 +104,7 @@ public:
 									//! Get the height of the bitmap
 	const int						GetHeight() const;
 
+									//! Get the position of the bitmap
+	D3DXVECTOR2						GetPosition() const;
 
 };

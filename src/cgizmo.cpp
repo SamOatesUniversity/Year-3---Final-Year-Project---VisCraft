@@ -614,3 +614,8 @@ IBrush *CGizmo::GetCurrentBrush()
 {
 	return m_brush[m_currentBrush];
 }
+
+InputType::Enum CGizmo::GetInputType() const
+{
+	return m_inputType;
+}

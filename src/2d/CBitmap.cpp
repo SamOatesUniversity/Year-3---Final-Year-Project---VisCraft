@@ -336,3 +336,8 @@ const int CBitmap::GetHeight() const
 {
 	return m_bitmapHeight;
 }
+
+D3DXVECTOR2 CBitmap::GetPosition() const
+{
+	return D3DXVECTOR2(static_cast<FLOAT>(m_previousPosX), static_cast<FLOAT>(m_previousPosY));
+}
