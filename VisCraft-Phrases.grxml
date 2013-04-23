@@ -4,12 +4,9 @@
       <item>
         <tag>VISCRAFT</tag>
         <one-of>
+		  <item> viscraft </item>
           <item> vis </item>
-          <item> viz </item>
           <item> craft </item>
-		  <item> app </item>
-		  <item> kinect </item>
-		  <item> xbox </item>
         </one-of>
       </item>
       <item>
@@ -31,32 +28,42 @@
         <one-of>
           <item> brush </item>
 		  <item> brushes </item>
-		  <item> tool </item>
         </one-of>
       </item>
 	  <item>
         <tag>BRUSH-RAISE</tag>
         <one-of>
           <item> raise </item>
-		  <item> rise </item>
-		  <item> up </item>
-		  <item> lift </item>
         </one-of>
       </item>
 	  <item>
         <tag>BRUSH-LOWER</tag>
         <one-of>
           <item> lower </item>
-		  <item> low </item>
-		  <item> down </item>
-		  <item> sink </item>
         </one-of>
       </item>
 	  <item>
         <tag>BRUSH-DEFORM</tag>
         <one-of>
           <item> deform </item>
-		  <item> form </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>BRUSH-LEVEL</tag>
+        <one-of>
+          <item> level </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>BRUSH-NOISE</tag>
+        <one-of>
+          <item> noise </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>BRUSH-SMOOTH</tag>
+        <one-of>
+          <item> smooth </item>
         </one-of>
       </item>
 	  <item>
@@ -87,8 +94,6 @@
         <tag>ABOUT</tag>
         <one-of>
           <item> about </item>
-		  <item> info </item>
-		  <item> information </item>
         </one-of>
       </item>
     </one-of>

@@ -199,7 +199,7 @@ HRESULT CKinect::InitializeAudioStream()
 			PROPVARIANT pvSysMode;
 			PropVariantInit(&pvSysMode);
 			pvSysMode.vt = VT_I4;
-			pvSysMode.lVal = (LONG)(2); // Use OPTIBEAM_ARRAY_ONLY setting. Set OPTIBEAM_ARRAY_AND_AEC instead if you expect to have sound playing from speakers.
+			pvSysMode.lVal = (LONG)(4); // Use OPTIBEAM_ARRAY_ONLY setting. Set OPTIBEAM_ARRAY_AND_AEC instead if you expect to have sound playing from speakers.
 			pPropertyStore->SetValue(MFPKEY_WMAAECMA_SYSTEM_MODE, pvSysMode);
 			PropVariantClear(&pvSysMode);
 
