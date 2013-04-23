@@ -101,16 +101,19 @@ void CAudioProcessor::Process(
 			{
 				handled = true;
 				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Raise);
+				m_gui->SetActiveBrush(BrushType::Raise);
 			}
 			else if (action == AudioPhrases::BrushLower)
 			{
 				handled = true;
 				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Lower);
+				m_gui->SetActiveBrush(BrushType::Lower);
 			}
 			else if (action == AudioPhrases::BrushDeform)
 			{
 				handled = true;
 				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Deform);
+				m_gui->SetActiveBrush(BrushType::Deform);
 			}
 			
 			if (handled) 
