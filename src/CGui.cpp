@@ -79,6 +79,12 @@ const bool CGui::Create(
 		return false;
 	}
 
+	m_brushOverlay[BrushType::Noise] = new CBitmap();
+	if (!m_brushOverlay[BrushType::Noise]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/noise.bmp", 256, 128))
+	{
+		return false;
+	}
+
 	m_textureShader = new CTextureShader();
 	if (!m_textureShader->Create(render->GetDevice()))
 	{

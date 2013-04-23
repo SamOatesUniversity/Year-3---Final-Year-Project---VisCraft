@@ -607,3 +607,29 @@ const D3DXVECTOR2 CTerrain::GetSize()
 {
 	return m_size;
 }
+
+float CTerrain::CalculateAverageTerrainHeight(
+		D3DXVECTOR2	position,
+		int area
+	)
+{
+	float count = 0.0f;
+	float height = 0.0f;
+
+	for (int xOffset = -area; xOffset <= area; ++xOffset)
+	{
+		for (int zOffset = -area; zOffset <= area; ++zOffset)
+		{
+			HeightMap *hmap = GetTerrainVertexAt(position.x + xOffset, position.y + zOffset);
+			if (hmap == nullptr)
+			{
+				continue;
+			}
+
+			height += hmap->position.y;
+			count++;
+		}
+	}
+
+	return height / count;	
+}

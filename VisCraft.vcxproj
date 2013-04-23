@@ -99,6 +99,7 @@
     <ClCompile Include="src\brush\CBrushDeform.cpp" />
     <ClCompile Include="src\brush\CBrushLevel.cpp" />
     <ClCompile Include="src\brush\CBrushLower.cpp" />
+    <ClCompile Include="src\brush\CBrushNoise.cpp" />
     <ClCompile Include="src\brush\CBrushRaise.cpp" />
     <ClCompile Include="src\ccamera.cpp" />
     <ClCompile Include="src\cgizmo.cpp" />
