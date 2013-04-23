@@ -154,4 +154,7 @@ public:
 
 							//! Get the active brush
 	IBrush					*GetCurrentBrush();
+
+							//! Get the current input type
+	InputType::Enum			GetInputType() const;
 };

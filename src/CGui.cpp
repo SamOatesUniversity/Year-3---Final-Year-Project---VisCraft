@@ -1,4 +1,5 @@
 #include "CGui.h"
+#include "cviscraft.h"
 
 CGui::CGui()
 {
@@ -179,6 +180,11 @@ void CGui::SetVisible(
 	)
 {
 	m_visible = visible;
+	if (!m_visible)
+	{
+		m_state = GuiState::MainMenu;
+	}
+	::ShowCursor(m_visible);
 }
 
 void CGui::Release()
@@ -231,4 +237,95 @@ void CGui::SetActiveBrush(
 	)
 {
 	m_brushChangeOverlay = newBrush;
+}
+
+void CGui::HandleMouseInput( 
+		const D3DXVECTOR2 mousePosition 
+	)
+{
+	CBitmap *const overlay = m_textOverlay[m_state];
+	if (overlay != nullptr)
+	{
+		D3DXVECTOR2 x1 = overlay->GetPosition() + D3DXVECTOR2(0, -40);
+		D3DXVECTOR2 x2 = x1 + D3DXVECTOR2(static_cast<FLOAT>(overlay->GetWidth()), static_cast<FLOAT>(overlay->GetHeight()));
+			
+		if (mousePosition.x < x1.x) return;
+		if (mousePosition.y < x1.y) return;
+		if (mousePosition.x > x2.x) return;
+		if (mousePosition.y > x2.y) return;
+
+		// The mouse is over this overlay.
+		// This code should only be called on mouse click, so handle what ever this overlay is.
+
+		switch (m_state)
+		{
+		case TextOverlay::File:
+			{
+				D3DXVECTOR2 bx1 = x1 + D3DXVECTOR2(54, 10);
+				D3DXVECTOR2 bx2 = x1 + D3DXVECTOR2(135, 50);
+				if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+				{
+					CVisCraft::GetInstance()->NewTerrain();
+					SetVisible(false);
+					return;
+				}
+
+				bx1 = x1 + D3DXVECTOR2(154, 10);
+				bx2 = x1 + D3DXVECTOR2(268, 50);
+				if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+				{
+					CVisCraft::GetInstance()->OpenTerrain();
+					SetVisible(false);
+					return;
+				}
+
+				bx1 = x1 + D3DXVECTOR2(276, 10);
+				bx2 = x1 + D3DXVECTOR2(375, 50);
+				if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+				{
+					CVisCraft::GetInstance()->SaveTerrain();
+					SetVisible(false);
+					return;
+				}
+
+				bx1 = x1 + D3DXVECTOR2(396, 10);
+				bx2 = x1 + D3DXVECTOR2(474, 50);
+				if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+				{
+					CVisCraft::GetInstance()->Close();
+					SetVisible(false);
+					return;
+				}
+			}
+			break;
+		}
+
+		// Brushes text
+		D3DXVECTOR2 bx1 = x1 + D3DXVECTOR2(10, 90);
+		D3DXVECTOR2 bx2 = x1 + D3DXVECTOR2(124, 124);
+		if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+		{
+			m_state = GuiState::Brushes;
+			return;
+		}
+
+		// File text
+		bx1 = x1 + D3DXVECTOR2(230, 90);
+		bx2 = x1 + D3DXVECTOR2(300, 124);
+		if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+		{
+			m_state = GuiState::File;
+			return;
+		}
+
+		// About text
+		bx1 = x1 + D3DXVECTOR2(410, 90);
+		bx2 = x1 + D3DXVECTOR2(510, 124);
+		if (mousePosition.x > bx1.x && mousePosition.x < bx2.x && mousePosition.y > bx1.y && mousePosition.y < bx2.y)
+		{
+			ShellExecute(NULL, "open", "http://www.samoatesgames.com", NULL, NULL, SW_SHOWMAXIMIZED);
+			SetVisible(false);
+			return;
+		}
+	}
 }

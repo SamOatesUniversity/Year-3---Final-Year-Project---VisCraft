@@ -117,4 +117,7 @@ public:
 
 								//! 
 	D3DXVECTOR2					GetWindowDimension() const;
+
+								//! 
+	void						SaveTerrain();
 };
