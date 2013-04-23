@@ -20,16 +20,6 @@ struct GizmoState {
 	};
 };
 
-struct BrushType {
-	enum Enum {
-		Deform,
-		Raise,
-		Lower,
-		Level,
-		Noof
-	};
-};
-
 struct InputType {
 	enum Enum {
 		Mouse,

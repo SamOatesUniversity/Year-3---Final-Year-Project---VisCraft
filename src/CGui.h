@@ -14,6 +14,16 @@ struct GuiState {
 	};
 };
 
+struct BrushType {
+	enum Enum {
+		Deform,
+		Raise,
+		Lower,
+		Level,
+		Noof
+	};
+};
+
 class CGui {
 
 private:
@@ -32,12 +42,14 @@ private:
 
 	CBitmap								*m_overlay;
 	CBitmap								*m_textOverlay[TextOverlay::Noof];
+	CBitmap								*m_brushOverlay[BrushType::Noof];
 
 	CTextureShader						*m_textureShader;
 
 	bool								m_visible;
 
 	GuiState::Enum						m_state;
+	BrushType::Enum						m_brushChangeOverlay;
 
 public:
 										//! 
@@ -74,4 +86,9 @@ public:
 
 										//! 
 	GuiState::Enum						GetState() const;
+
+										//! 
+	void								SetActiveBrush(
+											BrushType::Enum newBrush
+										);
 };

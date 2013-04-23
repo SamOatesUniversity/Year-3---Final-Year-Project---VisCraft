@@ -266,24 +266,28 @@ bool CVisCraft::Update()
 	{
 		while (m_input->IsKeyPressed(DIK_1)) m_input->Update();
 		m_gizmo->SetCurrentBrush(BrushType::Raise);
+		m_gui->SetActiveBrush(BrushType::Raise);
 	}	
 
 	if (m_input->IsKeyPressed(DIK_2) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_2)) m_input->Update();
 		m_gizmo->SetCurrentBrush(BrushType::Lower);
+		m_gui->SetActiveBrush(BrushType::Lower);
 	}	
 
 	if (m_input->IsKeyPressed(DIK_3) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_3)) m_input->Update();
 		m_gizmo->SetCurrentBrush(BrushType::Deform);
+		m_gui->SetActiveBrush(BrushType::Deform);
 	}	
 
 	if (m_input->IsKeyPressed(DIK_4) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_4)) m_input->Update();
 		m_gizmo->SetCurrentBrush(BrushType::Level);
+		m_gui->SetActiveBrush(BrushType::Level);
 	}
 
 	if (m_input->IsKeyPressed(DIK_UPARROW) == true)
