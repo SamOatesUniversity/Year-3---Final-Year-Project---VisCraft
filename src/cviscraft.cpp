@@ -297,6 +297,13 @@ bool CVisCraft::Update()
 		m_gui->SetActiveBrush(BrushType::Noise);
 	}
 
+	if (m_input->IsKeyPressed(DIK_6) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_6)) m_input->Update();
+		m_gizmo->SetCurrentBrush(BrushType::Smooth);
+		m_gui->SetActiveBrush(BrushType::Smooth);
+	}
+
 	if (m_input->IsKeyPressed(DIK_UPARROW) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_UPARROW)) m_input->Update();

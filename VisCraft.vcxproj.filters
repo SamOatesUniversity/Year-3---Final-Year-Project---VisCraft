@@ -123,6 +123,9 @@
     <ClCompile Include="src\brush\CBrushNoise.cpp">
       <Filter>Source Files\brush</Filter>
     </ClCompile>
+    <ClCompile Include="src\brush\CBrushSmooth.cpp">
+      <Filter>Source Files\brush</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">

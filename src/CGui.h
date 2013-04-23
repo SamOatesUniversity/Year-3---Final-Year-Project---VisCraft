@@ -21,6 +21,7 @@ struct BrushType {
 		Lower,
 		Level,
 		Noise,
+		Smooth,
 		Noof
 	};
 };
