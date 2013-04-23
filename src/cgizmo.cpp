@@ -270,6 +270,7 @@ bool CGizmo::Create(
 	m_brush[BrushType::Lower] = new CBrushLower();
 	m_brush[BrushType::Raise] = new CBrushRaise();
 	m_brush[BrushType::Level] = new CBrushLevel();
+	m_brush[BrushType::Noise] = new CBrushNoise();
 
 	return true;
 }

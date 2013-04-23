@@ -1,16 +1,16 @@
 #include "IBrush.h"
 
-CBrushLevel::CBrushLevel()
+CBrushNoise::CBrushNoise()
 {
 
 }
 
-CBrushLevel::~CBrushLevel()
+CBrushNoise::~CBrushNoise()
 {
 
 }
 
-void CBrushLevel::Apply(
+void CBrushNoise::Apply(
 		CGizmo *gizmo, //!< The gizmo controlling this brush
 		CInput *input, //!< The input device being used for the brush 
 		CTerrain *terrain //!< The terrain object we want to apply the brush too
@@ -19,7 +19,9 @@ void CBrushLevel::Apply(
 	if (!input->IsMouseDown(MouseButton::Right))
 		return;
 
-	HeightMap *centerhmap = terrain->GetTerrainVertexAt(gizmo->Position().x, gizmo->Position().z);
+	D3DXVECTOR2 position = D3DXVECTOR2(gizmo->Position().x, gizmo->Position().z);
+
+	HeightMap *centerhmap = terrain->GetTerrainVertexAt(position.x, position.y);
 	if (centerhmap == nullptr)
 	{
 		return;
@@ -29,19 +31,20 @@ void CBrushLevel::Apply(
 	{
 		for (int zOffset = -m_size; zOffset <= m_size; ++zOffset)
 		{
-			HeightMap *hmap = terrain->GetTerrainVertexAt(gizmo->Position().x + xOffset, gizmo->Position().z + zOffset);
+			HeightMap *hmap = terrain->GetTerrainVertexAt(position.x + xOffset, position.y + zOffset);
 			if (hmap == nullptr)
 			{
 				continue;
 			}
-			hmap->position.y = centerhmap->position.y;
+			float noise = (500 - (rand() % 1000)) * 0.001f;
+			hmap->position.y += noise;
 		}
 	}
 
 	terrain->UpdateHeightMap();
 }
 
-void CBrushLevel::Apply( 
+void CBrushNoise::Apply( 
 	CGizmo *gizmo,					//!< The gizmo controlling this brush
 	CKinect *kinect,				//!< The input device being used for the brush 
 	CTerrain *terrain				//!< The terrain object we want to apply the brush too 
@@ -50,7 +53,9 @@ void CBrushLevel::Apply(
 	if (!kinect->GetHandState() == HandState::ClosedFist)
 		return;
 
-	HeightMap *centerhmap = terrain->GetTerrainVertexAt(gizmo->Position().x, gizmo->Position().z);
+	D3DXVECTOR2 position = D3DXVECTOR2(gizmo->Position().x, gizmo->Position().z);
+
+	HeightMap *centerhmap = terrain->GetTerrainVertexAt(position.x, position.y);
 	if (centerhmap == nullptr)
 	{
 		return;
@@ -60,12 +65,13 @@ void CBrushLevel::Apply(
 	{
 		for (int zOffset = -m_size; zOffset <= m_size; ++zOffset)
 		{
-			HeightMap *hmap = terrain->GetTerrainVertexAt(gizmo->Position().x + xOffset, gizmo->Position().z + zOffset);
+			HeightMap *hmap = terrain->GetTerrainVertexAt(position.x + xOffset, position.y + zOffset);
 			if (hmap == nullptr)
 			{
 				continue;
 			}
-			hmap->position.y = centerhmap->position.y;
+			float noise = (500 - (rand() % 1000)) * 0.001f;
+			hmap->position.y += noise;
 		}
 	}
 

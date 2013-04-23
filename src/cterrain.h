@@ -162,4 +162,10 @@ public:
 
 							//! Get the size of the terrain
 	const D3DXVECTOR2		GetSize();
+
+							//! Calculate the average height of the terrain at a given point and area
+	float					CalculateAverageTerrainHeight( 
+								D3DXVECTOR2 position, 
+								int area 
+							);
 };

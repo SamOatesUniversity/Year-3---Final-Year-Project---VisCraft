@@ -20,6 +20,7 @@ struct BrushType {
 		Raise,
 		Lower,
 		Level,
+		Noise,
 		Noof
 	};
 };
