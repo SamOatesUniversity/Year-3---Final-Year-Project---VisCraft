@@ -57,37 +57,37 @@ const bool CGui::Create(
 	}
 
 	m_brushOverlay[BrushType::Raise] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Raise]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/raise.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Raise]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/raise.png", 512, 128))
 	{
 		return false;
 	}
 
 	m_brushOverlay[BrushType::Lower] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Lower]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/lower.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Lower]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/lower.png", 512, 128))
 	{
 		return false;
 	}
 
 	m_brushOverlay[BrushType::Deform] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Deform]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/deform.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Deform]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/deform.png", 512, 128))
 	{
 		return false;
 	}
 
 	m_brushOverlay[BrushType::Level] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Level]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/level.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Level]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/level.png", 512, 128))
 	{
 		return false;
 	}
 
 	m_brushOverlay[BrushType::Noise] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Noise]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/noise.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Noise]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/noise.png", 512, 128))
 	{
 		return false;
 	}
 
 	m_brushOverlay[BrushType::Smooth] = new CBitmap();
-	if (!m_brushOverlay[BrushType::Smooth]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/smooth.bmp", 256, 128))
+	if (!m_brushOverlay[BrushType::Smooth]->Create(render->GetDevice(), static_cast<int>(render->GetViewPort().Width), static_cast<int>(render->GetViewPort().Height), "graphics/GUI/text overlay/brushes/smooth.png", 512, 128))
 	{
 		return false;
 	}
@@ -116,7 +116,7 @@ const bool CGui::Render(
 		CBitmap *const brush = m_brushOverlay[m_brushChangeOverlay];
 		if (brush != nullptr)
 		{
-			brush->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (brush->GetWidth() * 0.5f)), static_cast<int>(screenHeight * 0.1f) + (static_cast<int>((256 - brush->GetHeight()) * 0.5f )));
+			brush->Render(render->GetDeviceContext(), static_cast<int>((screenWidth * 0.5f) - (brush->GetWidth() * 0.5f)), 0);
 			if (!m_textureShader->Render(render->GetDeviceContext(), brush->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, brush->GetTexture()))
 				return false;
 		}
