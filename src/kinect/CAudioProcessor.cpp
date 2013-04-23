@@ -137,6 +137,7 @@ void CAudioProcessor::Process(
 			else if (action == AudioPhrases::FileSave)
 			{
 				handled = true;
+				CVisCraft::GetInstance()->SaveTerrain();
 			}
 			else if (action == AudioPhrases::ExitApplication)
 			{
