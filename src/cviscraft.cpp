@@ -280,6 +280,12 @@ bool CVisCraft::Update()
 		m_gizmo->SetCurrentBrush(BrushType::Deform);
 	}	
 
+	if (m_input->IsKeyPressed(DIK_4) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_4)) m_input->Update();
+		m_gizmo->SetCurrentBrush(BrushType::Level);
+	}
+
 	if (m_input->IsKeyPressed(DIK_UPARROW) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_UPARROW)) m_input->Update();
