@@ -117,6 +117,9 @@
     <ClCompile Include="src\CGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\brush\CBrushLevel.cpp">
+      <Filter>Source Files\brush</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -147,15 +150,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\brush\IBrush.h">
-      <Filter>Header Files\brush</Filter>
-    </ClInclude>
-    <ClInclude Include="src\brush\CBrushDeform.h">
-      <Filter>Header Files\brush</Filter>
-    </ClInclude>
-    <ClInclude Include="src\brush\CBrushRaise.h">
-      <Filter>Header Files\brush</Filter>
-    </ClInclude>
-    <ClInclude Include="src\brush\CBrushLower.h">
       <Filter>Header Files\brush</Filter>
     </ClInclude>
     <ClInclude Include="src\brushes.h">

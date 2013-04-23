@@ -269,6 +269,7 @@ bool CGizmo::Create(
 	m_brush[BrushType::Deform] = new CBrushDeform(); 
 	m_brush[BrushType::Lower] = new CBrushLower();
 	m_brush[BrushType::Raise] = new CBrushRaise();
+	m_brush[BrushType::Level] = new CBrushLevel();
 
 	return true;
 }

@@ -25,8 +25,7 @@ struct BrushType {
 		Deform,
 		Raise,
 		Lower,
-		Smooth,
-		Noise,
+		Level,
 		Noof
 	};
 };

@@ -97,6 +97,7 @@
     <ClCompile Include="src\2d\CTexture.cpp" />
     <ClCompile Include="src\2d\CTextureShader.cpp" />
     <ClCompile Include="src\brush\CBrushDeform.cpp" />
+    <ClCompile Include="src\brush\CBrushLevel.cpp" />
     <ClCompile Include="src\brush\CBrushLower.cpp" />
     <ClCompile Include="src\brush\CBrushRaise.cpp" />
     <ClCompile Include="src\ccamera.cpp" />
@@ -122,9 +123,6 @@
     <ClInclude Include="src\2d\CTexture.h" />
     <ClInclude Include="src\2d\CTextureShader.h" />
     <ClInclude Include="src\brushes.h" />
-    <ClInclude Include="src\brush\CBrushDeform.h" />
-    <ClInclude Include="src\brush\CBrushLower.h" />
-    <ClInclude Include="src\brush\CBrushRaise.h" />
     <ClInclude Include="src\brush\IBrush.h" />
     <ClInclude Include="src\ccamera.h" />
     <ClInclude Include="src\cgizmo.h" />
