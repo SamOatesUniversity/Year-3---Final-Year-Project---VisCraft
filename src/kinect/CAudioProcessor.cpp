@@ -34,6 +34,9 @@ void CAudioProcessor::Process(
 		{L"BRUSH-RAISE", AudioPhrases::BrushRaise},
 		{L"BRUSH-LOWER", AudioPhrases::BrushLower},
 		{L"BRUSH-DEFORM", AudioPhrases::BrushDeform},
+		{L"BRUSH-LEVEL", AudioPhrases::BrushLevel},
+		{L"BRUSH-NOISE", AudioPhrases::BrushNoise},
+		{L"BRUSH-SMOOTH", AudioPhrases::BrushSmooth},
 		{L"FILE", AudioPhrases::File},
 		{L"FILE-NEW", AudioPhrases::FileNew},
 		{L"FILE-OPEN", AudioPhrases::FileOpen},
@@ -114,6 +117,24 @@ void CAudioProcessor::Process(
 				handled = true;
 				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Deform);
 				m_gui->SetActiveBrush(BrushType::Deform);
+			}
+			else if (action == AudioPhrases::BrushLevel)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Level);
+				m_gui->SetActiveBrush(BrushType::Level);
+			}
+			else if (action == AudioPhrases::BrushNoise)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Noise);
+				m_gui->SetActiveBrush(BrushType::Noise);
+			}
+			else if (action == AudioPhrases::BrushSmooth)
+			{
+				handled = true;
+				CVisCraft::GetInstance()->GetGizmo()->SetCurrentBrush(BrushType::Smooth);
+				m_gui->SetActiveBrush(BrushType::Smooth);
 			}
 			
 			if (handled) 
