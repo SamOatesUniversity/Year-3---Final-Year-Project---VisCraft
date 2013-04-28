@@ -37,13 +37,9 @@ void CBrushSmooth::Apply(
 			{
 				continue;
 			}
-			float scale = 0.0f;
-			if (hmap->position.y < averageHeight)
-				scale += 0.1f;
-			else
-				scale -= 0.1f;
-
-			hmap->position.y += scale;
+			
+			float diff = hmap->position.y - averageHeight;
+			hmap->position.y -= diff * 0.1f;
 		}
 	}
 
@@ -60,6 +56,7 @@ void CBrushSmooth::Apply(
 		return;
 
 	D3DXVECTOR2 position = D3DXVECTOR2(gizmo->Position().x, gizmo->Position().z);
+	const float averageHeight = terrain->CalculateAverageTerrainHeight(position, m_size);
 
 	HeightMap *centerhmap = terrain->GetTerrainVertexAt(position.x, position.y);
 	if (centerhmap == nullptr)
@@ -76,8 +73,9 @@ void CBrushSmooth::Apply(
 			{
 				continue;
 			}
-			float noise = (500 - (rand() % 1000)) * 0.001f;
-			hmap->position.y += noise;
+
+			float diff = hmap->position.y - averageHeight;
+			hmap->position.y -= diff * 0.1f;
 		}
 	}
 
