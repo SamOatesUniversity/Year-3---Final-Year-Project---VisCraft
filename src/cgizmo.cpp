@@ -454,9 +454,16 @@ void CGizmo::Control(
 
 			if (xpanDirection != 0 || ypanDirection != 0)
 			{
-				D3DXVECTOR3 campos = camera->GetPosition();
+				D3DXVECTOR3 oldpos, campos;
+				oldpos = campos = camera->GetPosition();
 				campos.x += xpanDirection * 0.5f;
 				campos.z += ypanDirection * 0.5f;
+
+				if (campos.x < 0) campos.x = oldpos.x;
+				if (campos.x > terrain->GetSize().x) campos.x = oldpos.x;
+				if (m_position.z < 1) campos.z = oldpos.z;
+				if (campos.z > terrain->GetSize().y - (campos.y * 3)) campos.z = oldpos.z;
+
 				camera->SetPosition(campos.x, campos.y, campos.z);
 			}
 
@@ -555,9 +562,16 @@ void CGizmo::Control(
 
 			if (xpanDirection != 0 || ypanDirection != 0)
 			{
-				D3DXVECTOR3 campos = camera->GetPosition();
+				D3DXVECTOR3 oldpos, campos;
+				oldpos = campos = camera->GetPosition();
 				campos.x += xpanDirection * 0.5f;
 				campos.z += ypanDirection * 0.5f;
+
+				if (campos.x < 0) campos.x = oldpos.x;
+				if (campos.x > terrain->GetSize().x) campos.x = oldpos.x;
+				if (m_position.z < 1) campos.z = oldpos.z;
+				if (campos.z > terrain->GetSize().y - (campos.y * 3)) campos.z = oldpos.z;
+
 				camera->SetPosition(campos.x, campos.y, campos.z);
 			}
 
