@@ -1,4 +1,5 @@
 #include "cshader.h"
+#include "cviscraft.h"
 
 CShader::CShader()
 {
@@ -242,7 +243,7 @@ const bool CShader::Render(
 	lightDataPtr->ambientColor = D3DXVECTOR4(0.05f, 0.05f, 0.05f, 0.05f);
 	lightDataPtr->diffuseColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
 	lightDataPtr->lightDirection = D3DXVECTOR3(0.0f, -0.5f, 0.75f);
-	lightDataPtr->__padding__ = 0.0f;
+	lightDataPtr->colorRender = CVisCraft::GetInstance()->GetTerrain()->GetFlag(TERRAIN_FLAG_COLORRENDER);
 
 	// Unlock the constant buffer.
 	m_renderer->GetDeviceContext()->Unmap(m_lightBuffer, 0);

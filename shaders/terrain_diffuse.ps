@@ -12,7 +12,7 @@ cbuffer LightBuffer
     float4 ambientColor;
     float4 diffuseColor;
     float3 lightDirection;
-    float padding;
+    float colourRender;
 };
 
 // TYPEDEFS //
@@ -29,17 +29,15 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 {
-	bool colourRender = false;
-
 	float4 lowColor = lowTexture.Sample(SampleType, input.texcoord);
 	float4 midColor = midTexture.Sample(SampleType, input.texcoord);
 	float4 highColor = highTexture.Sample(SampleType, input.texcoord);
 
-	if (colourRender == true)
+	if (colourRender != 0.0f)
 	{
-		lowColor = float4(1.0f, 0.0f, 0.0f, 1.0f);
-		midColor = float4(0.0f, 1.0f, 0.0f, 1.0f);
-		highColor = float4(0.0f, 0.0f, 1.0f, 1.0f);
+		lowColor = float4(0.54f, 0.99f, 0.76f, 1.0f);
+		midColor = float4(0.125f, 0.435f, 0.29f, 1.0f);
+		highColor = float4(0.29f, 0.31f, 0.80f, 1.0f);
 	}
 
 	float slope = 1.0f - input.normal.y;
