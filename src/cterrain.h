@@ -34,6 +34,9 @@ union TerrainFlags
 
 		unsigned int locked : 1;
 		#define TERRAIN_FLAG_LOCK			0x02
+
+		unsigned int colorrender : 1;
+		#define TERRAIN_FLAG_COLORRENDER	0x04
 	};
 
 	unsigned int allflags;

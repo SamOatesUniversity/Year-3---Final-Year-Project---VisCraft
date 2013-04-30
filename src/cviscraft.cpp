@@ -260,6 +260,13 @@ bool CVisCraft::Update()
 		m_terrain->GetFlag(TERRAIN_FLAG_WIREFRAME) ? m_terrain->DisableFlag(TERRAIN_FLAG_WIREFRAME) : m_terrain->EnableFlag(TERRAIN_FLAG_WIREFRAME);
 	}	
 
+	// toggle color render mode
+	if (m_input->IsKeyPressed(DIK_F2) == true)
+	{
+		while (m_input->IsKeyPressed(DIK_F2)) m_input->Update();
+		m_terrain->GetFlag(TERRAIN_FLAG_COLORRENDER) ? m_terrain->DisableFlag(TERRAIN_FLAG_COLORRENDER) : m_terrain->EnableFlag(TERRAIN_FLAG_COLORRENDER);
+	}	
+
 	// change brushes
 	// toggle wireframe mode
 	if (m_input->IsKeyPressed(DIK_1) == true)

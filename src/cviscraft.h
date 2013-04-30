@@ -120,4 +120,10 @@ public:
 
 								//! 
 	void						SaveTerrain();
+
+								//!
+	CTerrain					*GetTerrain()
+								{
+									return m_terrain;
+								}
 };
