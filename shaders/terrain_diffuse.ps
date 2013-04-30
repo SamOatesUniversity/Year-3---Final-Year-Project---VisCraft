@@ -2,6 +2,7 @@
 Texture2D lowTexture	: register(t0);
 Texture2D midTexture	: register(t1);
 Texture2D highTexture	: register(t2);
+Texture2D depthTexture	: register(t3);
 
 // Sample States //
 SamplerState SampleType;
@@ -21,18 +22,33 @@ struct PixelInputType
     float4 position : SV_POSITION;
 	float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL;
+	float4 lightViewPosition : TEXCOORD1;
+	float3 lightPos : TEXCOORD2;
 };
 
+float4 Shadow(PixelInputType input)
+{
+	float4 hpos_from_light = input.lightViewPosition;
+    float light_to_point_depth = hpos_from_light.z / hpos_from_light.w;
 
-////////////////////////////////////////////////////////////////////////////////
-// Pixel Shader
-////////////////////////////////////////////////////////////////////////////////
+	float xCoord = ((hpos_from_light.x / hpos_from_light.w) + 1.0f) * 0.5f;
+	float yCoord = ((hpos_from_light.y / hpos_from_light.w) + 1.0f) * 0.5f;
+
+    float2 shadow_texcoord = float2(xCoord, yCoord);
+
+	const float bias = 0.0004f;
+    float light_to_first_hit_depth = depthTexture.Sample(SampleType, shadow_texcoord).x;			
+	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.2f : 1.0f;
+	
+	return float4(shadowing, shadowing, shadowing, 1.0f);
+}
+
 float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 {
 	float4 lowColor = lowTexture.Sample(SampleType, input.texcoord);
 	float4 midColor = midTexture.Sample(SampleType, input.texcoord);
 	float4 highColor = highTexture.Sample(SampleType, input.texcoord);
-
+	
 	if (colourRender != 0.0f)
 	{
 		lowColor = float4(0.54f, 0.99f, 0.76f, 1.0f);
@@ -78,5 +94,5 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 
 	color = color * textureColor;
 
-    return color;
+    return color * Shadow(input);
 }
