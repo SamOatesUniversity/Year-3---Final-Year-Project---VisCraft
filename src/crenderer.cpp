@@ -391,3 +391,13 @@ void CRenderer::EnableAlphaBlending(
 	}
 }
 
+void CRenderer::SetBackBufferRenderTarget()
+{
+	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+}
+
+void CRenderer::ResetViewport()
+{
+	m_deviceContext->RSSetViewports(1, &m_viewport);
+}
+

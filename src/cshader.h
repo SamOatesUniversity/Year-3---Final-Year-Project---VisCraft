@@ -4,6 +4,8 @@
 	Header file includes
 */
 #include "crenderer.h"
+#include "clight.h"
+#include "crendertexture.h"
 #include <d3dx11async.h>
 #include <d3dx11tex.h>
 
@@ -40,12 +42,36 @@ private:
 	ID3D11VertexShader				*m_vertexShader;									//!< 
 	ID3D11PixelShader				*m_pixelShader;										//!< 
 
+	ID3D11VertexShader				*m_vertexShadowShader;								//!< 
+	ID3D11PixelShader				*m_pixelShadowShader;								//!< 
+
 	ID3D11InputLayout				*m_layout;											//!< 
+	ID3D11InputLayout				*m_layoutShadow;									//!< 
+
 	ID3D11SamplerState				*m_sampleState;										//!< 
 	ID3D11Buffer					*m_matrixBuffer;									//!< 
 	ID3D11Buffer					*m_lightBuffer;										//!< 
 
 	ID3D11ShaderResourceView		*m_texture[TerrainTexture::Noof];					//!< 	
+
+	CLight							*m_light;											//!< 
+	CRenderTexture					*m_shadowbuffer;									//!< 
+
+private:
+
+	bool							RenderLightPass(
+										int indexCount,			//!< 
+										D3DXMATRIX world,		//!< 
+										D3DXMATRIX view,		//!< 
+										D3DXMATRIX projection	//!< 
+									);
+
+	bool							RenderShadowPass(
+										int indexCount,			//!< 
+										D3DXMATRIX world,		//!< 
+										D3DXMATRIX view,		//!< 
+										D3DXMATRIX projection	//!< 
+									);
 
 public:
 									//! Class Constructor							

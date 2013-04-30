@@ -108,5 +108,10 @@ public:
 									bool enable
 								);
 
+								//! 
+	void						SetBackBufferRenderTarget();
+
+								//! 
+	void						ResetViewport();
 };
 

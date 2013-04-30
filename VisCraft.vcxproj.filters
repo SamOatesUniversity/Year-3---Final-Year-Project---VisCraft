@@ -126,6 +126,12 @@
     <ClCompile Include="src\brush\CBrushSmooth.cpp">
       <Filter>Source Files\brush</Filter>
     </ClCompile>
+    <ClCompile Include="src\clight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\crendertexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -195,6 +201,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\clight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\crendertexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -106,7 +106,9 @@
     <ClCompile Include="src\cgizmo.cpp" />
     <ClCompile Include="src\CGui.cpp" />
     <ClCompile Include="src\cinput.cpp" />
+    <ClCompile Include="src\clight.cpp" />
     <ClCompile Include="src\crenderer.cpp" />
+    <ClCompile Include="src\crendertexture.cpp" />
     <ClCompile Include="src\cshader.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
     <ClCompile Include="src\kinect\CAudioProcessor.cpp" />
@@ -130,7 +132,9 @@
     <ClInclude Include="src\cgizmo.h" />
     <ClInclude Include="src\CGui.h" />
     <ClInclude Include="src\cinput.h" />
+    <ClInclude Include="src\clight.h" />
     <ClInclude Include="src\crenderer.h" />
+    <ClInclude Include="src\crendertexture.h" />
     <ClInclude Include="src\cshader.h" />
     <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\helper.h" />
