@@ -11,8 +11,14 @@ cbuffer MatrixBuffer
     matrix worldMatrix;
     matrix viewMatrix;
     matrix projectionMatrix;
+	matrix lightViewProjection;
 };
 
+cbuffer LightInformationBuffer
+{
+    float3 lightPosition;
+	float padding;
+};
 
 //////////////
 // TYPEDEFS //
@@ -29,6 +35,8 @@ struct PixelInputType
     float4 position : SV_POSITION;
 	float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL;
+	float4 lightViewPosition : TEXCOORD1;
+	float3 lightPos : TEXCOORD2;
 };
 
 
@@ -55,6 +63,11 @@ PixelInputType TerrainVertexShader(VertexInputType input)
 
 	// Just pass through the texture coordinates
 	output.texcoord = input.texcoord; 
+	
+	// Lighting stuff
+	output.lightViewPosition = mul(input.position, worldMatrix);
+    output.lightViewPosition = mul(output.lightViewPosition, lightViewProjection);	
+	output.lightPos = lightPosition;
 
     return output;
 }

@@ -43,6 +43,7 @@ const bool CShader::Create(
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 		&vertexShaderBuffer, &errorMessage, NULL)))
 	{
+		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
 		return false;
 	}
 
@@ -53,6 +54,7 @@ const bool CShader::Create(
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
 		&pixelShaderBuffer, &errorMessage, NULL)))
 	{
+		char* compileErrors = (char*)(errorMessage->GetBufferPointer());
 		return false;
 	}
 
@@ -269,9 +271,11 @@ const bool CShader::Render(
 		D3DXMATRIX projection				//!< 
 	)
 {
-	D3DXMATRIX lightView, lightProjection;
+	D3DXMATRIX lightView, lightProjection, lightViewProjection;
 	D3DXMatrixOrthoLH(&lightProjection, static_cast<float>(128 + 32), static_cast<float>(128 + 32), 10.0f, 256.0f);
 	D3DXMatrixLookAtLH(&lightView, &(m_light->GetDirection() * -64.0f), &D3DXVECTOR3(64, 0, 64), &D3DXVECTOR3(0, 1, 0));
+
+	D3DXMatrixMultiply(&lightViewProjection, &lightView, &lightProjection);
 
 	m_shadowbuffer->SetRenderTarget(m_renderer->GetDeviceContext());
 	m_shadowbuffer->ClearRenderTarget(m_renderer->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
@@ -282,7 +286,7 @@ const bool CShader::Render(
 	m_renderer->SetBackBufferRenderTarget();
 	m_renderer->ResetViewport();
 
-	if (!RenderLightPass(indexCount, world, view, projection))
+	if (!RenderLightPass(indexCount, world, view, projection, lightViewProjection))
 		return false;
 
 	return true;
@@ -292,7 +296,7 @@ bool CShader::RenderShadowPass(
 	int indexCount,						//!< 
 	D3DXMATRIX world,					//!< 
 	D3DXMATRIX view,					//!< 
-	D3DXMATRIX projection				//!< 
+	D3DXMATRIX projection				//!<
 	)
 {
 	// Transpose the matrices to prepare them for the shader.
@@ -342,7 +346,8 @@ bool CShader::RenderLightPass(
 		int indexCount,						//!< 
 		D3DXMATRIX world,					//!< 
 		D3DXMATRIX view,					//!< 
-		D3DXMATRIX projection				//!< 
+		D3DXMATRIX projection,				//!< 
+		D3DXMATRIX lightViewProjection		//!< 
 	)
 {
 	// Transpose the matrices to prepare them for the shader.
@@ -362,6 +367,7 @@ bool CShader::RenderLightPass(
 	dataPtr->world = world;
 	dataPtr->view = view;
 	dataPtr->projection = projection;
+	dataPtr->lightViewProjection = lightViewProjection;
 
 	// Unlock the constant buffer.
 	m_renderer->GetDeviceContext()->Unmap(m_matrixBuffer, 0);
@@ -395,9 +401,12 @@ bool CShader::RenderLightPass(
 	m_renderer->GetDeviceContext()->PSSetConstantBuffers(bufferNumber, 1, &m_lightBuffer);	
 
 	// Set shader texture resource in the pixel shader.
+	ID3D11ShaderResourceView *depthTexture = m_shadowbuffer->GetShaderResourceView();
+
 	m_renderer->GetDeviceContext()->PSSetShaderResources(0, 1, &m_texture[TerrainTexture::Low]);
 	m_renderer->GetDeviceContext()->PSSetShaderResources(1, 1, &m_texture[TerrainTexture::Medium]);
 	m_renderer->GetDeviceContext()->PSSetShaderResources(2, 1, &m_texture[TerrainTexture::High]);
+	m_renderer->GetDeviceContext()->PSSetShaderResources(3, 1, &depthTexture);
 
 	// Set the vertex input layout.
 	m_renderer->GetDeviceContext()->IASetInputLayout(m_layout);

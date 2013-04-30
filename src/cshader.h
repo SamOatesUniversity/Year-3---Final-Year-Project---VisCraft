@@ -16,6 +16,7 @@ private:
 		D3DXMATRIX world;																//!< 
 		D3DXMATRIX view;																//!< 
 		D3DXMATRIX projection;															//!< 
+		D3DXMATRIX lightViewProjection;													//!< 
 	};
 
 	struct LightBuffer
@@ -60,17 +61,18 @@ private:
 private:
 
 	bool							RenderLightPass(
-										int indexCount,			//!< 
-										D3DXMATRIX world,		//!< 
-										D3DXMATRIX view,		//!< 
-										D3DXMATRIX projection	//!< 
+										int indexCount,									//!< 
+										D3DXMATRIX world,								//!< 
+										D3DXMATRIX view,								//!< 
+										D3DXMATRIX projection,							//!< 
+										D3DXMATRIX lightViewProjection					//!< 
 									);
 
 	bool							RenderShadowPass(
-										int indexCount,			//!< 
-										D3DXMATRIX world,		//!< 
-										D3DXMATRIX view,		//!< 
-										D3DXMATRIX projection	//!< 
+										int indexCount,									//!< 
+										D3DXMATRIX world,								//!< 
+										D3DXMATRIX view,								//!< 
+										D3DXMATRIX projection							//!< 
 									);
 
 public:
