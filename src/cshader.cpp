@@ -5,9 +5,12 @@ CShader::CShader()
 {
 	m_renderer = nullptr;
 	m_layout = nullptr;
+	m_layoutShadow = nullptr;
 	m_matrixBuffer = nullptr;
 	m_pixelShader = nullptr;
 	m_vertexShader = nullptr;
+	m_pixelShadowShader = nullptr;
+	m_vertexShadowShader = nullptr;
 	m_lightBuffer = nullptr;
 	m_sampleState = nullptr;
 
@@ -28,11 +31,13 @@ const bool CShader::Create(
 
 	const char *const vsFilename = "shaders/terrain_diffuse.vs";
 	const char *const psFilename = "shaders/terrain_diffuse.ps";
+	const char *const vsShadowFilename = "shaders/terrain_shadow.vs";
+	const char *const psShadowFilename = "shaders/terrain_shadow.ps";
 
 	ID3D10Blob *errorMessage = nullptr;
-	ID3D10Blob *vertexShaderBuffer = nullptr;
-
+	
 	// Compile the vertex shader code.
+	ID3D10Blob *vertexShaderBuffer = nullptr;
 	if (FAILED(D3DX11CompileFromFile(
 		vsFilename, NULL, NULL, "TerrainVertexShader", "vs_4_0", 
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
@@ -51,6 +56,26 @@ const bool CShader::Create(
 		return false;
 	}
 
+	// Compile the vertex shader code.
+	ID3D10Blob *vertexShadowShaderBuffer = nullptr;
+	if (FAILED(D3DX11CompileFromFile(
+		vsShadowFilename, NULL, NULL, "TerrainVertexShadowShader", "vs_4_0", 
+		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
+		&vertexShadowShaderBuffer, &errorMessage, NULL)))
+	{
+		return false;
+	}
+
+	// Compile the pixel shader code.
+	ID3D10Blob *pixelShadowShaderBuffer = nullptr;
+	if (FAILED(D3DX11CompileFromFile(
+		psShadowFilename, NULL, NULL, "TerrainPixelShadowShader", "ps_4_0", 
+		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, 
+		&pixelShadowShaderBuffer, &errorMessage, NULL)))
+	{
+		return false;
+	}
+
 	// Create the vertex shader from the buffer.
 	if (FAILED(renderer->GetDevice()->CreateVertexShader(
 			vertexShaderBuffer->GetBufferPointer(), 
@@ -65,6 +90,24 @@ const bool CShader::Create(
 		pixelShaderBuffer->GetBufferPointer(), 
 		pixelShaderBuffer->GetBufferSize(), 
 		NULL, &m_pixelShader)))
+	{
+		return false;
+	}
+
+	// Create the vertex shader from the buffer.
+	if (FAILED(renderer->GetDevice()->CreateVertexShader(
+		vertexShadowShaderBuffer->GetBufferPointer(), 
+		vertexShadowShaderBuffer->GetBufferSize(), 
+		NULL, &m_vertexShadowShader)))
+	{
+		return false;
+	}
+
+	// Create the pixel shader from the buffer.
+	if (FAILED(renderer->GetDevice()->CreatePixelShader(
+		pixelShadowShaderBuffer->GetBufferPointer(), 
+		pixelShadowShaderBuffer->GetBufferSize(), 
+		NULL, &m_pixelShadowShader)))
 	{
 		return false;
 	}
@@ -107,9 +150,20 @@ const bool CShader::Create(
 		return false;
 	}
 
+	// Create the vertex input layout.
+	if (FAILED(renderer->GetDevice()->CreateInputLayout(
+		polygonLayout, noofElements, 
+		vertexShadowShaderBuffer->GetBufferPointer(), 
+		vertexShadowShaderBuffer->GetBufferSize(), &m_layoutShadow)))
+	{
+		return false;
+	}
+
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	SafeRelease(vertexShaderBuffer);
 	SafeRelease(pixelShaderBuffer);
+	SafeRelease(vertexShadowShaderBuffer);
+	SafeRelease(pixelShadowShaderBuffer);
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -186,6 +240,13 @@ const bool CShader::Create(
 		)))
 		return false;
 
+	m_light = new CLight();
+
+	///////////////////////////////////////
+
+	m_shadowbuffer = new CRenderTexture();
+	m_shadowbuffer->Initialize(renderer->GetDevice(), 1024, 1024);
+
 	return true;
 }
 
@@ -196,9 +257,88 @@ void CShader::Release()
 
 	SafeRelease(m_vertexShader);
 	SafeRelease(m_pixelShader);
+	SafeDelete(m_light);
+	m_shadowbuffer->Shutdown();
+	SafeDelete(m_shadowbuffer);
 }
 
 const bool CShader::Render(
+		int indexCount,						//!< 
+		D3DXMATRIX world,					//!< 
+		D3DXMATRIX view,					//!< 
+		D3DXMATRIX projection				//!< 
+	)
+{
+	D3DXMATRIX lightView, lightProjection;
+	D3DXMatrixOrthoLH(&lightProjection, static_cast<float>(128 + 32), static_cast<float>(128 + 32), 10.0f, 256.0f);
+	D3DXMatrixLookAtLH(&lightView, &(m_light->GetDirection() * -64.0f), &D3DXVECTOR3(64, 0, 64), &D3DXVECTOR3(0, 1, 0));
+
+	m_shadowbuffer->SetRenderTarget(m_renderer->GetDeviceContext());
+	m_shadowbuffer->ClearRenderTarget(m_renderer->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	if (!RenderShadowPass(indexCount, world, lightView, lightProjection))
+		return false;
+
+	m_renderer->SetBackBufferRenderTarget();
+	m_renderer->ResetViewport();
+
+	if (!RenderLightPass(indexCount, world, view, projection))
+		return false;
+
+	return true;
+}
+
+bool CShader::RenderShadowPass(
+	int indexCount,						//!< 
+	D3DXMATRIX world,					//!< 
+	D3DXMATRIX view,					//!< 
+	D3DXMATRIX projection				//!< 
+	)
+{
+	// Transpose the matrices to prepare them for the shader.
+	D3DXMatrixTranspose(&world, &world);
+	D3DXMatrixTranspose(&view, &view);
+	D3DXMatrixTranspose(&projection, &projection);
+
+	// Lock the constant buffer so it can be written to.
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	if (FAILED(m_renderer->GetDeviceContext()->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return false;
+
+	// Get a pointer to the data in the constant buffer.
+	MatrixBuffer *const dataPtr = static_cast<MatrixBuffer*>(mappedResource.pData);
+
+	// Copy the matrices into the constant buffer.
+	dataPtr->world = world;
+	dataPtr->view = view;
+	dataPtr->projection = projection;
+
+	// Unlock the constant buffer.
+	m_renderer->GetDeviceContext()->Unmap(m_matrixBuffer, 0);
+
+	// Set the position of the constant buffer in the vertex shader.
+	unsigned int bufferNumber = 0;
+
+	// Finally set the constant buffer in the vertex shader with the updated values.
+	m_renderer->GetDeviceContext()->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
+
+	// Set the vertex input layout.
+	m_renderer->GetDeviceContext()->IASetInputLayout(m_layoutShadow);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	m_renderer->GetDeviceContext()->VSSetShader(m_vertexShadowShader, NULL, 0);
+	m_renderer->GetDeviceContext()->PSSetShader(m_pixelShadowShader, NULL, 0);
+
+	// Set the sampler state in the pixel shader.
+	m_renderer->GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
+
+	// Render the triangle.
+	m_renderer->GetDeviceContext()->DrawIndexed(indexCount, 0, 0);
+
+	return true;
+}
+
+bool CShader::RenderLightPass(
 		int indexCount,						//!< 
 		D3DXMATRIX world,					//!< 
 		D3DXMATRIX view,					//!< 
@@ -238,11 +378,11 @@ const bool CShader::Render(
 
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *const lightDataPtr = static_cast<LightBuffer*>(mappedResource.pData);
-
+	
 	// Copy the lighting variables into the constant buffer.
-	lightDataPtr->ambientColor = D3DXVECTOR4(0.05f, 0.05f, 0.05f, 0.05f);
-	lightDataPtr->diffuseColor = D3DXVECTOR4(0.5f, 0.5f, 0.5f, 1.0f);
-	lightDataPtr->lightDirection = D3DXVECTOR3(0.0f, -0.5f, 0.75f);
+	lightDataPtr->ambientColor = m_light->GetAmbiant();
+	lightDataPtr->diffuseColor = m_light->GetDiffuse();
+	lightDataPtr->lightDirection = m_light->GetDirection();
 	lightDataPtr->colorRender = CVisCraft::GetInstance()->GetTerrain()->GetFlag(TERRAIN_FLAG_COLORRENDER);
 
 	// Unlock the constant buffer.

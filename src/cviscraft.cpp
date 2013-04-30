@@ -460,6 +460,7 @@ const bool CVisCraft::RenderGraphics()
 	// Render the terrain buffers.
 	m_terrain->Update();
 
+	// render the light pass
 	if (!m_shader->Render(m_terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix))
 		return false;
 
