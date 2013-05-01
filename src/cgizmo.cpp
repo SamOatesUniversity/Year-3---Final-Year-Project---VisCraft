@@ -6,9 +6,6 @@
 */
 CGizmo::CGizmo()
 {
-	m_vertexBuffer = nullptr;
-	m_indexBuffer = nullptr;
-
 	m_vertexShader = nullptr;
 	m_pixelShader = nullptr;
 	m_layout = nullptr;
@@ -30,152 +27,10 @@ CGizmo::CGizmo()
 */
 CGizmo::~CGizmo()
 {
-	SafeRelease(m_indexBuffer);
-	SafeRelease(m_vertexBuffer);
-
 	for (IBrush* brush : m_brush)
 	{
 		SafeDelete(brush);
 	}
-}
-
-bool CGizmo::LoadGizmoMesh()
-{
-	std::ifstream objFile;
-	objFile.open("gizmo.obj", std::ios_base::in);
-
-	struct Face {
-		float position[3];
-		float normal[3];
-	};
-	std::vector<Face> faces;
-	std::vector<D3DXVECTOR3> verts, vertNorms;
-
-	std::string line;
-	while (std::getline(objFile, line))
-	{
-		std::vector<std::string> tokens;
-		std::istringstream iss(line);
-		std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter<std::vector<std::string> >(tokens));
-
-		if (tokens.empty())
-		{
-			continue;
-		}
-
-		if (tokens[0] == "v")
-		{
-			D3DXVECTOR3 newVert;
-			newVert.x = static_cast<float>(::atof(tokens[1].c_str()));
-			newVert.y = static_cast<float>(::atof(tokens[2].c_str()));
-			newVert.z = static_cast<float>(::atof(tokens[3].c_str()));
-			verts.push_back(newVert);
-		}
-		else if (tokens[0] == "vn")
-		{
-			D3DXVECTOR3 newVertNormal;
-			newVertNormal.x = static_cast<float>(::atof(tokens[1].c_str()));
-			newVertNormal.y = static_cast<float>(::atof(tokens[2].c_str()));
-			newVertNormal.z = static_cast<float>(::atof(tokens[3].c_str()));
-			vertNorms.push_back(newVertNormal);
-		}
-		else if (tokens[0] == "f")
-		{
-			Face newFace;
-
-			for (int tokenIndex = 1; tokenIndex <= 3; ++tokenIndex)
-			{
-				std::string part = tokens[tokenIndex];
-				std::string posPart = part.substr(0, part.find('/'));
-				std::string normPart = part.substr(part.rfind('/') + 1);
-
-				newFace.position[tokenIndex - 1] = static_cast<float>(::atof(posPart.c_str())) - 1;
-				newFace.normal[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
-			}
-
-			faces.push_back(newFace);
-		}
-	}
-
-	objFile.close();
-
-	m_vertexCount = verts.size();
-	m_indexCount = faces.size() * 3;
-
-	// Create the vertex array.
-	CGizmo::Vertex *const vertices = new CGizmo::Vertex[m_vertexCount];
-
-	// Create the index array.
-	unsigned long *const indices = new unsigned long[m_indexCount];
-
-	int vertIndex = 0;
-	for (D3DXVECTOR3 vert : verts)
-	{
-		vertices[vertIndex++].position = vert;
-	}
-
-	// Load the index array with data.
-	int indIndex = 0;
-	for (unsigned int faceIndex = 0; faceIndex < faces.size(); ++faceIndex)
-	{
-		indices[indIndex]		= static_cast<unsigned int>(faces[faceIndex].position[0]);  
-		indices[indIndex + 1]	= static_cast<unsigned int>(faces[faceIndex].position[1]);  
-		indices[indIndex + 2]	= static_cast<unsigned int>(faces[faceIndex].position[2]); 
-		indIndex += 3;
-	}
-
-
-	// Set up the description of the static vertex buffer.
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(CGizmo::Vertex) * m_vertexCount;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the vertex data.
-	D3D11_SUBRESOURCE_DATA vertexData;
-	vertexData.pSysMem = vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	// Now create the vertex buffer.
-	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer)))
-	{
-		delete[] vertices;
-		delete[] indices;
-		return false;
-	}
-
-	// Set up the description of the static index buffer.
-	D3D11_BUFFER_DESC indexBufferDesc;
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-	indexBufferDesc.StructureByteStride = 0;
-
-	// Give the subresource structure a pointer to the index data.
-	D3D11_SUBRESOURCE_DATA indexData;
-	indexData.pSysMem = indices;
-	indexData.SysMemPitch = 0;
-	indexData.SysMemSlicePitch = 0;
-
-	// Create the index buffer.
-	if (FAILED(m_renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer)))
-	{
-		delete[] vertices;
-		delete[] indices;
-		return false;
-	}
-
-	// Release the arrays now that the vertex and index buffers have been created and loaded.
-	delete[] vertices;
-	delete[] indices;
-
-	return true;
 }
 
 /*
@@ -186,7 +41,9 @@ bool CGizmo::Create(
 	)
 {
 	m_renderer = renderer;
-	if (!LoadGizmoMesh())
+
+	m_gizmoMesh = new CMesh();
+	if (!m_gizmoMesh->LoadMesh(m_renderer, "gizmo.obj"))
 	{
 		return false;
 	}
@@ -286,21 +143,9 @@ void CGizmo::Render(
 		CCamera *camera
 	)
 {
-	// Set vertex buffer stride and offset.
-	unsigned int stride = sizeof(CGizmo::Vertex); 
-	unsigned int offset = 0;
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	m_renderer->GetDeviceContext()->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
-	m_renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	m_renderer->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	m_gizmoMesh->PrepareRender(m_renderer);
+		
 	// move to the position, but offset the y coordinate by one, to compensate for it been drawn around 0, 0, 0 local space
-
 	IBrush *const brush = m_brush[m_currentBrush];
 
 	D3DXMATRIX xformmat, scalemat;
@@ -370,7 +215,7 @@ void CGizmo::Render(
 	m_renderer->EnableAlphaBlending(true);
 
 	// Render the triangle.
-	m_renderer->GetDeviceContext()->DrawIndexed(m_indexCount, 0, 0);
+	m_gizmoMesh->Draw(m_renderer);
 
 	m_renderer->EnableAlphaBlending(false);
 }

@@ -132,6 +132,9 @@
     <ClCompile Include="src\crendertexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\cmesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -209,14 +212,11 @@
     <ClInclude Include="src\crendertexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\cmesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\terrain_diffuse.ps">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\terrain_diffuse.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\gizmo.ps">
       <Filter>Shaders</Filter>
     </None>
@@ -228,6 +228,18 @@
     </None>
     <None Include="shaders\GUI\texture.vs">
       <Filter>Shaders\GUI</Filter>
+    </None>
+    <None Include="shaders\terrain_diffuse.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_diffuse.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_shadow.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\terrain_shadow.vs">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

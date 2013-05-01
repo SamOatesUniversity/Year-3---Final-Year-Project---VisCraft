@@ -107,6 +107,7 @@
     <ClCompile Include="src\CGui.cpp" />
     <ClCompile Include="src\cinput.cpp" />
     <ClCompile Include="src\clight.cpp" />
+    <ClCompile Include="src\cmesh.cpp" />
     <ClCompile Include="src\crenderer.cpp" />
     <ClCompile Include="src\crendertexture.cpp" />
     <ClCompile Include="src\cshader.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="src\CGui.h" />
     <ClInclude Include="src\cinput.h" />
     <ClInclude Include="src\clight.h" />
+    <ClInclude Include="src\cmesh.h" />
     <ClInclude Include="src\crenderer.h" />
     <ClInclude Include="src\crendertexture.h" />
     <ClInclude Include="src\cshader.h" />
@@ -155,6 +157,8 @@
     <None Include="shaders\GUI\texture.vs" />
     <None Include="shaders\terrain_diffuse.ps" />
     <None Include="shaders\terrain_diffuse.vs" />
+    <None Include="shaders\terrain_shadow.ps" />
+    <None Include="shaders\terrain_shadow.vs" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\Resource.rc" />
