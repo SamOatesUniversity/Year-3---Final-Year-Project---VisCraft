@@ -101,9 +101,6 @@ bool CMesh::LoadMesh(
 					}
 				}
 
-				//std::string posPart = part.substr(0, part.find('/'));
-				//std::string normPart = part.substr(part.rfind('/') + 1);
-
 				newFace.position[tokenIndex - 1] = static_cast<float>(::atof(posPart.c_str())) - 1;
 				newFace.normal[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
 				newFace.texcoord[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
@@ -124,10 +121,15 @@ bool CMesh::LoadMesh(
 	// Create the index array.
 	unsigned long *const indices = new unsigned long[m_indexCount];
 
-	int vertIndex = 0;
-	for (D3DXVECTOR3 vert : verts)
+	for (unsigned int vertIndex = 0; vertIndex < m_vertexCount; ++vertIndex)
 	{
-		vertices[vertIndex++].position = vert;
+		vertices[vertIndex].position = verts[vertIndex];
+		if (vertNorms.size() > vertIndex) {
+			vertices[vertIndex].normal = vertNorms[vertIndex];
+		}
+		if (vertTexCoords.size() > vertIndex) {
+			vertices[vertIndex].texcoord = vertTexCoords[vertIndex];
+		}
 	}
 
 	// Load the index array with data.
@@ -139,7 +141,6 @@ bool CMesh::LoadMesh(
 		indices[indIndex + 2]	= static_cast<unsigned int>(faces[faceIndex].position[2]); 
 		indIndex += 3;
 	}
-
 
 	// Set up the description of the static vertex buffer.
 	D3D11_BUFFER_DESC vertexBufferDesc;

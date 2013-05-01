@@ -457,14 +457,14 @@ const bool CVisCraft::RenderGraphics()
 	// Clear the scene.
 	m_renderer->BeginScene(0.0f, 0.0f, 0.0f);
 
-	m_skybox->Render(m_renderer);
-
 	// Get the world, view, projection matrices from the camera and Direct3D objects.
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	m_renderer->GetWorldMatrix(worldMatrix);
 	m_camera->GetViewMatrix(viewMatrix);
 	m_renderer->GetProjectionMatrix(projectionMatrix);
 	m_renderer->GetOrthoMatrix(orthoMatrix);
+
+	m_skybox->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
 
 	// Render the terrain buffers.
 	m_terrain->Update();
