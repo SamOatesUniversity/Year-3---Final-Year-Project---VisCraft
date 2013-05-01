@@ -9,6 +9,7 @@
 #include "ccamera.h"
 #include "brush/IBrush.h"
 #include "kinect/CKinect.h"
+#include "cmesh.h"
 
 #include <d3dx11async.h>
 #include <vector>
@@ -35,11 +36,6 @@ friend class CVisCraft;
 
 private:
 
-	struct Vertex
-	{
-		D3DXVECTOR3 position;
-	};
-
 	struct MatrixBuffer
 	{
 		D3DXMATRIX world;
@@ -61,11 +57,6 @@ private:
 
 	CRenderer				*m_renderer;						//!< Pointer to the renderer object
 
-	ID3D11Buffer			*m_vertexBuffer;					//!< 
-	ID3D11Buffer			*m_indexBuffer;						//!< 
-	int						m_vertexCount;						//!< 
-	int						m_indexCount;						//!< 
-
 	ID3D11VertexShader		*m_vertexShader;					//!< 
 	ID3D11PixelShader		*m_pixelShader;						//!< 
 	ID3D11InputLayout		*m_layout;							//!< 
@@ -81,9 +72,7 @@ private:
 
 	InputType::Enum			m_inputType;						//!< 
 
-private:
-
-	bool					LoadGizmoMesh();
+	CMesh					*m_gizmoMesh;						//!< 
 
 public:
 							//! Class constructor
