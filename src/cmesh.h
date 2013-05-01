@@ -11,16 +11,16 @@ public:
 	struct Vertex
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR3 normal;
 		D3DXVECTOR2 texcoord;
+		D3DXVECTOR3 normal;
 	};
 
 private:
 
 	ID3D11Buffer			*m_vertexBuffer;					//!< 
 	ID3D11Buffer			*m_indexBuffer;						//!< 
-	int						m_vertexCount;						//!< 
-	int						m_indexCount;						//!< 
+	unsigned int			m_vertexCount;						//!< 
+	unsigned int			m_indexCount;						//!< 
 
 public:
 										//!

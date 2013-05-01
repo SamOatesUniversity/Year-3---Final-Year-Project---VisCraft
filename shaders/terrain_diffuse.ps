@@ -22,23 +22,23 @@ struct PixelInputType
     float4 position : SV_POSITION;
 	float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL;
-	float4 lightViewPosition : TEXCOORD1;
-	float3 lightPos : TEXCOORD2;
+	float4 worldPosition : TEXCOORD1;
+	matrix lightViewProjection : TEXCOORD2;
 };
 
 float4 Shadow(PixelInputType input)
 {
-	float4 hpos_from_light = input.lightViewPosition;
+	float4 hpos_from_light = mul(input.worldPosition, input.lightViewProjection);
     float light_to_point_depth = hpos_from_light.z / hpos_from_light.w;
 
 	float xCoord = ((hpos_from_light.x / hpos_from_light.w) + 1.0f) * 0.5f;
-	float yCoord = ((hpos_from_light.y / hpos_from_light.w) + 1.0f) * 0.5f;
+	float yCoord = ((hpos_from_light.y / hpos_from_light.w) - 1.0f) * 0.5f;
 
     float2 shadow_texcoord = float2(xCoord, yCoord);
 
-	const float bias = 0.0004f;
+	const float bias = 0.00004f;
     float light_to_first_hit_depth = depthTexture.Sample(SampleType, shadow_texcoord).x;			
-	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.2f : 1.0f;
+	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.0f : 1.0f;
 	
 	return float4(shadowing, shadowing, shadowing, 1.0f);
 }
