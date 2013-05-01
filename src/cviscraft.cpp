@@ -110,6 +110,13 @@ const bool CVisCraft::Create()
 		return false;
 	}
 
+	m_skybox = new CSkyBox();
+	if (!m_skybox->Create(m_renderer))
+	{
+		VISASSERT(false, "Failed to create skybox");
+		return false;
+	}
+
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
 	SetForegroundWindow(m_hwnd);
@@ -448,7 +455,9 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 const bool CVisCraft::RenderGraphics()
 {
 	// Clear the scene.
-	m_renderer->BeginScene(0.0f, 0.4f, 0.8f);
+	m_renderer->BeginScene(0.0f, 0.0f, 0.0f);
+
+	m_skybox->Render(m_renderer);
 
 	// Get the world, view, projection matrices from the camera and Direct3D objects.
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;

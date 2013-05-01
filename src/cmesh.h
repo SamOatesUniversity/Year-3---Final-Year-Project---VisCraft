@@ -11,6 +11,8 @@ public:
 	struct Vertex
 	{
 		D3DXVECTOR3 position;
+		D3DXVECTOR3 normal;
+		D3DXVECTOR2 texcoord;
 	};
 
 private:

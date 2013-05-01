@@ -27,6 +27,8 @@ CGizmo::CGizmo()
 */
 CGizmo::~CGizmo()
 {
+	SafeDelete(m_gizmoMesh);
+
 	for (IBrush* brush : m_brush)
 	{
 		SafeDelete(brush);
