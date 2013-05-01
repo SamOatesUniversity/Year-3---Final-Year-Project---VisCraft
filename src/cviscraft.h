@@ -11,6 +11,7 @@
 #include "cinput.h"
 #include "cgizmo.h"
 #include "CGui.h"
+#include "cskybox.h"
 #include "../resource/resource.h"
 
 /**
@@ -45,6 +46,7 @@ private:
 	CCamera						*m_camera;										//!< The main camera, representing the view into 3d space
 	CTerrain					*m_terrain;										//!< The terrain object
 	CShader						*m_shader;										//!< The shader we want to render the scene with
+	CSkyBox						*m_skybox;										//!< 
 
 	CGizmo						*m_gizmo;										//!< The xform gizmo
 	CGui						*m_gui;											//!< The gui

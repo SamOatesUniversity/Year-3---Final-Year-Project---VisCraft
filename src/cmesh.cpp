@@ -26,9 +26,11 @@ bool CMesh::LoadMesh(
 	struct Face {
 		float position[3];
 		float normal[3];
+		float texcoord[3];
 	};
 	std::vector<Face> faces;
 	std::vector<D3DXVECTOR3> verts, vertNorms;
+	std::vector<D3DXVECTOR2> vertTexCoords;
 
 	std::string line;
 	while (std::getline(objFile, line))
@@ -58,6 +60,13 @@ bool CMesh::LoadMesh(
 			newVertNormal.z = static_cast<float>(::atof(tokens[3].c_str()));
 			vertNorms.push_back(newVertNormal);
 		}
+		else if (tokens[0] == "vt")
+		{
+			D3DXVECTOR2 newVertTexCoord;
+			newVertTexCoord.x = static_cast<float>(::atof(tokens[1].c_str()));
+			newVertTexCoord.y = static_cast<float>(::atof(tokens[2].c_str()));
+			vertTexCoords.push_back(newVertTexCoord);
+		}
 		else if (tokens[0] == "f")
 		{
 			Face newFace;
@@ -65,11 +74,39 @@ bool CMesh::LoadMesh(
 			for (int tokenIndex = 1; tokenIndex <= 3; ++tokenIndex)
 			{
 				std::string part = tokens[tokenIndex];
-				std::string posPart = part.substr(0, part.find('/'));
-				std::string normPart = part.substr(part.rfind('/') + 1);
+				std::string posPart, normPart, texcoordPart;
+
+				int strbreak = part.find('/');
+
+				if (strbreak == -1) 
+				{
+					posPart = part;
+					normPart = "";
+					texcoordPart = "";
+				}
+				else
+				{
+					posPart = part.substr(0, strbreak);
+					int strbreakr = part.rfind('/');
+
+					if (strbreakr == strbreak)
+					{
+						normPart = part.substr(strbreakr + 1);
+						texcoordPart = "";
+					}
+					else
+					{
+						normPart = part.substr(strbreak + 1, strbreakr - strbreak - 1);
+						texcoordPart = part.substr(strbreakr + 1);
+					}
+				}
+
+				//std::string posPart = part.substr(0, part.find('/'));
+				//std::string normPart = part.substr(part.rfind('/') + 1);
 
 				newFace.position[tokenIndex - 1] = static_cast<float>(::atof(posPart.c_str())) - 1;
 				newFace.normal[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
+				newFace.texcoord[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
 			}
 
 			faces.push_back(newFace);
