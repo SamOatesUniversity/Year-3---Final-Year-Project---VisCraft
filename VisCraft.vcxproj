@@ -43,8 +43,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>G:\Program Files %28x86%29\Visual Leak Detector\include;.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
-    <LibraryPath>G:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Assimp\include;G:\Program Files %28x86%29\Visual Leak Detector\include;.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Assimp\lib\x86;G:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SAM.lib;Msdmo.lib;dmoguids.lib;amstrmid.lib;avrt.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SAM.lib;Msdmo.lib;dmoguids.lib;amstrmid.lib;avrt.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

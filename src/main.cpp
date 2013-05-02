@@ -1,5 +1,6 @@
 
 #include "main.h"
+//#include <vld.h>
 
 /*!
  * \brief Main entry point of the application
