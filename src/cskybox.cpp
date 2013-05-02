@@ -3,6 +3,8 @@
 CSkyBox::CSkyBox()
 {
 	m_mesh = nullptr;
+	m_texture = nullptr;
+	m_sampleState = nullptr;
 }
 
 CSkyBox::~CSkyBox()
@@ -94,6 +96,37 @@ bool CSkyBox::Create(
 	if (FAILED(result))
 		return false;
 
+	// Load the terrain texture
+	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
+		renderer->GetDevice(),
+		"skybox/texture.dds",
+		NULL, NULL,
+		&m_texture,
+		NULL
+	)))
+		return false;
+	
+
+	// Create a texture sampler state description.
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Create the texture sampler state.
+	if (FAILED(renderer->GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState)))
+		return false;
+
 	return true;
 }
 
@@ -108,7 +141,7 @@ void CSkyBox::Render(
 
 	D3DXMATRIX xformmat, scalemat;
 	D3DXMatrixTranslation(&xformmat, 64, 0, 64); 
-	D3DXMatrixScaling(&scalemat, 4.0f, 4.0f, 4.0f);
+	D3DXMatrixScaling(&scalemat, 2.0f, 2.0f, 2.0f);
 
 	D3DXMatrixMultiply (&world, &scalemat, &xformmat);
 
@@ -141,6 +174,9 @@ void CSkyBox::Render(
 
 	// Finally set the constant buffer in the vertex shader with the updated values.
 	renderer->GetDeviceContext()->VSSetConstantBuffers(0, 1, &m_matrixBuffer);
+	
+	// Send the texture across
+	renderer->GetDeviceContext()->PSSetShaderResources(0, 1, &m_texture);
 
 	// Set the vertex input layout.
 	renderer->GetDeviceContext()->IASetInputLayout(m_layout);
@@ -148,6 +184,9 @@ void CSkyBox::Render(
 	// Set the vertex and pixel shaders that will be used to render this triangle.
 	renderer->GetDeviceContext()->VSSetShader(m_vertexShader, NULL, 0);
 	renderer->GetDeviceContext()->PSSetShader(m_pixelShader, NULL, 0);
+
+	// set the sampler state
+	renderer->GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
 	m_mesh->Draw(renderer);
 }
