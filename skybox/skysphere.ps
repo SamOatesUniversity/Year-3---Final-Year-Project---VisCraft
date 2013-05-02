@@ -4,7 +4,7 @@
 
 TextureCube skymapTexure : register(t0);
 
-SamplerState sampleType;
+SamplerState SampleType;
 
 //////////////
 // TYPEDEFS //
@@ -23,7 +23,5 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 float4 ColorPixelShader(PixelInputType input) : SV_TARGET
 {
-	float4 skymap = skymapTexure.Sample(sampleType, input.view);
-	//return skymap;
-	return float4(input.texcoord.x, input.texcoord.y, 0, 1);
+	return skymapTexure.Sample(SampleType, input.view);
 }
