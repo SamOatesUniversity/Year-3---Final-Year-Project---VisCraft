@@ -85,6 +85,14 @@ const bool CVisCraft::Create()
 		return false;
 	}
 
+	// Create the skybox
+	m_skybox = new CSkyBox();
+	if (!m_skybox->Create(m_renderer))
+	{
+		VISASSERT(false, "Failed to create skybox");
+		return false;
+	}
+
 	// Create the gui
 	m_gui = new CGui();
 	if (!m_gui->Create(m_renderer))
@@ -107,13 +115,6 @@ const bool CVisCraft::Create()
 	if (!m_input->Create(m_hinstance, m_hwnd, m_screenWidth, m_screenHeight))
 	{
 		VISASSERT(false, "Failed to create input class");
-		return false;
-	}
-
-	m_skybox = new CSkyBox();
-	if (!m_skybox->Create(m_renderer))
-	{
-		VISASSERT(false, "Failed to create skybox");
 		return false;
 	}
 
@@ -236,6 +237,7 @@ void CVisCraft::Release()
 	SafeReleaseDelete(m_shader);
 	SafeDelete(m_gizmo);
 	SafeDelete(m_kinect);
+	SafeDelete(m_skybox);
 	SafeReleaseDelete(m_gui);
 
 	// Remove the window.

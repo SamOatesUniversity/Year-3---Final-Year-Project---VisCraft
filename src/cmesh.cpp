@@ -20,100 +20,12 @@ bool CMesh::LoadMesh(
 		char *meshLocation
 	)
 {
-	std::ifstream objFile;
-	objFile.open(meshLocation, std::ios_base::in);
-
-	struct Face {
-		float position[3];
-		float normal[3];
-		float texcoord[3];
-	};
-	std::vector<Face> faces;
-	std::vector<D3DXVECTOR3> verts, vertNorms;
-	std::vector<D3DXVECTOR2> vertTexCoords;
-
-	std::string line;
-	while (std::getline(objFile, line))
-	{
-		std::vector<std::string> tokens;
-		std::istringstream iss(line);
-		std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter<std::vector<std::string> >(tokens));
-
-		if (tokens.empty())
-		{
-			continue;
-		}
-
-		if (tokens[0] == "v")
-		{
-			D3DXVECTOR3 newVert;
-			newVert.x = static_cast<float>(::atof(tokens[1].c_str()));
-			newVert.y = static_cast<float>(::atof(tokens[2].c_str()));
-			newVert.z = static_cast<float>(::atof(tokens[3].c_str()));
-			verts.push_back(newVert);
-		}
-		else if (tokens[0] == "vn")
-		{
-			D3DXVECTOR3 newVertNormal;
-			newVertNormal.x = static_cast<float>(::atof(tokens[1].c_str()));
-			newVertNormal.y = static_cast<float>(::atof(tokens[2].c_str()));
-			newVertNormal.z = static_cast<float>(::atof(tokens[3].c_str()));
-			vertNorms.push_back(newVertNormal);
-		}
-		else if (tokens[0] == "vt")
-		{
-			D3DXVECTOR2 newVertTexCoord;
-			newVertTexCoord.x = static_cast<float>(::atof(tokens[1].c_str()));
-			newVertTexCoord.y = static_cast<float>(::atof(tokens[2].c_str()));
-			vertTexCoords.push_back(newVertTexCoord);
-		}
-		else if (tokens[0] == "f")
-		{
-			Face newFace;
-
-			for (int tokenIndex = 1; tokenIndex <= 3; ++tokenIndex)
-			{
-				std::string part = tokens[tokenIndex];
-				std::string posPart, normPart, texcoordPart;
-
-				int strbreak = part.find('/');
-
-				if (strbreak == -1) 
-				{
-					posPart = part;
-					normPart = "";
-					texcoordPart = "";
-				}
-				else
-				{
-					posPart = part.substr(0, strbreak);
-					int strbreakr = part.rfind('/');
-
-					if (strbreakr == strbreak)
-					{
-						normPart = part.substr(strbreakr + 1);
-						texcoordPart = "";
-					}
-					else
-					{
-						normPart = part.substr(strbreak + 1, strbreakr - strbreak - 1);
-						texcoordPart = part.substr(strbreakr + 1);
-					}
-				}
-
-				newFace.position[tokenIndex - 1] = static_cast<float>(::atof(posPart.c_str())) - 1;
-				newFace.normal[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
-				newFace.texcoord[tokenIndex - 1] = static_cast<float>(::atof(normPart.c_str())) - 1;
-			}
-
-			faces.push_back(newFace);
-		}
-	}
-
-	objFile.close();
-
-	m_vertexCount = verts.size();
-	m_indexCount = faces.size() * 3;
+	Assimp::Importer Importer;
+	const aiScene* scene = Importer.ReadFile(meshLocation, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_GenUVCoords);
+	parseNode(scene, scene->mRootNode);
+	
+	m_vertexCount = m_vertex.size();
+	m_indexCount = m_index.size();
 
 	// Create the vertex array.
 	CMesh::Vertex *const vertices = new CMesh::Vertex[m_vertexCount];
@@ -121,25 +33,17 @@ bool CMesh::LoadMesh(
 	// Create the index array.
 	unsigned long *const indices = new unsigned long[m_indexCount];
 
+	// copy shit from vectors
 	for (unsigned int vertIndex = 0; vertIndex < m_vertexCount; ++vertIndex)
 	{
-		vertices[vertIndex].position = verts[vertIndex];
-		if (vertNorms.size() > vertIndex) {
-			vertices[vertIndex].normal = vertNorms[vertIndex];
-		}
-		if (vertTexCoords.size() > vertIndex) {
-			vertices[vertIndex].texcoord = vertTexCoords[vertIndex];
-		}
+		vertices[vertIndex].position = m_vertex[vertIndex].position;
+		vertices[vertIndex].normal = m_vertex[vertIndex].normal;
+		vertices[vertIndex].texcoord = m_vertex[vertIndex].texcoord;
 	}
 
-	// Load the index array with data.
-	int indIndex = 0;
-	for (unsigned int faceIndex = 0; faceIndex < faces.size(); ++faceIndex)
+	for (unsigned int faceIndex = 0; faceIndex < m_index.size(); ++faceIndex)
 	{
-		indices[indIndex]		= static_cast<unsigned int>(faces[faceIndex].position[0]);  
-		indices[indIndex + 1]	= static_cast<unsigned int>(faces[faceIndex].position[1]);  
-		indices[indIndex + 2]	= static_cast<unsigned int>(faces[faceIndex].position[2]); 
-		indIndex += 3;
+		indices[faceIndex] = m_index[faceIndex];
 	}
 
 	// Set up the description of the static vertex buffer.
@@ -193,6 +97,43 @@ bool CMesh::LoadMesh(
 	delete[] indices;
 
 	return true;
+}
+
+void CMesh::parseNode( 
+		const aiScene* scene, 
+		aiNode* node 
+	)
+{
+	// load all the nodes meshes
+	for (unsigned int meshIndex = 0; meshIndex < node->mNumMeshes; ++meshIndex)
+	{
+		const struct aiMesh *mesh = scene->mMeshes[node->mMeshes[meshIndex]];
+		for (unsigned int vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex)
+		{
+			CMesh::Vertex vert;
+			vert.position = D3DXVECTOR3(mesh->mVertices[vertexIndex].x, mesh->mVertices[vertexIndex].y, mesh->mVertices[vertexIndex].z);
+			vert.normal = D3DXVECTOR3(mesh->mNormals[vertexIndex].x, mesh->mNormals[vertexIndex].y, mesh->mNormals[vertexIndex].z);
+			if (mesh->mTextureCoords[0] != NULL) vert.texcoord = D3DXVECTOR2(mesh->mTextureCoords[0][vertexIndex].x, mesh->mTextureCoords[0][vertexIndex].y);
+			m_vertex.push_back(vert);
+		}
+
+		for (unsigned int faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex)
+		{
+			const struct aiFace* face = &mesh->mFaces[faceIndex];
+			
+			for (unsigned int faceIndex = 0; faceIndex < face->mNumIndices; ++faceIndex)
+			{
+				m_index.push_back(face->mIndices[faceIndex]);
+			}
+
+		}
+	}
+
+	// recurse through children
+	for (unsigned int childIndex = 0; childIndex < node->mNumChildren; ++childIndex)
+	{
+		parseNode(scene, node->mChildren[childIndex]);
+	}
 }
 
 void CMesh::PrepareRender(
