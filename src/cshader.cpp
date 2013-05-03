@@ -273,6 +273,7 @@ const bool CShader::Render(
 {
 	D3DXMATRIX lightView, lightProjection, lightViewProjection;
 	D3DXMatrixOrthoLH(&lightProjection, static_cast<float>(128 + 32), static_cast<float>(128 + 32), 10.0f, 256.0f);
+
 	D3DXMatrixLookAtLH(&lightView, &(m_light->GetDirection() * -64.0f), &D3DXVECTOR3(64, 0, 64), &D3DXVECTOR3(0, 1, 0));
 
 	D3DXMatrixMultiply(&lightViewProjection, &lightView, &lightProjection);
@@ -354,6 +355,7 @@ bool CShader::RenderLightPass(
 	D3DXMatrixTranspose(&world, &world);
 	D3DXMatrixTranspose(&view, &view);
 	D3DXMatrixTranspose(&projection, &projection);
+	D3DXMatrixTranspose(&lightViewProjection, &lightViewProjection);
 
 	// Lock the constant buffer so it can be written to.
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -363,7 +365,7 @@ bool CShader::RenderLightPass(
 	// Get a pointer to the data in the constant buffer.
 	MatrixBuffer *const dataPtr = static_cast<MatrixBuffer*>(mappedResource.pData);
 	
-	0// Copy the matrices into the constant buffer.
+	// Copy the matrices into the constant buffer.
 	dataPtr->world = world;
 	dataPtr->view = view;
 	dataPtr->projection = projection;
