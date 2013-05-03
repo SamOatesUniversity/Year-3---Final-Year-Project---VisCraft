@@ -21,6 +21,8 @@ CVisCraft::CVisCraft() :
 	m_gizmo = nullptr;
 	m_kinect = nullptr;
 	m_gui = nullptr;
+	m_water = nullptr;
+	m_skybox = nullptr;
 
 	m_running = false;
 }
@@ -78,6 +80,14 @@ const bool CVisCraft::Create()
 		return false;
 	}
 
+	m_water = new CWater();
+	if (!m_water->Create(m_renderer))
+	{
+		VISASSERT(false, "Failed to create water");
+		return false;
+	}
+
+	//
 	m_gizmo = new CGizmo();
 	if (!m_gizmo->Create(m_renderer))
 	{
@@ -238,6 +248,7 @@ void CVisCraft::Release()
 	SafeDelete(m_gizmo);
 	SafeDelete(m_kinect);
 	SafeDelete(m_skybox);
+	SafeDelete(m_water);
 	SafeReleaseDelete(m_gui);
 
 	// Remove the window.
@@ -479,6 +490,8 @@ const bool CVisCraft::RenderGraphics()
 	m_renderer->GetOrthoMatrix(orthoMatrix);
 
 	m_skybox->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
+
+	m_water->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
 
 	// Render the terrain buffers.
 	m_terrain->Update();

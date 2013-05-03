@@ -113,6 +113,7 @@
     <ClCompile Include="src\cshader.cpp" />
     <ClCompile Include="src\cskybox.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
+    <ClCompile Include="src\cwater.cpp" />
     <ClCompile Include="src\kinect\CAudioProcessor.cpp" />
     <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp" />
     <ClCompile Include="src\kinect\chand.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="src\cshader.h" />
     <ClInclude Include="src\cskybox.h" />
     <ClInclude Include="src\cterrain.h" />
+    <ClInclude Include="src\cwater.h" />
     <ClInclude Include="src\helper.h" />
     <ClInclude Include="src\kinect\CAudioProcessor.h" />
     <ClInclude Include="src\kinect\CDeformableTemplateModel.h" />
@@ -161,6 +163,8 @@
     <None Include="shaders\terrain_diffuse.vs" />
     <None Include="shaders\terrain_shadow.ps" />
     <None Include="shaders\terrain_shadow.vs" />
+    <None Include="shaders\water\water.ps" />
+    <None Include="shaders\water\water.vs" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\Resource.rc" />
