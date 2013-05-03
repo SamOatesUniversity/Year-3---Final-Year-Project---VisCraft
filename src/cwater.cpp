@@ -197,5 +197,9 @@ void CWater::Render(
 	// set the sampler state
 	//renderer->GetDeviceContext()->PSSetSamplers(0, 1, &m_sampleState);
 
+	renderer->EnableAlphaBlending(true);
+
 	m_mesh->Draw(renderer);
+
+	renderer->EnableAlphaBlending(false);
 }

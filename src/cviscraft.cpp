@@ -491,8 +491,6 @@ const bool CVisCraft::RenderGraphics()
 
 	m_skybox->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
 
-	m_water->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
-
 	// Render the terrain buffers.
 	m_terrain->Update();
 
@@ -501,6 +499,8 @@ const bool CVisCraft::RenderGraphics()
 		return false;
 
 	m_gizmo->Render(worldMatrix, viewMatrix, projectionMatrix, m_camera);
+
+	m_water->Render(m_renderer, worldMatrix, viewMatrix, projectionMatrix);
 
 	m_renderer->EnableZBuffer(false);
 	m_renderer->EnableAlphaBlending(true);

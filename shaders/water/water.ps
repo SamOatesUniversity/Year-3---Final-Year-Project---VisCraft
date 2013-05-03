@@ -14,7 +14,5 @@ struct PixelInputType
 ////////////////////////////////////////////////////////////////////////////////
 float4 WaterPixelShader(PixelInputType input) : SV_TARGET
 {
-	float depth = input.position.z / input.position.w;
-	float4 color = float4(depth, 0, 0, 1);	
-    return color;
+    return float4(0.06f, 0.56f, 0.6f, 0.01f);
 }
