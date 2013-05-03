@@ -8,7 +8,9 @@ CKinect::CKinect() :
 	m_hwnd(NULL),
 	m_kinectID(NULL),
 	m_nextDepthFrameEvent(NULL),
+	m_nextColorFrameEvent(NULL),
 	m_depthStreamHandle(NULL),
+	m_colorStreamHandle(NULL),
 	m_nuiProcess(NULL),
 	m_nuiProcessStop(NULL),
 	m_hSpeechEvent(NULL),
@@ -16,15 +18,19 @@ CKinect::CKinect() :
 {
 	m_nuiSensor = nullptr;
 	m_drawDepth = nullptr;
+	m_drawColor = nullptr;
 	m_D2DFactory = nullptr;
 	m_hand = nullptr;
 	m_audioCommandProcessor = nullptr;
 	m_pKinectAudioStream = nullptr;
+
+	m_lastScreenshot = 0;
 }
 
 CKinect::~CKinect()
 {
 	SafeDelete(m_drawDepth);
+	SafeDelete(m_drawColor);
 	SafeRelease(m_nuiSensor);
 	SafeReleaseDelete(m_hand);
 	SafeDelete(m_audioCommandProcessor);
@@ -80,7 +86,14 @@ const bool CKinect::Create(
 	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * 4))
 		return false;
 
-	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH | NUI_INITIALIZE_FLAG_USES_AUDIO);
+	m_drawColor = new ImageRenderer();
+	HRESULT hr = m_drawColor->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * sizeof(long));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH | NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_AUDIO);
 	if (FAILED(initResult))
 		return false;
 
@@ -89,7 +102,7 @@ const bool CKinect::Create(
 	const HRESULT depthStreeam = m_nuiSensor->NuiImageStreamOpen(
 		NUI_IMAGE_TYPE_DEPTH,
 		NUI_IMAGE_RESOLUTION_640x480,
-		0,
+		NUI_IMAGE_STREAM_FLAG_ENABLE_NEAR_MODE,
 		2,
 		m_nextDepthFrameEvent,
 		&m_depthStreamHandle
@@ -98,11 +111,25 @@ const bool CKinect::Create(
 	if (FAILED(depthStreeam))
 		return false;
 
+	m_nextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+
+	const HRESULT colorStreeam = m_nuiSensor->NuiImageStreamOpen(
+		NUI_IMAGE_TYPE_COLOR,
+		NUI_IMAGE_RESOLUTION_640x480,
+		0,
+		2,
+		m_nextColorFrameEvent,
+		&m_colorStreamHandle
+		);
+
+	if (FAILED(colorStreeam))
+		return false;
+
 	m_hand = new CHand();
 	m_hand->Create(640, 480);
 	
 	// Audio
-	HRESULT hr = InitializeAudioStream();
+	hr = InitializeAudioStream();
 	if (FAILED(hr))
 	{
 		return false;
@@ -293,8 +320,8 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 	while (m_isRunning)
 	{
 		// Wait for any of the events to be signaled
-		static const int numEvents = 3;
-		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent, m_hSpeechEvent };
+		static const int numEvents = 4;
+		HANDLE hEvents[numEvents] = { m_nuiProcessStop, m_nextDepthFrameEvent, m_nextColorFrameEvent, m_hSpeechEvent };
 
 		const int eventId = WaitForMultipleObjects( numEvents, hEvents, FALSE, 100 );
 
@@ -317,8 +344,13 @@ DWORD WINAPI CKinect::Nui_ProcessThread()
 			Nui_GotDepthAlert();
 			continue;
 
-		// Depth event
+		// Audio event
 		case WAIT_OBJECT_0 + 2:
+			Nui_GotColorAlert();
+			continue;
+
+		// Audio event
+		case WAIT_OBJECT_0 + 3:
 			ProcessSpeech();
 			continue;
 		}
@@ -371,7 +403,115 @@ void CKinect::ProcessSpeech()
 	return;
 }
 
-void CKinect::Nui_GotDepthAlert( )
+HRESULT SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, char *lpszFilePath)
+{
+	DWORD dwByteCount = lWidth * lHeight * (wBitsPerPixel / 8);
+
+	BITMAPINFOHEADER bmpInfoHeader = {0};
+
+	bmpInfoHeader.biSize        = sizeof(BITMAPINFOHEADER);  // Size of the header
+	bmpInfoHeader.biBitCount    = wBitsPerPixel;             // Bit count
+	bmpInfoHeader.biCompression = BI_RGB;                    // Standard RGB, no compression
+	bmpInfoHeader.biWidth       = lWidth;                    // Width in pixels
+	bmpInfoHeader.biHeight      = -lHeight;                  // Height in pixels, negative indicates it's stored right-side-up
+	bmpInfoHeader.biPlanes      = 1;                         // Default
+	bmpInfoHeader.biSizeImage   = dwByteCount;               // Image size in bytes
+
+	BITMAPFILEHEADER bfh = {0};
+
+	bfh.bfType    = 0x4D42;                                           // 'M''B', indicates bitmap
+	bfh.bfOffBits = bmpInfoHeader.biSize + sizeof(BITMAPFILEHEADER);  // Offset to the start of pixel data
+	bfh.bfSize    = bfh.bfOffBits + bmpInfoHeader.biSizeImage;        // Size of image + headers
+
+	// Create the file on disk to write to
+	HANDLE hFile = CreateFile(lpszFilePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	// Return if error opening file
+	if (NULL == hFile) 
+	{
+		return E_ACCESSDENIED;
+	}
+
+	DWORD dwBytesWritten = 0;
+
+	// Write the bitmap file header
+	if (!WriteFile(hFile, &bfh, sizeof(bfh), &dwBytesWritten, NULL) )
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}
+
+	// Write the bitmap info header
+	if (!WriteFile(hFile, &bmpInfoHeader, sizeof(bmpInfoHeader), &dwBytesWritten, NULL) )
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}
+
+	// Write the RGB Data
+	if (!WriteFile(hFile, pBitmapBits, bmpInfoHeader.biSizeImage, &dwBytesWritten, NULL) )
+	{
+		CloseHandle(hFile);
+		return E_FAIL;
+	}    
+
+	// Close the file
+	CloseHandle(hFile);
+	return S_OK;
+}
+
+void CKinect::Nui_GotColorAlert()
+{
+	HRESULT hr;
+	NUI_IMAGE_FRAME imageFrame;
+
+	// Attempt to get the color frame
+	hr = m_nuiSensor->NuiImageStreamGetNextFrame(m_colorStreamHandle, 0, &imageFrame);
+	if (FAILED(hr))
+	{
+		return;
+	}
+
+	INuiFrameTexture * pTexture = imageFrame.pFrameTexture;
+	NUI_LOCKED_RECT LockedRect;
+
+	// Lock the frame data so the Kinect knows not to modify it while we're reading it
+	pTexture->LockRect(0, &LockedRect, NULL, 0);
+
+	// Make sure we've received valid data
+	if (LockedRect.Pitch != 0)
+	{
+		// Draw the data with Direct2D
+		//m_drawColor->Draw(static_cast<BYTE *>(LockedRect.pBits), LockedRect.size);
+
+		// Every 60 seconds save a picture
+		if (static_cast<float>((clock() - m_lastScreenshot)/CLOCKS_PER_SEC) > 20.0f)
+		{
+			time_t t = time(0);   // get time now
+			struct tm now;
+			localtime_s(&now, &t);
+
+			std::stringstream date;
+			date << now.tm_mday << '-' << (now.tm_mon + 1) << '-' << (now.tm_year + 1900) << " " << now.tm_hour << "-" << now.tm_min << "-" << now.tm_sec;
+
+			std::stringstream buf;
+			buf << "./kinect_images/" << date.str() << ".bmp";
+
+			// Write out the bitmap to disk
+			hr = SaveBitmapToFile(static_cast<BYTE *>(LockedRect.pBits), 640, 480, 32, const_cast<char*>(buf.str().c_str()));
+
+			m_lastScreenshot = clock();
+		}
+	}
+
+	// We're done with the texture so unlock it
+	pTexture->UnlockRect(0);
+
+	// Release the frame
+	m_nuiSensor->NuiImageStreamReleaseFrame(m_colorStreamHandle, &imageFrame);
+}
+
+void CKinect::Nui_GotDepthAlert()
 {
 	NUI_IMAGE_FRAME imageFrame;
 

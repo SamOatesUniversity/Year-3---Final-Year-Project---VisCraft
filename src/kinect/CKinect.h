@@ -11,6 +11,8 @@
 #include <sphelper.h>
 
 #include "DrawDevice.h"
+#include "ImageRenderer.h"
+
 #include "KinectAudioStream.h"
 #include "CAudioProcessor.h"
 #include "chand.h"
@@ -30,6 +32,7 @@ private:
 	HWND										m_hwnd;									//!< 
 	ID2D1Factory								*m_D2DFactory;							//!< 
 	DrawDevice									*m_drawDepth;							//!< 
+	ImageRenderer								*m_drawColor;							//!< 
 
 	INuiSensor									*m_nuiSensor;							//!< 
 	BSTR										m_kinectID;								//!< 
@@ -39,8 +42,10 @@ private:
 	HANDLE										m_nuiProcessStop;						//!< 
 	HANDLE										m_nextDepthFrameEvent;					//!< 
 	HANDLE										m_hSpeechEvent;							//!< 
+	HANDLE										m_nextColorFrameEvent;					//!< 
 
 	HANDLE										m_depthStreamHandle;					//!< 
+	HANDLE										m_colorStreamHandle;					//!< 
 
 	RGBQUAD										m_rgbWk[640*480];						//!< 
 
@@ -54,6 +59,8 @@ private:
 	CAudioProcessor								*m_audioCommandProcessor;				//!< Process audio scemantics
 
 	bool										m_isRunning;							//!< The running state of the processing thread
+
+	clock_t										m_lastScreenshot;						//!< 
 
 private:
 
@@ -83,6 +90,9 @@ public:
 
 												//! 
 	void										Nui_GotDepthAlert();
+
+												//! 
+	void										Nui_GotColorAlert();
 
 												//!
 	RGBQUAD										Nui_ShortToQuad_Depth( 
