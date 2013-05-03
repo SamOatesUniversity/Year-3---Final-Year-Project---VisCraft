@@ -169,7 +169,7 @@ const bool CShader::Create(
 
 	// Create a texture sampler state description.
 	D3D11_SAMPLER_DESC samplerDesc;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -247,7 +247,7 @@ const bool CShader::Create(
 	///////////////////////////////////////
 
 	m_shadowbuffer = new CRenderTexture();
-	m_shadowbuffer->Initialize(renderer->GetDevice(), 1024, 1024);
+	m_shadowbuffer->Initialize(renderer->GetDevice(), 2048, 2048);
 
 	return true;
 }
@@ -386,7 +386,7 @@ bool CShader::RenderLightPass(
 
 	// Get a pointer to the data in the constant buffer.
 	LightBuffer *const lightDataPtr = static_cast<LightBuffer*>(mappedResource.pData);
-	
+
 	// Copy the lighting variables into the constant buffer.
 	lightDataPtr->ambientColor = m_light->GetAmbiant();
 	lightDataPtr->diffuseColor = m_light->GetDiffuse();

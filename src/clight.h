@@ -35,4 +35,8 @@ public:
 												return m_direction;
 											}
 
+											//! 
+	void									SetDirection(
+												D3DXVECTOR3 &direction
+											);
 };
