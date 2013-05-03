@@ -31,17 +31,14 @@ float4 Shadow(PixelInputType input)
 	float4 hpos_from_light = mul(input.worldPosition, input.lightViewProjection);
     float light_to_point_depth = hpos_from_light.z / hpos_from_light.w;
 
-	float xCoord = ((hpos_from_light.x / hpos_from_light.w) + 0.5f) * 0.5f;
-	float yCoord = ((hpos_from_light.y / hpos_from_light.w) - 0.5f) * 0.5f;
+	float xCoord = ((hpos_from_light.x / hpos_from_light.w) + 1.0f) * 0.5f;
+	float yCoord = ((-hpos_from_light.y / hpos_from_light.w) + 1.0f) * 0.5f;
 
     float2 shadow_texcoord = float2(xCoord, yCoord);
 
-	const float bias = 0.00004f;
-    float light_to_first_hit_depth = depthTexture.Sample(SampleType, shadow_texcoord).r;			
-	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.0f : 1.0f;
-
-	//if(light_to_first_hit_depth < 0.5)
-	//	shadowing = 1.0f;
+	const float bias = 0.0004f;
+    float light_to_first_hit_depth = depthTexture.Sample(SampleType, shadow_texcoord).x;			
+	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.5f : 1.0f;
 	
 	return float4(shadowing, shadowing, shadowing, 1.0f);
 }
@@ -97,5 +94,5 @@ float4 TerrainPixelShader(PixelInputType input) : SV_TARGET
 
 	color = color * textureColor;
 
-    return Shadow(input);//color * 
+    return color * Shadow(input);
 }
