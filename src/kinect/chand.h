@@ -4,6 +4,7 @@
 #include <NuiApi.h>
 #include <SAM.h>
 #include <d3dx9.h>
+#include <time.h>
 
 #include "../helper.h"
 #include "CDeformableTemplateModel.h"
@@ -26,6 +27,8 @@ private:
 
 	D3DXVECTOR2										m_palm;											//!<
 	D3DXVECTOR2										m_lastPosition;									//!< 
+	D3DXVECTOR2										m_oldPosition;									//!< 
+	D3DXVECTOR2										m_center;
 
 	SAM::TVector<unsigned int, 4>					m_handArea;										//!< 
 	HandState::Enum									m_handState;
@@ -33,6 +36,8 @@ private:
 	CDeformableTemplateModel						*m_handStateDTM[HandState::Noof];				//!< 	
 
 	RGBQUAD											*m_edgeTempBuffer;								//!< 
+
+	clock_t											m_startClose;									//!< 
 
 
 private:
@@ -51,6 +56,18 @@ private:
 													//! Detect the edges of the hands and display them in white
 	void											DetectHandEdges(
 														RGBQUAD *depthData
+													);
+
+													//! 
+	void											DrawBox(
+														RGBQUAD *depthData, 
+														unsigned int x1, 
+														unsigned int y1, 
+														unsigned int x2, 
+														unsigned int y2, 
+														unsigned int r, 
+														unsigned int g, 
+														unsigned int b
 													);
 
 public:
@@ -79,4 +96,10 @@ public:
 
 													//! Get the current hand state
 	HandState::Enum									GetHandState() const;
+
+
+	void											ResetHandPosition()
+													{
+														m_lastPosition = m_oldPosition;
+													}
 };
