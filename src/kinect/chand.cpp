@@ -7,6 +7,8 @@ CHand::CHand() : m_edgeTempBuffer(nullptr)
 	m_frameWidth = 0;
 	m_frameHeight = 0;
 	m_handState = HandState::NotFound;
+	m_startClose = 0;
+	m_center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
 }
 
 CHand::~CHand()
@@ -111,12 +113,32 @@ bool CHand::SampleToHandArea(
 	bottom = top + static_cast<int>((right - left) * 1.3f);
 
 	// Make sure we have valid extremities
-	if (left >= right) return false;
-	if (top >= bottom) return false;
-	if (bottom > m_frameHeight) return false;
-	if (top < 0) return false;
-	if (right > m_frameWidth) return false;
-	if (left < 0) return false;
+	bool valid = true;
+	if (left >= right) valid = false;
+	if (top >= bottom) valid = false;
+	if (bottom > m_frameHeight) valid = false;
+	if (top < 0) valid = false;
+	if (right > m_frameWidth) valid = false;
+	if (left < 0) valid = false;
+
+	if (!valid)
+	{
+		m_handState = HandState::NotFound;
+		return false;
+	}
+
+	const int widthOfHand = right - left;
+	const int heightOfHand = bottom - top;
+
+	// if the sample are is massive, its probably not a hand... or its a giant.
+	if (widthOfHand > 100) valid = false;
+	if (widthOfHand < 20) valid = false;
+
+	if (!valid)
+	{
+		m_handState = HandState::NotFound;
+		return false;
+	}
 
 	// Update our stored sample location
 	m_handArea.Set(0, 0, 0, 0);
@@ -124,17 +146,71 @@ bool CHand::SampleToHandArea(
 	m_handArea[HandAreaSamplePoint::Right] = right;
 	m_handArea[HandAreaSamplePoint::Top] = top;
 	m_handArea[HandAreaSamplePoint::Bottom] = bottom;
-
-	int widthOfHand = right - left;
-	int heightOfHand = bottom - top;
+	
 	float xPos = left + (widthOfHand * 0.5f);
 	float yPos = top + (heightOfHand * 0.5f);
 
+	HandState::Enum oldState = m_handState;
 	m_handState = widthOfHand > 70 ? HandState::OpenHand : HandState::ClosedFist;
 
+	if (oldState != HandState::ClosedFist && m_handState == HandState::ClosedFist)
+	{
+		if (m_startClose == 0) 
+		{
+			m_startClose = clock();
+			m_handState = HandState::OpenHand;
+		}
+		else if (static_cast<float>((clock() - m_startClose)/CLOCKS_PER_SEC) > 0.1f)
+		{
+			m_startClose = 0;
+		}
+		else
+		{
+			m_handState = HandState::OpenHand;
+		}
+	}
+	else if (m_handState == HandState::OpenHand)
+	{
+		m_startClose = 0;
+	}
+
 	m_palm = D3DXVECTOR2(xPos, yPos);
+
+	if (oldState == HandState::NotFound)
+	{
+		m_center = m_palm;
+	}
 		
 	return true;
+}
+
+void CHand::DrawBox(
+		RGBQUAD *depthData, 
+		unsigned int x1, 
+		unsigned int y1, 
+		unsigned int x2, 
+		unsigned int y2, 
+		unsigned int r, 
+		unsigned int g, 
+		unsigned int b
+	)
+{
+	for (unsigned int yPos = y1; yPos < y2; ++yPos)
+	{
+		if (yPos >= m_frameHeight) continue;
+		if (yPos <= 0) continue;
+
+		for (unsigned int xPos = x1; xPos < x2; ++xPos)
+		{
+			if (xPos >= m_frameWidth) continue;
+			if (xPos <= 0) continue;
+			
+			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
+			depthData[pixel].rgbRed = r;
+			depthData[pixel].rgbGreen = g;
+			depthData[pixel].rgbBlue = b;
+		}
+	}
 }
 
 void CHand::DrawHandAreaBounds(
@@ -148,85 +224,21 @@ void CHand::DrawHandAreaBounds(
 	const unsigned int top = m_handArea[HandAreaSamplePoint::Top];
 	const unsigned int bottom = m_handArea[HandAreaSamplePoint::Bottom];
 
-	for (unsigned int yPos = top; yPos < bottom; ++yPos)
-	{
-		if (yPos >= m_frameHeight) continue;
-		if (yPos <= 0) continue;
+	DrawBox(depthData, left - thickness, top, left + thickness, bottom, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
+	DrawBox(depthData, right - thickness, top, right + thickness, bottom, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
+	DrawBox(depthData, left, top - thickness, right, top + thickness, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
+	DrawBox(depthData, left, bottom - thickness, right, bottom + thickness, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
 
-		for (unsigned int xPos = left - thickness; xPos < left + thickness; ++xPos)
-		{
-			if (xPos >= m_frameWidth) continue;
-			if (xPos <= 0) continue;
-			
-			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			
-			if (m_handState == HandState::OpenHand) {
-				depthData[pixel].rgbGreen = 255;
-			} else {
-				depthData[pixel].rgbBlue = 255;
-			}
-		}
-	}
 
-	for (unsigned int yPos = top; yPos < bottom; ++yPos)
-	{
-		if (yPos >= m_frameHeight) continue;
-		if (yPos <= 0) continue;
-
-		for (unsigned int xPos = right - thickness; xPos < right + thickness; ++xPos)
-		{
-			if (xPos >= m_frameWidth) continue;
-			if (xPos <= 0) continue;
-
-			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			
-			if (m_handState == HandState::OpenHand) {
-				depthData[pixel].rgbGreen = 255;
-			} else {
-				depthData[pixel].rgbBlue = 255;
-			}
-		}
-	}
-
-	for (unsigned int xPos = left; xPos < right; ++xPos)
-	{
-		if (xPos >= m_frameWidth) continue;
-		if (xPos <= 0) continue;
-
-		for (unsigned int yPos = top - thickness; yPos < top + thickness; ++yPos)
-		{
-			if (yPos >= m_frameHeight) continue;
-			if (yPos <= 0) continue;
-
-			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-			
-			if (m_handState == HandState::OpenHand) {
-				depthData[pixel].rgbGreen = 255;
-			} else {
-				depthData[pixel].rgbBlue = 255;
-			}
-		}
-	}
-
-	for (unsigned int xPos = left; xPos < right; ++xPos)
-	{
-		if (xPos >= m_frameWidth) continue;
-		if (xPos <= 0) continue;
-
-		for (unsigned int yPos = bottom - thickness; yPos < bottom + thickness; ++yPos)
-		{
-			if (yPos >= m_frameHeight) continue;
-			if (yPos <= 0) continue;
-
-			const unsigned int pixel = (yPos * m_frameWidth) + xPos;
-
-			if (m_handState == HandState::OpenHand) {
-				depthData[pixel].rgbGreen = 255;
-			} else {
-				depthData[pixel].rgbBlue = 255;
-			}
-		}
-	}
+	DrawBox(depthData, right - thickness, top, right + thickness, bottom, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
+	DrawBox(
+		depthData, 
+		static_cast<unsigned int>(m_center.x - 8), 
+		static_cast<unsigned int>(m_center.y - 8), 
+		static_cast<unsigned int>(m_center.x + 8), 
+		static_cast<unsigned int>(m_center.y + 8), 
+		255, 255, 0
+	);
 }
 
 void CHand::DetectHandEdges( 
@@ -311,17 +323,21 @@ const D3DXVECTOR2 CHand::GetHandPosition()
 {
 	if (m_handState != HandState::NotFound)
 	{
-		static const D3DXVECTOR2 center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.7f);
-		D3DXVECTOR2 differnce = (center - m_palm);
+		D3DXVECTOR2 differnce = (m_center - m_palm);
 		differnce.x = differnce.x * 0.025f;
 		differnce.y = differnce.y * 0.025f;
 
 		const float sqrLen = (differnce.x*differnce.x + differnce.y*differnce.y);
 		if (sqrLen > 1.0f) {
 			differnce.y = differnce.y * 0.5f;
+			m_oldPosition = m_lastPosition;
 			m_lastPosition = m_lastPosition - differnce;
 		}
 	}
+
+	//std::stringstream buf;
+	//buf << m_lastPosition.x << ", " << m_lastPosition.y << "\n";
+	//OutputDebugString(buf.str().c_str());
 
 	return m_lastPosition;
 }

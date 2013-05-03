@@ -420,6 +420,7 @@ void CGizmo::Control(
 				if (campos.z > terrain->GetSize().y - (campos.y * 3)) campos.z = oldpos.z;
 
 				camera->SetPosition(campos.x, campos.y, campos.z);
+				kinect->ResetHandPosition();
 			}
 
 			D3D11_VIEWPORT viewport = m_renderer->GetViewPort();

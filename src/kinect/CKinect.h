@@ -109,4 +109,10 @@ public:
 
 												//! Get the current hand state
 	HandState::Enum								GetHandState() const;
+
+												//!
+	void										ResetHandPosition()
+												{
+													m_hand->ResetHandPosition();
+												}
 };
