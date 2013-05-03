@@ -334,6 +334,18 @@ bool CVisCraft::Update()
 		brush->SetSize(brush->GetSize() - 1);
 	}	
 
+	if (m_input->IsKeyPressed(DIK_RIGHTARROW) == true)
+	{
+		CLight *sunLight = m_shader->GetLight();
+		sunLight->SetDirection(sunLight->GetDirection() + D3DXVECTOR3(0.01f, 0, 0));
+	}	
+
+	if (m_input->IsKeyPressed(DIK_LEFTARROW) == true)
+	{
+		CLight *sunLight = m_shader->GetLight();
+		sunLight->SetDirection(sunLight->GetDirection() + D3DXVECTOR3(-0.01f, 0, 0));
+	}	
+
 	if (m_input->IsKeyPressed(DIK_TAB) == true)
 	{
 		while (m_input->IsKeyPressed(DIK_TAB)) m_input->Update();

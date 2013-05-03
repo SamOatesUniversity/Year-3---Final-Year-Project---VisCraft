@@ -36,11 +36,23 @@ float4 Shadow(PixelInputType input)
 
     float2 shadow_texcoord = float2(xCoord, yCoord);
 
-	const float bias = 0.0004f;
-    float light_to_first_hit_depth = depthTexture.Sample(SampleType, shadow_texcoord).x;			
-	float shadowing = (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.5f : 1.0f;
-	
-	return float4(shadowing, shadowing, shadowing, 1.0f);
+	const float bias = 0.004f;
+	const int size = 10;
+	float shadowing = 0.0f;
+	float count = 0.0f;
+
+	for (int xOffset = -size; xOffset <= size; ++xOffset)
+	{
+		for (int yOffset = -size; yOffset <= size; ++yOffset)
+		{
+			float2 sampleCoord = shadow_texcoord + float2(xOffset / 2048, yOffset / 2048);
+			float light_to_first_hit_depth = depthTexture.Sample(SampleType, sampleCoord).x;			
+			shadowing += (light_to_first_hit_depth + bias) < light_to_point_depth ? 0.5f : 1.0f;
+			count++;
+		}
+	}
+	  
+	return float4(shadowing / count, shadowing / count, shadowing / count, 1.0f);
 }
 
 float4 TerrainPixelShader(PixelInputType input) : SV_TARGET

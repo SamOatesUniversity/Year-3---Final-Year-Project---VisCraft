@@ -97,4 +97,10 @@ public:
 										D3DXMATRIX view,		//!< 
 										D3DXMATRIX projection	//!< 
 									);
+
+									//! Get the sun light object
+	CLight							*GetLight() const
+									{
+										return m_light;
+									}
 };
