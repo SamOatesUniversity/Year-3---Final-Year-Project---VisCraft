@@ -233,10 +233,10 @@ void CHand::DrawHandAreaBounds(
 	DrawBox(depthData, right - thickness, top, right + thickness, bottom, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
 	DrawBox(
 		depthData, 
-		static_cast<unsigned int>(m_center.x - 8), 
-		static_cast<unsigned int>(m_center.y - 8), 
-		static_cast<unsigned int>(m_center.x + 8), 
-		static_cast<unsigned int>(m_center.y + 8), 
+		static_cast<unsigned int>(m_center.x - 12), 
+		static_cast<unsigned int>(m_center.y - 12), 
+		static_cast<unsigned int>(m_center.x + 12), 
+		static_cast<unsigned int>(m_center.y + 12), 
 		255, 255, 0
 	);
 }
