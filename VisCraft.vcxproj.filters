@@ -144,6 +144,9 @@
     <ClCompile Include="src\cwater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\kinect\ImageRenderer.cpp">
+      <Filter>Source Files\kinect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -229,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="src\cwater.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\ImageRenderer.h">
+      <Filter>Header Files\kinect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

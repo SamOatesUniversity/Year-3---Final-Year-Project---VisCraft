@@ -120,6 +120,7 @@
     <ClCompile Include="src\kinect\CKinect.cpp" />
     <ClCompile Include="src\kinect\DrawDevice.cpp" />
     <ClCompile Include="src\kinect\gestures\CGestureHandClosed.cpp" />
+    <ClCompile Include="src\kinect\ImageRenderer.cpp" />
     <ClCompile Include="src\kinect\KinectAudioStream.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\cviscraft.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\kinect\CKinect.h" />
     <ClInclude Include="src\kinect\DrawDevice.h" />
     <ClInclude Include="src\kinect\gestures\CGestureHandClosed.h" />
+    <ClInclude Include="src\kinect\ImageRenderer.h" />
     <ClInclude Include="src\kinect\KinectAudioStream.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\cviscraft.h" />
