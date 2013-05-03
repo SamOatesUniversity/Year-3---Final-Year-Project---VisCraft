@@ -12,6 +12,7 @@
 #include "cgizmo.h"
 #include "CGui.h"
 #include "cskybox.h"
+#include "cwater.h"
 #include "../resource/resource.h"
 
 /**
@@ -47,6 +48,7 @@ private:
 	CTerrain					*m_terrain;										//!< The terrain object
 	CShader						*m_shader;										//!< The shader we want to render the scene with
 	CSkyBox						*m_skybox;										//!< 
+	CWater						*m_water;										//!< 
 
 	CGizmo						*m_gizmo;										//!< The xform gizmo
 	CGui						*m_gui;											//!< The gui
