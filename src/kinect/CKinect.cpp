@@ -416,11 +416,7 @@ HBITMAP FlipBitmapVertically(HBITMAP hBitmap, HWND hwnd)
 	HGDIOBJ oldSource = ::SelectObject(sourceDC, hBitmap);
 	HGDIOBJ destSource = ::SelectObject(destDC, flippedBitmap);
 
-	if (::BitBlt(destDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, sourceDC, 0, 0, SRCCOPY) == 0)
-	{
-		int i = 1;
-		i = 0;
-	}
+	::BitBlt(destDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, sourceDC, 0, 0, SRCCOPY);
 
 	// release resources here
 	::SelectObject(sourceDC, oldSource);

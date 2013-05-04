@@ -151,7 +151,7 @@ void CGizmo::Render(
 	IBrush *const brush = m_brush[m_currentBrush];
 
 	D3DXMATRIX xformmat, scalemat;
-	D3DXMatrixTranslation(&xformmat, m_position.x, m_position.y + 2.0f, m_position.z); 
+	D3DXMatrixTranslation(&xformmat, m_position.x, m_position.y < 2.0f ? 2.0f : m_position.y + 2.0f, m_position.z); 
 	D3DXMatrixScaling(&scalemat, static_cast<float>(brush->GetSize()) * 0.4f, 1.0f, static_cast<float>(brush->GetSize()) * 0.4f);
 	
 	D3DXMatrixMultiply (&worldMatrix, &scalemat, &xformmat);

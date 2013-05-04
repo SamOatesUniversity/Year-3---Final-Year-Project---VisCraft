@@ -176,9 +176,14 @@ bool CHand::SampleToHandArea(
 
 	m_palm = D3DXVECTOR2(xPos, yPos);
 
-	if (oldState == HandState::NotFound)
+	if (oldState == HandState::NotFound || m_handState == HandState::ClosedFist)
 	{
 		m_center = m_palm;
+	}
+
+	if (m_handState != HandState::NotFound)
+	{
+		CVisCraft::GetInstance()->GetGizmo()->SetInputType(InputType::Kinect);
 	}
 		
 	return true;
@@ -229,14 +234,12 @@ void CHand::DrawHandAreaBounds(
 	DrawBox(depthData, left, top - thickness, right, top + thickness, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
 	DrawBox(depthData, left, bottom - thickness, right, bottom + thickness, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
 
-
-	DrawBox(depthData, right - thickness, top, right + thickness, bottom, 0, m_handState == HandState::OpenHand ? 255 : 0, m_handState == HandState::OpenHand ? 0 : 255);
 	DrawBox(
 		depthData, 
-		static_cast<unsigned int>(m_center.x - 12), 
-		static_cast<unsigned int>(m_center.y - 12), 
-		static_cast<unsigned int>(m_center.x + 12), 
-		static_cast<unsigned int>(m_center.y + 12), 
+		static_cast<unsigned int>(m_center.x - 6), 
+		static_cast<unsigned int>(m_center.y - 6), 
+		static_cast<unsigned int>(m_center.x + 6), 
+		static_cast<unsigned int>(m_center.y + 6), 
 		255, 255, 0
 	);
 }
@@ -321,7 +324,7 @@ void CHand::Release()
 
 const D3DXVECTOR2 CHand::GetHandPosition()
 {
-	if (m_handState != HandState::NotFound)
+	if (m_handState == HandState::OpenHand)
 	{
 		D3DXVECTOR2 differnce = (m_center - m_palm);
 		differnce.x = differnce.x * 0.025f;
