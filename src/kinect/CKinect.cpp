@@ -503,6 +503,8 @@ void CKinect::Nui_GotColorAlert()
 	// Make sure we've received valid data
 	if (LockedRect.Pitch != 0)
 	{
+		//m_hand->DrawHandAreaBounds(static_cast<BYTE *>(LockedRect.pBits));
+
 		// Draw the data with Direct2D
 		//m_drawColor->Draw(static_cast<BYTE *>(LockedRect.pBits), LockedRect.size);
 
@@ -532,10 +534,8 @@ void CKinect::Nui_GotColorAlert()
 					for (std::string imageLocation : m_screenshots)
 					{
 						HBITMAP hbm = (HBITMAP)LoadImage(NULL, imageLocation.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-						//HBITMAP flipped = FlipBitmapVertically(hbm, m_hwndDepth);
 						AddAviFrame(avi, hbm);
 						DeleteObject(hbm);
-						//DeleteObject(flipped);
 					}
 
 					CloseAvi(avi);
@@ -590,6 +590,7 @@ void CKinect::Nui_GotDepthAlert()
 		}
 	
 		m_hand->FindFromDepth(m_rgbWk);		
+		m_hand->DrawHandAreaBounds(m_rgbWk);
 
 		m_drawDepth->Draw( (BYTE*) m_rgbWk, frameWidth * frameHeight * 4 );
 	}
