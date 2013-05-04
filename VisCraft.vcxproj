@@ -43,8 +43,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\build\$(Configuration)\</OutDir>
     <IntDir>objects\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files\Assimp\include;G:\Program Files %28x86%29\Visual Leak Detector\include;.\SAM;$(DXSDK_DIR)Include;C:\Program Files\Microsoft SDKs\Kinect\v1.0\inc;C:\Program Files\Microsoft SDKs\Kinect\v1.6\inc;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Assimp\lib\x86;G:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);C:\Program Files\Microsoft SDKs\Kinect\v1.0\lib\x86;C:\Program Files\Microsoft SDKs\Kinect\v1.6\lib\x86;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\assimp;.\SAM;$(DXSDK_DIR)Include;$(KINECTSDK10_DIR)inc;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Include;$(ProgramFiles)\Visual Leak Detector\include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\assimp\lib\x86;.\SAM;$(DXSDK_DIR)Lib\$(PlatformShortName);$(KINECTSDK10_DIR)lib\x86;$(ProgramFiles)\Microsoft SDKs\Speech\v11.0\Lib;$(ProgramFiles)\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
