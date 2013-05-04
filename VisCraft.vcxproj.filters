@@ -52,6 +52,12 @@
     <Filter Include="Shaders\Water">
       <UniqueIdentifier>{74a22ae7-ab7a-4a82-8601-e41812fd83ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\kinect\avi">
+      <UniqueIdentifier>{841d967d-bc4e-4547-be48-f50e801381b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\avi">
+      <UniqueIdentifier>{928587ea-bcef-4eb5-b8e7-d51bc0d7f2ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -147,6 +153,9 @@
     <ClCompile Include="src\kinect\ImageRenderer.cpp">
       <Filter>Source Files\kinect</Filter>
     </ClCompile>
+    <ClCompile Include="src\kinect\avi_utils.cpp">
+      <Filter>Source Files\kinect\avi</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main.h">
@@ -235,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="src\kinect\ImageRenderer.h">
       <Filter>Header Files\kinect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\kinect\avi_utils.h">
+      <Filter>Header Files\avi</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SAM.lib;Msdmo.lib;dmoguids.lib;amstrmid.lib;avrt.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SAM.lib;Msdmo.lib;dmoguids.lib;amstrmid.lib;avrt.lib;kernel32.lib;user32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp.lib;Vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,6 +114,7 @@
     <ClCompile Include="src\cskybox.cpp" />
     <ClCompile Include="src\cterrain.cpp" />
     <ClCompile Include="src\cwater.cpp" />
+    <ClCompile Include="src\kinect\avi_utils.cpp" />
     <ClCompile Include="src\kinect\CAudioProcessor.cpp" />
     <ClCompile Include="src\kinect\CDeformableTemplateModel.cpp" />
     <ClCompile Include="src\kinect\chand.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="src\cterrain.h" />
     <ClInclude Include="src\cwater.h" />
     <ClInclude Include="src\helper.h" />
+    <ClInclude Include="src\kinect\avi_utils.h" />
     <ClInclude Include="src\kinect\CAudioProcessor.h" />
     <ClInclude Include="src\kinect\CDeformableTemplateModel.h" />
     <ClInclude Include="src\kinect\chand.h" />

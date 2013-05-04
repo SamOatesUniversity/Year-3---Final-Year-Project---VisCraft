@@ -1,5 +1,3 @@
-#pragma once
-
 #include "crenderer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -7,6 +5,8 @@
 
 #include <fstream>
 #include <vector>
+
+#pragma once
 
 class CMesh {
 
