@@ -36,7 +36,7 @@ void CBrushNoise::Apply(
 			{
 				continue;
 			}
-			float noise = (500 - (rand() % 1000)) * 0.001f;
+			float noise = (500 - (rand() % 1000)) * 0.00025f;
 			hmap->position.y += noise;
 		}
 	}
@@ -70,7 +70,7 @@ void CBrushNoise::Apply(
 			{
 				continue;
 			}
-			float noise = (500 - (rand() % 1000)) * 0.001f;
+			float noise = (500 - (rand() % 1000)) * 0.00025f;
 			hmap->position.y += noise;
 		}
 	}

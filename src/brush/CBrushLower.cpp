@@ -65,7 +65,7 @@ void CBrushLower::Apply(
 			float scale = 1;
 			if (xOffset < 0) scale += -xOffset; else scale += xOffset;
 			if (zOffset < 0) scale += -zOffset; else scale += zOffset;
-			scale *= 0.75f;
+			scale *= 5.0f;
 
 			const float scaledMovedAmount = (m_strength / (scale));
 
