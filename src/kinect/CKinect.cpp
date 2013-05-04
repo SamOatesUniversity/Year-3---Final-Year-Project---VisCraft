@@ -5,7 +5,7 @@ static const int g_IntensityShiftByPlayerG[] = { 1, 2, 2, 0, 2, 0, 0, 1 };
 static const int g_IntensityShiftByPlayerB[] = { 1, 0, 2, 2, 0, 2, 0, 2 };
 
 CKinect::CKinect() :
-	m_hwnd(NULL),
+	m_hwndDepth(NULL),
 	m_kinectID(NULL),
 	m_nextDepthFrameEvent(NULL),
 	m_nextColorFrameEvent(NULL),
@@ -60,7 +60,7 @@ const bool CKinect::Create(
 	if (!RegisterClassEx(&wc))
 		return false;
 
-	m_hwnd = CreateWindowEx(
+	m_hwndDepth = CreateWindowEx(
 		WS_EX_TOPMOST,
 		"KinectPreviewClass",
 		"Kinect Preview",
@@ -70,7 +70,7 @@ const bool CKinect::Create(
 		parent, NULL, hInstance, NULL
 	);
 
-	if (m_hwnd == NULL)
+	if (m_hwndDepth == NULL)
 		return false;
 
 	// setup the kinect
@@ -83,11 +83,11 @@ const bool CKinect::Create(
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2DFactory);
 
 	m_drawDepth = new DrawDevice();
-	if (!m_drawDepth->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * 4))
+	if (!m_drawDepth->Initialize(m_hwndDepth, m_D2DFactory, 640, 480, 640 * 4))
 		return false;
 
 	m_drawColor = new ImageRenderer();
-	HRESULT hr = m_drawColor->Initialize(m_hwnd, m_D2DFactory, 640, 480, 640 * sizeof(long));
+	HRESULT hr = m_drawColor->Initialize(m_hwndDepth, m_D2DFactory, 640, 480, 640 * sizeof(long));
 	if (FAILED(hr))
 	{
 		return false;
@@ -158,7 +158,7 @@ const bool CKinect::Create(
 	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
 	m_nuiProcess = CreateThread( NULL, 0, Nui_ProcessThread, this, 0, NULL );
 
-	ShowWindow(m_hwnd, SW_SHOW);
+	ShowWindow(m_hwndDepth, SW_SHOW);
 
 	return true;
 }
@@ -403,6 +403,32 @@ void CKinect::ProcessSpeech()
 	return;
 }
 
+HBITMAP FlipBitmapVertically(HBITMAP hBitmap, HWND hwnd)
+{
+	HDC sourceDC = ::GetDC(hwnd);
+	HDC destDC = ::CreateCompatibleDC(sourceDC);
+
+	BITMAP bitmap;
+	::GetObject(hBitmap, sizeof(bitmap), &bitmap);
+
+	HBITMAP flippedBitmap = ::CreateCompatibleBitmap(destDC, bitmap.bmWidth, bitmap.bmHeight);
+
+	HGDIOBJ oldSource = ::SelectObject(sourceDC, hBitmap);
+	HGDIOBJ destSource = ::SelectObject(destDC, flippedBitmap);
+
+	if (::BitBlt(destDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, sourceDC, 0, 0, SRCCOPY) == 0)
+	{
+		int i = 1;
+		i = 0;
+	}
+
+	// release resources here
+	::SelectObject(sourceDC, oldSource);
+	::SelectObject(destDC, destSource);
+	
+	return flippedBitmap;
+}
+
 HRESULT SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, char *lpszFilePath)
 {
 	DWORD dwByteCount = lWidth * lHeight * (wBitsPerPixel / 8);
@@ -485,7 +511,7 @@ void CKinect::Nui_GotColorAlert()
 		//m_drawColor->Draw(static_cast<BYTE *>(LockedRect.pBits), LockedRect.size);
 
 		// Every 60 seconds save a picture
-		if (static_cast<float>((clock() - m_lastScreenshot)/CLOCKS_PER_SEC) > 20.0f)
+		if (static_cast<float>((clock() - m_lastScreenshot)/CLOCKS_PER_SEC) > 1.0f)
 		{
 			time_t t = time(0);   // get time now
 			struct tm now;
@@ -500,6 +526,26 @@ void CKinect::Nui_GotColorAlert()
 			// Write out the bitmap to disk
 			hr = SaveBitmapToFile(static_cast<BYTE *>(LockedRect.pBits), 640, 480, 32, const_cast<char*>(buf.str().c_str()));
 
+			if (hr == S_OK)
+			{
+				m_screenshots.push_back(buf.str());
+				if (m_screenshots.size() > 0 && (m_screenshots.size() % 6 == 0))
+				{
+					HAVI avi = CreateAvi("./kinect_images/video/timelapse.avi", 1000 / 6, NULL);	// 6fps
+
+					for (std::string imageLocation : m_screenshots)
+					{
+						HBITMAP hbm = (HBITMAP)LoadImage(NULL, imageLocation.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+						//HBITMAP flipped = FlipBitmapVertically(hbm, m_hwndDepth);
+						AddAviFrame(avi, hbm);
+						DeleteObject(hbm);
+						//DeleteObject(flipped);
+					}
+
+					CloseAvi(avi);
+				}
+			}
+			
 			m_lastScreenshot = clock();
 		}
 	}
@@ -584,7 +630,7 @@ RGBQUAD CKinect::Nui_ShortToQuad_Depth(
 void CKinect::Destroy()
 {
 	SetEvent(m_nuiProcessStop);
-	ShowWindow(m_hwnd, SW_HIDE);
+	ShowWindow(m_hwndDepth, SW_HIDE);
 	do {
 		Sleep(10);
 	} while (m_isRunning);

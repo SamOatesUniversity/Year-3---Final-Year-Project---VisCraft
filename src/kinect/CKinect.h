@@ -17,6 +17,7 @@
 #include "CAudioProcessor.h"
 #include "chand.h"
 
+#include "avi_utils.h"
 //#include <vld.h>
 
 #include "../CGui.h"
@@ -29,7 +30,7 @@ class CKinect {
 
 private:
 
-	HWND										m_hwnd;									//!< 
+	HWND										m_hwndDepth;									//!< 
 	ID2D1Factory								*m_D2DFactory;							//!< 
 	DrawDevice									*m_drawDepth;							//!< 
 	ImageRenderer								*m_drawColor;							//!< 
@@ -61,6 +62,8 @@ private:
 	bool										m_isRunning;							//!< The running state of the processing thread
 
 	clock_t										m_lastScreenshot;						//!< 
+
+	std::vector<std::string>					m_screenshots;
 
 private:
 
