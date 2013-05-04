@@ -78,7 +78,7 @@ RGBQUAD* CHand::FindFromDepth(
 
 #ifdef _DEBUG
 	// Draw the bounds if we are in debug mode
-	DrawHandAreaBounds(depthData);
+	//DrawHandAreaBounds(depthData);
 #endif
 	
 	return depthData;
@@ -160,7 +160,7 @@ bool CHand::SampleToHandArea(
 			m_startClose = clock();
 			m_handState = HandState::OpenHand;
 		}
-		else if (static_cast<float>((clock() - m_startClose)/CLOCKS_PER_SEC) > 0.1f)
+		else if (static_cast<float>((clock() - m_startClose)/CLOCKS_PER_SEC) > 0.01f)
 		{
 			m_startClose = 0;
 		}
@@ -183,7 +183,7 @@ bool CHand::SampleToHandArea(
 
 	if (m_handState != HandState::NotFound)
 	{
-		CVisCraft::GetInstance()->GetGizmo()->SetInputType(InputType::Kinect);
+		CVisCraft::GetInstance()->GetGizmo()->SetInputType(InputType::Kinect); 
 	}
 		
 	return true;
@@ -248,6 +248,8 @@ void CHand::DetectHandEdges(
 		RGBQUAD *depthData 
 	)
 {
+	return;
+
 	memcpy(m_edgeTempBuffer, depthData, m_frameWidth * m_frameHeight * sizeof(RGBQUAD));
 
 	const unsigned int left = m_handArea[HandAreaSamplePoint::Left];

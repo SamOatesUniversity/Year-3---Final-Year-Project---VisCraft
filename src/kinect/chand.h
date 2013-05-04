@@ -48,11 +48,6 @@ private:
 														RGBQUAD *depthData
 													);
 
-													//! Draw a green box around the sampled hand area for debugging
-	void											DrawHandAreaBounds(
-														RGBQUAD *depthData
-													);
-
 													//! Detect the edges of the hands and display them in white
 	void											DetectHandEdges(
 														RGBQUAD *depthData
@@ -89,6 +84,11 @@ public:
 													//! Try and find a hand from the depth image
 	RGBQUAD*										FindFromDepth(
 														RGBQUAD *depthData	
+													);
+
+													//! Draw a green box around the sampled hand area for debugging
+	void											DrawHandAreaBounds(
+														RGBQUAD *depthData
 													);
 
 													//! Get the current hand position
