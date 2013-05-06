@@ -222,6 +222,9 @@ void CHand::DrawHandAreaBounds(
 		RGBQUAD *depthData
 	)
 {
+	if (m_handState == HandState::NotFound)
+		return;
+
 	static const int thickness = 1;
 
 	const unsigned int left = m_handArea[HandAreaSamplePoint::Left];
