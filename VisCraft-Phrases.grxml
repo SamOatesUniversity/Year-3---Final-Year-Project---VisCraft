@@ -14,7 +14,6 @@
         <one-of>
           <item> exit </item>
           <item> quit </item>
-          <item> close </item>
         </one-of>
       </item>
 	  <item>
