@@ -508,8 +508,8 @@ void CKinect::Nui_GotColorAlert()
 		// Draw the data with Direct2D
 		//m_drawColor->Draw(static_cast<BYTE *>(LockedRect.pBits), LockedRect.size);
 
-		// Every 60 seconds save a picture
-		if (static_cast<float>((clock() - m_lastScreenshot)/CLOCKS_PER_SEC) > 1.0f)
+		// Every 20 seconds save a picture
+		if (static_cast<float>((clock() - m_lastScreenshot)/CLOCKS_PER_SEC) > 20.0f)
 		{
 			time_t t = time(0);   // get time now
 			struct tm now;
