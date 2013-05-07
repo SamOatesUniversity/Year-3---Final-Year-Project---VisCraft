@@ -23,6 +23,12 @@ private:
 			FileOpen,
 			FileSave,
 			About,
+			WireFrame,
+			Smooth,
+			IncreaseBrushSize,
+			DecreaseBrushSize,
+			IncreaseBrushStrength,
+			DecreaseBrushStrength,
 			Noof
 		};
 	};

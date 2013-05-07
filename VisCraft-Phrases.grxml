@@ -12,7 +12,6 @@
       <item>
         <tag>EXIT</tag>
         <one-of>
-          <item> exit </item>
           <item> quit </item>
         </one-of>
       </item>
@@ -93,6 +92,42 @@
         <tag>ABOUT</tag>
         <one-of>
           <item> about </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>WIREFRAME</tag>
+        <one-of>
+          <item> toggle wire frame </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>SMOOTH</tag>
+        <one-of>
+          <item> toggle smooth render </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>INCREASE-BRUSH-SIZE</tag>
+        <one-of>
+          <item> brush size up </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>DECREASE-BRUSH-SIZE</tag>
+        <one-of>
+          <item> brush size down </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>INCREASE-BRUSH-STRENGTH</tag>
+        <one-of>
+          <item> brush strength up </item>
+        </one-of>
+      </item>
+	  <item>
+        <tag>DECREASE-BRUSH-STRENGTH</tag>
+        <one-of>
+          <item> brush strength down </item>
         </one-of>
       </item>
     </one-of>
