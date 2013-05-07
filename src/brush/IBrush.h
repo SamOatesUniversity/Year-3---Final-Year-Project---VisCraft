@@ -51,6 +51,18 @@ public:
 														m_size = size > 5 ? 5 : size < 1 ? 1 : size;
 													}
 
+													//! Get the strength of the brush
+	float											GetStrength() const
+													{
+														return m_strength;
+													}
+
+													//! Set the strength of the brush
+	void											SetStrength(float strength)
+													{
+														m_strength = strength > 3.0f ? 3.0f : strength < 0.25f ? 0.25f : strength;
+													}
+
 };
 
 class CBrushDeform : public IBrush {

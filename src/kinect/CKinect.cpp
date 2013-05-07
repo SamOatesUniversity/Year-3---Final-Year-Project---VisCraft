@@ -75,7 +75,7 @@ const bool CKinect::Create(
 
 	// setup the kinect
 
-	const HRESULT createResult = NuiCreateSensorByIndex(0, &m_nuiSensor);
+ 	const HRESULT createResult = NuiCreateSensorByIndex(0, &m_nuiSensor);
 	if (FAILED(createResult))
 		return false;
 
@@ -524,23 +524,23 @@ void CKinect::Nui_GotColorAlert()
 			// Write out the bitmap to disk
 			hr = SaveBitmapToFile(static_cast<BYTE *>(LockedRect.pBits), 640, 480, 32, const_cast<char*>(buf.str().c_str()));
 
-			if (hr == S_OK)
-			{
-				m_screenshots.push_back(buf.str());
-				if (m_screenshots.size() > 0 && (m_screenshots.size() % 6 == 0))
-				{
-					HAVI avi = CreateAvi("./kinect_images/video/timelapse.avi", 1000 / 6, NULL);	// 6fps
+			//if (hr == S_OK)
+			//{
+			//	m_screenshots.push_back(buf.str());
+			//	if (m_screenshots.size() > 0 && (m_screenshots.size() % 6 == 0))
+			//	{
+			//		HAVI avi = CreateAvi("./kinect_images/video/timelapse.avi", 1000 / 6, NULL);	// 6fps
 
-					for (std::string imageLocation : m_screenshots)
-					{
-						HBITMAP hbm = (HBITMAP)LoadImage(NULL, imageLocation.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-						AddAviFrame(avi, hbm);
-						DeleteObject(hbm);
-					}
+			//		for (std::string imageLocation : m_screenshots)
+			//		{
+			//			HBITMAP hbm = (HBITMAP)LoadImage(NULL, imageLocation.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+			//			AddAviFrame(avi, hbm);
+			//			DeleteObject(hbm);
+			//		}
 
-					CloseAvi(avi);
-				}
-			}
+			//		CloseAvi(avi);
+			//	}
+			//}
 			
 			m_lastScreenshot = clock();
 		}

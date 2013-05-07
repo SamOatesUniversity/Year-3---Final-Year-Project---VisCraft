@@ -42,6 +42,12 @@ void CAudioProcessor::Process(
 		{L"FILE-OPEN", AudioPhrases::FileOpen},
 		{L"FILE-SAVE", AudioPhrases::FileSave},
 		{L"ABOUT", AudioPhrases::About},
+		{L"WIREFRAME", AudioPhrases::WireFrame},
+		{L"SMOOTH", AudioPhrases::Smooth},
+		{L"INCREASE-BRUSH-SIZE", AudioPhrases::IncreaseBrushSize},
+		{L"DECREASE-BRUSH-SIZE", AudioPhrases::DecreaseBrushSize},
+		{L"INCREASE-BRUSH-STRENGTH", AudioPhrases::IncreaseBrushStrength},
+		{L"DECREASE-BRUSH-STRENGTH", AudioPhrases::DecreaseBrushStrength},
 	};
 
 	AudioPhrases::Enum action = AudioPhrases::Noof;
@@ -176,5 +182,38 @@ void CAudioProcessor::Process(
 			}
 			return;
 		}
+	} else {
+		
+		if (action == AudioPhrases::WireFrame) 
+		{
+			CTerrain *terrain = CVisCraft::GetInstance()->GetTerrain();
+			terrain->GetFlag(TERRAIN_FLAG_WIREFRAME) ? terrain->DisableFlag(TERRAIN_FLAG_WIREFRAME) : terrain->EnableFlag(TERRAIN_FLAG_WIREFRAME);
+		}
+		else if (action == AudioPhrases::Smooth)
+		{
+			CTerrain *terrain = CVisCraft::GetInstance()->GetTerrain();
+			terrain->GetFlag(TERRAIN_FLAG_COLORRENDER) ? terrain->DisableFlag(TERRAIN_FLAG_COLORRENDER) : terrain->EnableFlag(TERRAIN_FLAG_COLORRENDER);
+		}
+		else if (action == AudioPhrases::IncreaseBrushSize)
+		{
+			IBrush *const brush = CVisCraft::GetInstance()->GetGizmo()->GetCurrentBrush();
+			brush->SetSize(brush->GetSize() + 1);
+		}
+		else if (action == AudioPhrases::DecreaseBrushSize)
+		{
+			IBrush *const brush = CVisCraft::GetInstance()->GetGizmo()->GetCurrentBrush();
+			brush->SetSize(brush->GetSize() - 1);
+		}
+		else if (action == AudioPhrases::IncreaseBrushStrength)
+		{
+			IBrush *const brush = CVisCraft::GetInstance()->GetGizmo()->GetCurrentBrush();
+			brush->SetStrength(brush->GetStrength() + 0.5f);
+		}
+		else if (action == AudioPhrases::DecreaseBrushStrength)
+		{
+			IBrush *const brush = CVisCraft::GetInstance()->GetGizmo()->GetCurrentBrush();
+			brush->SetStrength(brush->GetStrength() - 0.5f);
+		}
+
 	}
 }

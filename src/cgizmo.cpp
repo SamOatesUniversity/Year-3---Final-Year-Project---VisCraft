@@ -192,7 +192,7 @@ void CGizmo::Render(
 	if (m_gizmoState == GizmoState::Free)
 	{
 		// green
-		gizmoDataPtr->color = D3DXVECTOR4(0.0f, 0.6f, 0.0f, 0.01f);
+		gizmoDataPtr->color = D3DXVECTOR4(0.25f * (brush->GetStrength() * brush->GetStrength()), 0.6f * brush->GetStrength(), 0.1f * (3.0f - brush->GetStrength()), 0.01f);
 	}
 	else
 	{
