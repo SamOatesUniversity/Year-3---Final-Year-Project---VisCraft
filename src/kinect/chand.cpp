@@ -30,11 +30,16 @@ bool CHand::Create(
 	m_lastPosition.x *= 0.5f;
 	m_lastPosition.y *= 0.75f;
 
+	m_configuratState = ConfigurationState::None;
+
+	m_handSize.x = 90;
+	m_handSize.y = 30;
+
 	return true;
 }
 
 RGBQUAD* CHand::FindFromDepth( 
-		RGBQUAD* depthData 
+		RGBQUAD* depthData
 	)
 {
 	// start with a simple depth cull.
@@ -76,11 +81,6 @@ RGBQUAD* CHand::FindFromDepth(
 	// From the hand bounding box, perform edge detection
 	DetectHandEdges(depthData);
 
-#ifdef _DEBUG
-	// Draw the bounds if we are in debug mode
-	//DrawHandAreaBounds(depthData);
-#endif
-	
 	return depthData;
 }
 
@@ -131,8 +131,8 @@ bool CHand::SampleToHandArea(
 	const int heightOfHand = bottom - top;
 
 	// if the sample are is massive, its probably not a hand... or its a giant.
-	if (widthOfHand > 100) valid = false;
-	if (widthOfHand < 20) valid = false;
+	if (widthOfHand > m_handSize.x) valid = false;
+	if (widthOfHand < m_handSize.y) valid = false;
 
 	if (!valid)
 	{
@@ -151,7 +151,16 @@ bool CHand::SampleToHandArea(
 	float yPos = top + (heightOfHand * 0.5f);
 
 	HandState::Enum oldState = m_handState;
-	m_handState = widthOfHand > 70 ? HandState::OpenHand : HandState::ClosedFist;
+
+	float differenceToMax = m_handSize.x - widthOfHand;
+	float differnceToMin = widthOfHand - m_handSize.y;
+
+	std::stringstream buf;
+	buf << "Distance To Max: " << differenceToMax << ", Distance To Min: " << differnceToMin << "\n";
+
+	OutputDebugString(buf.str().c_str());
+
+	m_handState = differenceToMax < differnceToMin ? HandState::OpenHand : HandState::ClosedFist;
 
 	if (oldState != HandState::ClosedFist && m_handState == HandState::ClosedFist)
 	{
@@ -342,10 +351,6 @@ const D3DXVECTOR2 CHand::GetHandPosition()
 			m_lastPosition = m_lastPosition - differnce;
 		}
 	}
-
-	//std::stringstream buf;
-	//buf << m_lastPosition.x << ", " << m_lastPosition.y << "\n";
-	//OutputDebugString(buf.str().c_str());
 
 	return m_lastPosition;
 }

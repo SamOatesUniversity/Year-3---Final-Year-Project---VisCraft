@@ -59,11 +59,12 @@ private:
 	ISpRecoGrammar								*m_pSpeechGrammar;						//!< Speech grammar
 	CAudioProcessor								*m_audioCommandProcessor;				//!< Process audio scemantics
 
+	ISpVoice									*m_voice;
+
 	bool										m_isRunning;							//!< The running state of the processing thread
 
 	clock_t										m_lastScreenshot;						//!< 
-
-	std::vector<std::string>					m_screenshots;
+	std::vector<std::string>					m_screenshots;				
 
 private:
 

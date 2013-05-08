@@ -23,18 +23,14 @@ CKinect::CKinect() :
 	m_hand = nullptr;
 	m_audioCommandProcessor = nullptr;
 	m_pKinectAudioStream = nullptr;
+	m_voice = nullptr;
 
 	m_lastScreenshot = 0;
 }
 
 CKinect::~CKinect()
 {
-	SafeDelete(m_drawDepth);
-	SafeDelete(m_drawColor);
-	SafeRelease(m_nuiSensor);
-	SafeReleaseDelete(m_hand);
-	SafeDelete(m_audioCommandProcessor);
-	SafeDelete(m_pKinectAudioStream);
+
 }
 
 const bool CKinect::Create( 
@@ -152,7 +148,7 @@ const bool CKinect::Create(
 	{
 		return false;
 	}
-
+	
 	m_audioCommandProcessor = new CAudioProcessor(gui);
 
 	m_nuiProcessStop = CreateEvent( NULL, FALSE, FALSE, NULL );
@@ -403,28 +399,6 @@ void CKinect::ProcessSpeech()
 	return;
 }
 
-HBITMAP FlipBitmapVertically(HBITMAP hBitmap, HWND hwnd)
-{
-	HDC sourceDC = ::GetDC(hwnd);
-	HDC destDC = ::CreateCompatibleDC(sourceDC);
-
-	BITMAP bitmap;
-	::GetObject(hBitmap, sizeof(bitmap), &bitmap);
-
-	HBITMAP flippedBitmap = ::CreateCompatibleBitmap(destDC, bitmap.bmWidth, bitmap.bmHeight);
-
-	HGDIOBJ oldSource = ::SelectObject(sourceDC, hBitmap);
-	HGDIOBJ destSource = ::SelectObject(destDC, flippedBitmap);
-
-	::BitBlt(destDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, sourceDC, 0, 0, SRCCOPY);
-
-	// release resources here
-	::SelectObject(sourceDC, oldSource);
-	::SelectObject(destDC, destSource);
-	
-	return flippedBitmap;
-}
-
 HRESULT SaveBitmapToFile(BYTE* pBitmapBits, LONG lWidth, LONG lHeight, WORD wBitsPerPixel, char *lpszFilePath)
 {
 	DWORD dwByteCount = lWidth * lHeight * (wBitsPerPixel / 8);
@@ -636,6 +610,14 @@ void CKinect::Destroy()
 	{
 		m_pKinectAudioStream->StopCapture();
 	}
+
+	SafeDelete(m_drawDepth);
+	SafeDelete(m_drawColor);
+	SafeRelease(m_nuiSensor);
+	SafeReleaseDelete(m_hand);
+	SafeDelete(m_audioCommandProcessor);
+	SafeDelete(m_pKinectAudioStream);
+	SafeRelease(m_voice);
 }
 
 const D3DXVECTOR2 CKinect::GetHandPosition()
