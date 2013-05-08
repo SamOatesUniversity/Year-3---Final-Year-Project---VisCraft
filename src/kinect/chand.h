@@ -5,6 +5,7 @@
 #include <SAM.h>
 #include <d3dx9.h>
 #include <time.h>
+#include <sapi.h>
 
 #include "../helper.h"
 #include "CDeformableTemplateModel.h"
@@ -19,6 +20,18 @@ struct HandState {
 	};
 };
 
+struct ConfigurationState {
+	enum Enum {
+		None,
+		Started,
+		HasOpenHand,
+		HasClosedHand,
+		HasVoice,
+		Configured,
+		Noof
+	};
+};
+
 class CHand {
 private:
 
@@ -29,6 +42,7 @@ private:
 	D3DXVECTOR2										m_lastPosition;									//!< 
 	D3DXVECTOR2										m_oldPosition;									//!< 
 	D3DXVECTOR2										m_center;
+	D3DXVECTOR2										m_handSize;
 
 	SAM::TVector<unsigned int, 4>					m_handArea;										//!< 
 	HandState::Enum									m_handState;
@@ -39,6 +53,7 @@ private:
 
 	clock_t											m_startClose;									//!< 
 
+	ConfigurationState::Enum						m_configuratState;								//!< The current state of configuration
 
 private:
 
@@ -83,7 +98,7 @@ public:
 
 													//! Try and find a hand from the depth image
 	RGBQUAD*										FindFromDepth(
-														RGBQUAD *depthData	
+														RGBQUAD *depthData
 													);
 
 													//! Draw a green box around the sampled hand area for debugging
@@ -97,9 +112,10 @@ public:
 													//! Get the current hand state
 	HandState::Enum									GetHandState() const;
 
-
+													//! 
 	void											ResetHandPosition()
 													{
 														m_lastPosition = m_oldPosition;
 													}
+	
 };
