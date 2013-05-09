@@ -166,7 +166,7 @@ HRESULT CKinect::LoadSpeechGrammar()
 	if (SUCCEEDED(hr))
 	{
 		// Populate recognition grammar from file
-		LPCWSTR file = L"VisCraft-Phrases.grxml";
+		LPCWSTR file = L"data/VisCraft-Phrases.grxml";
 		hr = m_pSpeechGrammar->LoadCmdFromFile(file, SPLO_STATIC);
 	}
 

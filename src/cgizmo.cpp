@@ -45,7 +45,7 @@ bool CGizmo::Create(
 	m_renderer = renderer;
 
 	m_gizmoMesh = new CMesh();
-	if (!m_gizmoMesh->LoadMesh(m_renderer, "gizmo.obj"))
+	if (!m_gizmoMesh->LoadMesh(m_renderer, "data/models/gizmo.obj"))
 	{
 		return false;
 	}
@@ -54,13 +54,13 @@ bool CGizmo::Create(
 	HRESULT result;
 	ID3D10Blob* errorMessage = nullptr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("shaders/gizmo.vs", NULL, NULL, "ColorVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/shaders/gizmo.vs", NULL, NULL, "ColorVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 	
 	// Compile the pixel shader code.
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("shaders/gizmo.ps", NULL, NULL, "ColorPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/shaders/gizmo.ps", NULL, NULL, "ColorPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 

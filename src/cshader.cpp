@@ -29,10 +29,10 @@ const bool CShader::Create(
 {
 	m_renderer = renderer;
 
-	const char *const vsFilename = "shaders/terrain_diffuse.vs";
-	const char *const psFilename = "shaders/terrain_diffuse.ps";
-	const char *const vsShadowFilename = "shaders/terrain_shadow.vs";
-	const char *const psShadowFilename = "shaders/terrain_shadow.ps";
+	const char *const vsFilename = "data/shaders/terrain_diffuse.vs";
+	const char *const psFilename = "data/shaders/terrain_diffuse.ps";
+	const char *const vsShadowFilename = "data/shaders/terrain_shadow.vs";
+	const char *const psShadowFilename = "data/shaders/terrain_shadow.ps";
 
 	ID3D10Blob *errorMessage = nullptr;
 	
@@ -217,7 +217,7 @@ const bool CShader::Create(
 	// Load the terrain texture
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
 			renderer->GetDevice(),
-			"graphics/Terrain Textures/low.dds",
+			"data/graphics/Terrain Textures/low.dds",
 			NULL, NULL,
 			&m_texture[TerrainTexture::Low],
 			NULL
@@ -226,7 +226,7 @@ const bool CShader::Create(
 
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
 		renderer->GetDevice(),
-		"graphics/Terrain Textures/medium.dds",
+		"data/graphics/Terrain Textures/medium.dds",
 		NULL, NULL,
 		&m_texture[TerrainTexture::Medium],
 		NULL
@@ -235,7 +235,7 @@ const bool CShader::Create(
 
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
 		renderer->GetDevice(),
-		"graphics/Terrain Textures/high.dds",
+		"data/graphics/Terrain Textures/high.dds",
 		NULL, NULL,
 		&m_texture[TerrainTexture::High],
 		NULL

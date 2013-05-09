@@ -23,7 +23,7 @@ bool CWater::Create(
 	)
 {
 	m_mesh = new CMesh();
-	if (!m_mesh->LoadMesh(renderer, "models/water/water.obj"))
+	if (!m_mesh->LoadMesh(renderer, "data/models/water/water.obj"))
 	{
 		SafeDelete(m_mesh);
 		return false;
@@ -33,13 +33,13 @@ bool CWater::Create(
 	HRESULT result;
 	ID3D10Blob* errorMessage = nullptr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("shaders/water/water.vs", NULL, NULL, "WaterVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/shaders/water/water.vs", NULL, NULL, "WaterVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 
 	// Compile the pixel shader code.
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("shaders/water/water.ps", NULL, NULL, "WaterPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/shaders/water/water.ps", NULL, NULL, "WaterPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 
@@ -105,36 +105,6 @@ bool CWater::Create(
 	result = renderer->GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
 		return false;
-
-	//// Load the terrain texture
-	//if (FAILED(D3DX11CreateShaderResourceViewFromFile(
-	//	renderer->GetDevice(),
-	//	"skybox/texture.dds",
-	//	NULL, NULL,
-	//	&m_texture,
-	//	NULL
-	//)))
-	//	return false;
-	
-	//// Create a texture sampler state description.
-	//D3D11_SAMPLER_DESC samplerDesc;
-	//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	//samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	//samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	//samplerDesc.MipLODBias = 0.0f;
-	//samplerDesc.MaxAnisotropy = 1;
-	//samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	//samplerDesc.BorderColor[0] = 0;
-	//samplerDesc.BorderColor[1] = 0;
-	//samplerDesc.BorderColor[2] = 0;
-	//samplerDesc.BorderColor[3] = 0;
-	//samplerDesc.MinLOD = 0;
-	//samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	//// Create the texture sampler state.
-	//if (FAILED(renderer->GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState)))
-	//	return false;
 
 	return true;
 }
