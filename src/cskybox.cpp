@@ -17,19 +17,19 @@ bool CSkyBox::Create(
 	)
 {
 	m_mesh = new CMesh();
-	m_mesh->LoadMesh(renderer, "skybox/skysphere.obj");
+	m_mesh->LoadMesh(renderer, "data/skybox/skysphere.obj");
 
 	// Compile the vertex shader code.
 	HRESULT result;
 	ID3D10Blob* errorMessage = nullptr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("skybox/skysphere.vs", NULL, NULL, "ColorVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/skybox/skysphere.vs", NULL, NULL, "ColorVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 
 	// Compile the pixel shader code.
 	ID3D10Blob* pixelShaderBuffer = nullptr;
-	result = D3DX11CompileFromFile("skybox/skysphere.ps", NULL, NULL, "ColorPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
+	result = D3DX11CompileFromFile("data/skybox/skysphere.ps", NULL, NULL, "ColorPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 		return false;
 
@@ -99,7 +99,7 @@ bool CSkyBox::Create(
 	// Load the terrain texture
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
 		renderer->GetDevice(),
-		"skybox/texture.dds",
+		"data/skybox/texture.dds",
 		NULL, NULL,
 		&m_texture,
 		NULL

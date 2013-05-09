@@ -18,7 +18,7 @@ bool CTextureShader::Create(
 		ID3D11Device *device
 	)
 {
-	const bool result = InitializeShader(device, "shaders/GUI/texture.vs", "shaders/GUI/texture.ps");
+	const bool result = InitializeShader(device, "data/shaders/GUI/texture.vs", "data/shaders/GUI/texture.ps");
 	if (!result)
 	{
 		return false;
