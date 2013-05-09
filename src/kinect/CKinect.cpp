@@ -26,6 +26,12 @@ CKinect::CKinect() :
 	m_voice = nullptr;
 
 	m_lastScreenshot = 0;
+
+	m_pSpeechContext = nullptr;
+	m_pSpeechRecognizer = nullptr;
+	m_pSpeechContext = nullptr;
+	m_pSpeechGrammar = nullptr;
+	m_pSpeechStream = nullptr;
 }
 
 CKinect::~CKinect()
@@ -211,7 +217,7 @@ HRESULT CKinect::InitializeAudioStream()
 
 		if (SUCCEEDED(hr))
 		{
-			hr = pNuiAudioSource->QueryInterface(IID_IPropertyStore, (void**)&pPropertyStore);
+			pNuiAudioSource->QueryInterface(IID_IPropertyStore, (void**)&pPropertyStore);
 
 			// Set AEC-MicArray DMO system mode. This must be set for the DMO to work properly.
 			// Possible values are:
@@ -277,13 +283,13 @@ HRESULT CKinect::StartSpeechRecognition()
 	if (SUCCEEDED(hr))
 	{
 		// Specify that all top level rules in grammar are now active
-		hr = m_pSpeechGrammar->SetRuleState(NULL, NULL, SPRS_ACTIVE);
+		m_pSpeechGrammar->SetRuleState(NULL, NULL, SPRS_ACTIVE);
 
 		// Specify that engine should always be reading audio
-		hr = m_pSpeechRecognizer->SetRecoState(SPRST_ACTIVE_ALWAYS);
+		m_pSpeechRecognizer->SetRecoState(SPRST_ACTIVE_ALWAYS);
 
 		// Specify that we're only interested in receiving recognition events
-		hr = m_pSpeechContext->SetInterest(SPFEI(SPEI_RECOGNITION), SPFEI(SPEI_RECOGNITION));
+		m_pSpeechContext->SetInterest(SPFEI(SPEI_RECOGNITION), SPFEI(SPEI_RECOGNITION));
 
 		// Ensure that engine is recognizing speech and not in paused state
 		m_pSpeechContext->Pause(0);
@@ -496,25 +502,7 @@ void CKinect::Nui_GotColorAlert()
 			buf << "./kinect_images/" << date.str() << ".bmp";
 
 			// Write out the bitmap to disk
-			hr = SaveBitmapToFile(static_cast<BYTE *>(LockedRect.pBits), 640, 480, 32, const_cast<char*>(buf.str().c_str()));
-
-			//if (hr == S_OK)
-			//{
-			//	m_screenshots.push_back(buf.str());
-			//	if (m_screenshots.size() > 0 && (m_screenshots.size() % 6 == 0))
-			//	{
-			//		HAVI avi = CreateAvi("./kinect_images/video/timelapse.avi", 1000 / 6, NULL);	// 6fps
-
-			//		for (std::string imageLocation : m_screenshots)
-			//		{
-			//			HBITMAP hbm = (HBITMAP)LoadImage(NULL, imageLocation.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-			//			AddAviFrame(avi, hbm);
-			//			DeleteObject(hbm);
-			//		}
-
-			//		CloseAvi(avi);
-			//	}
-			//}
+			SaveBitmapToFile(static_cast<BYTE *>(LockedRect.pBits), 640, 480, 32, const_cast<char*>(buf.str().c_str()));
 			
 			m_lastScreenshot = clock();
 		}

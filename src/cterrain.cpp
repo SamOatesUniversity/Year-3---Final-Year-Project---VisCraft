@@ -686,7 +686,7 @@ void CTerrain::SaveHeightMap(
 	}
 
 	const float min = GetLowestTerrainPoint(); 
-	const float max = GetHighestTerrainPoint(); 
+	//const float max = GetHighestTerrainPoint(); 
 
 	BYTE *fileBuffer = new BYTE[size];
 
@@ -702,7 +702,7 @@ void CTerrain::SaveHeightMap(
 		CloseHandle(file);
 		return;
 	}
-	delete fileBuffer;
+	delete[] fileBuffer;
 
 	CloseHandle(file);
 }

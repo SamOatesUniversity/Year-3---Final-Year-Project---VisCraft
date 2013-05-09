@@ -208,13 +208,13 @@ CStaticMediaBuffer *KinectAudioStream::GetWriteBuffer()
 
     //Get a free buffer if available. Otherwise, get the oldest buffer
     //from the read queue. This is a way of overwriting the oldest data
-    if (m_BufferPool.size() > 0)
+    if (!m_BufferPool.empty())
     {   
         pBuf = m_BufferPool.top();
         m_BufferPool.pop();
         pBuf->SetLength(0);
     }                           
-    else if (m_ReadBufferQueue.size() > 0)
+    else if (!m_ReadBufferQueue.empty())
     {
         pBuf = m_ReadBufferQueue.front();
         m_ReadBufferQueue.pop();
@@ -248,7 +248,7 @@ void KinectAudioStream::ReleaseBuffer(CStaticMediaBuffer* pBuffer)
 void KinectAudioStream::ReleaseAllBuffers()
 {
     EnterCriticalSection(&m_Lock);
-    while (m_ReadBufferQueue.size() > 0)
+    while (!m_ReadBufferQueue.empty())
     {
         CStaticMediaBuffer *pBuf = m_ReadBufferQueue.front();
         m_ReadBufferQueue.pop();
@@ -337,7 +337,7 @@ void KinectAudioStream::ReadOneBuffer(BYTE **ppbData, ULONG* pcbData)
     //Do we already have a buffer we are reading from? Otherwise grab one from the queue
     if (m_CurrentReadBuffer == NULL) 
     {
-        if(m_ReadBufferQueue.size() != 0)
+        if(!m_ReadBufferQueue.empty())
         {
             m_CurrentReadBuffer = m_ReadBufferQueue.front();
             m_ReadBufferQueue.pop();
@@ -364,7 +364,7 @@ void KinectAudioStream::ReadOneBuffer(BYTE **ppbData, ULONG* pcbData)
             m_CurrentReadBuffer = NULL;
             m_CurrentReadBufferIndex = 0;
 
-            if(m_ReadBufferQueue.size() != 0)
+            if(!m_ReadBufferQueue.empty())
             {
                 m_CurrentReadBuffer = m_ReadBufferQueue.front();
                 m_ReadBufferQueue.pop();
@@ -384,7 +384,7 @@ void KinectAudioStream::ReadOneBuffer(BYTE **ppbData, ULONG* pcbData)
 /// <returns>Non-zero if thread ended successfully, zero in case of failure</returns>
 DWORD WINAPI KinectAudioStream::CaptureThread(LPVOID pParam)
 {
-    KinectAudioStream *pthis = (KinectAudioStream *) pParam;
+    KinectAudioStream *pthis = reinterpret_cast<KinectAudioStream*>(pParam);
     return pthis->CaptureThread();
 }
 

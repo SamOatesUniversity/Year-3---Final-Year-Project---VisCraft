@@ -25,6 +25,8 @@ CVisCraft::CVisCraft() :
 	m_skybox = nullptr;
 
 	m_running = false;
+
+	m_screenWidth = m_screenHeight = 0;
 }
 
 /*!
@@ -114,8 +116,6 @@ const bool CVisCraft::Create()
 	m_kinect = new CKinect();
 	if (!m_kinect->Create(m_hwnd, m_hinstance, m_gui))
 	{
-		//VISASSERT(false, "Failed to create the kinect interface class");
-		//return false;
 		SafeDelete(m_kinect);
 		::MessageBox(NULL, "Failed to Initialize the Kinect!", "VisCraft", MB_OK);
 	}
@@ -399,11 +399,6 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 {
 	if (hwnd == m_splashhwnd)
 	{
-		HDC hDC;
-		PAINTSTRUCT ps;
-		RECT area;
-		BITMAP bm;
-
 		switch (message)
 		{
 		case WM_PAINT:
@@ -412,12 +407,16 @@ LRESULT CALLBACK CVisCraft::MessageHandler(
 					m_spashBitmap = LoadBitmap(m_hinstance, MAKEINTRESOURCE(IDB_BITMAP_SPLASHSCREEN));
 				}
 
-				hDC = ::BeginPaint(m_splashhwnd, &ps);
+				PAINTSTRUCT ps;
+				HDC hDC = ::BeginPaint(m_splashhwnd, &ps);
+
+				RECT area;
 				::GetClientRect(m_splashhwnd, &area);
 
 				HDC hdcMem = CreateCompatibleDC(hDC);
 				HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem, m_spashBitmap);
 
+				BITMAP bm;
 				GetObject(m_spashBitmap, sizeof(bm), &bm);
 				BitBlt(hDC, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
