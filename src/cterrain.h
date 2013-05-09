@@ -62,6 +62,7 @@ private:
 	unsigned int			m_indexCount;						//!< The number of indecies
 
 	HeightMap				*m_heightMap;						//!< The heightmap of ther terrain, used for modifying the terrain buffers		
+	VectorType				*m_normalsBuffer;					//!< 
 
 	ID3D11Buffer			*m_vertexBuffer;					//!< Terrain D3D11 vertex buffer
 	ID3D11Buffer			*m_indexBuffer;						//!< Terrain D3D11 index buffer

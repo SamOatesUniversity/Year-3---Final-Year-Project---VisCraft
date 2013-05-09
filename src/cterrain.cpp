@@ -15,6 +15,8 @@ CTerrain::CTerrain()
 	m_indexBuffer = nullptr;
 	m_heightMap = nullptr;
 
+	m_normalsBuffer = nullptr;
+
 	m_size = D3DXVECTOR2(128, 128);
 }
 
@@ -37,7 +39,6 @@ bool CTerrain::Create(
 
 	// create a dummy height map
 	HeightMap *const heightMap = new HeightMap[static_cast<int>(m_size.x * m_size.y)];
-	// Read the image data into the height map.
 	for (int z = 0; z < m_size.y; ++z)
 	{
 		for (int x = 0; x < m_size.x; ++x)
@@ -180,9 +181,11 @@ bool CTerrain::CalculateNormals(
 		HeightMap *heightMap							//!< 
 	)
 {
-	// Create a temporary array to hold the un-normalized normal vectors.
-	VectorType *const normals = new VectorType[static_cast<int>((m_size.x - 1) * (m_size.y - 1))];
-	
+	// If our normal buffer doesn't exist, create it
+	if (m_normalsBuffer == nullptr) {
+		m_normalsBuffer = new VectorType[static_cast<int>((m_size.x - 1) * (m_size.y - 1))];
+	}
+
 	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3], sum[3], length;
 
 	// Go through all the faces in the mesh and calculate their normals.
@@ -218,9 +221,9 @@ bool CTerrain::CalculateNormals(
 			int index = static_cast<int>((z * (m_size.y - 1)) + x);
 
 			// Calculate the cross product of those two vectors to get the un-normalized value for this face normal.
-			normals[index].position.x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
-			normals[index].position.y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
-			normals[index].position.z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+			m_normalsBuffer[index].position.x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
+			m_normalsBuffer[index].position.y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
+			m_normalsBuffer[index].position.z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
 		}
 	}
 
@@ -243,9 +246,9 @@ bool CTerrain::CalculateNormals(
 			{
 				int index = static_cast<int>(((z - 1) * (m_size.y - 1)) + (x - 1));
 
-				sum[0] += normals[index].position.x;
-				sum[1] += normals[index].position.y;
-				sum[2] += normals[index].position.z;
+				sum[0] += m_normalsBuffer[index].position.x;
+				sum[1] += m_normalsBuffer[index].position.y;
+				sum[2] += m_normalsBuffer[index].position.z;
 				count++;
 			}
 
@@ -254,9 +257,9 @@ bool CTerrain::CalculateNormals(
 			{
 				int index = static_cast<int>(((z - 1) * (m_size.y - 1)) + x);
 
-				sum[0] += normals[index].position.x;
-				sum[1] += normals[index].position.y;
-				sum[2] += normals[index].position.z;
+				sum[0] += m_normalsBuffer[index].position.x;
+				sum[1] += m_normalsBuffer[index].position.y;
+				sum[2] += m_normalsBuffer[index].position.z;
 				count++;
 			}
 
@@ -265,9 +268,9 @@ bool CTerrain::CalculateNormals(
 			{
 				int index = static_cast<int>((z * (m_size.y - 1)) + (x - 1));
 
-				sum[0] += normals[index].position.x;
-				sum[1] += normals[index].position.y;
-				sum[2] += normals[index].position.z;
+				sum[0] += m_normalsBuffer[index].position.x;
+				sum[1] += m_normalsBuffer[index].position.y;
+				sum[2] += m_normalsBuffer[index].position.z;
 				count++;
 			}
 
@@ -276,9 +279,9 @@ bool CTerrain::CalculateNormals(
 			{
 				int index = static_cast<int>((z * (m_size.y - 1)) + x);
 
-				sum[0] += normals[index].position.x;
-				sum[1] += normals[index].position.y;
-				sum[2] += normals[index].position.z;
+				sum[0] += m_normalsBuffer[index].position.x;
+				sum[1] += m_normalsBuffer[index].position.y;
+				sum[2] += m_normalsBuffer[index].position.z;
 				count++;
 			}
 
@@ -301,7 +304,7 @@ bool CTerrain::CalculateNormals(
 	}
 
 	// Release the temporary normals.
-	delete [] normals;
+	//delete [] normals;
 
 	return true;
 }
@@ -373,6 +376,7 @@ void CTerrain::Release()
 	SafeRelease(m_indexBuffer);
 	SafeRelease(m_vertexBuffer);
 	SafeDelete(m_heightMap);
+	SafeDelete(m_normalsBuffer);
 }
 
 /*
@@ -406,8 +410,6 @@ void CTerrain::UpdateHeightMap()
 {
 	if (!CalculateNormals(m_heightMap))
 		return;
-
-	//CalculateTextureCoordinates(m_heightMap);
 
 	D3D11_MAPPED_SUBRESOURCE resource;
 	const HRESULT result = m_renderer->GetDeviceContext()->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
