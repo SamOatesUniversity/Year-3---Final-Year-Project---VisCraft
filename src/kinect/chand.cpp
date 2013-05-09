@@ -185,7 +185,7 @@ bool CHand::SampleToHandArea(
 
 	m_palm = D3DXVECTOR2(xPos, yPos);
 
-	if (oldState == HandState::NotFound || m_handState == HandState::ClosedFist)
+	if (oldState == HandState::NotFound || (m_handState == HandState::ClosedFist && oldState == HandState::OpenHand))
 	{
 		m_center = m_palm;
 	}
@@ -338,7 +338,7 @@ void CHand::Release()
 
 const D3DXVECTOR2 CHand::GetHandPosition()
 {
-	if (m_handState == HandState::OpenHand)
+	if (m_handState == HandState::OpenHand || m_handState == HandState::ClosedFist)
 	{
 		D3DXVECTOR2 differnce = (m_center - m_palm);
 		differnce.x = differnce.x * 0.025f;
