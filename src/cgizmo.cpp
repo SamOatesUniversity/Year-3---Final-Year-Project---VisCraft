@@ -268,6 +268,10 @@ void CGizmo::Control(
 				m_gizmoState = GizmoState::Free;
 			}
 		}
+		else
+		{
+			m_gizmoState = GizmoState::Free;
+		}
 
 		if (m_gizmoState == GizmoState::Free)
 		{
@@ -375,6 +379,10 @@ void CGizmo::Control(
 					m_gizmoState = GizmoState::Free;
 				}
 			}
+		}
+		else
+		{
+			m_gizmoState = GizmoState::Free;
 		}
 
 		if (m_gizmoState == GizmoState::Free)
