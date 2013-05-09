@@ -47,7 +47,13 @@ class CStaticMediaBuffer : public IMediaBuffer
 {
 public:
     // Constructor
-    CStaticMediaBuffer() : m_dataLength(0) {}
+    CStaticMediaBuffer() : m_dataLength(0) 
+	{
+		for (int dataindex = 0; dataindex < AudioSamplesPerSecond * AudioBlockAlign; ++dataindex)
+		{
+			m_pData[dataindex] = 0;
+		}
+	}
 
     // IUnknown methods
     STDMETHODIMP_(ULONG) AddRef() { return 2; }

@@ -2,16 +2,21 @@
 
 CRenderTexture::CRenderTexture()
 {
-	m_renderTargetTexture = 0;
-	m_renderTargetView = 0;
-	m_shaderResourceView = 0;
-	m_depthStencilBuffer = 0;
-	m_depthStencilView = 0;
+	m_renderTargetTexture = nullptr;
+	m_renderTargetView = nullptr;
+	m_shaderResourceView = nullptr;
+	m_depthStencilBuffer = nullptr;
+	m_depthStencilView = nullptr;
 }
 
 
 CRenderTexture::CRenderTexture(const CRenderTexture& other)
 {
+	m_renderTargetTexture = nullptr;
+	m_renderTargetView = nullptr;
+	m_shaderResourceView = nullptr;
+	m_depthStencilBuffer = nullptr;
+	m_depthStencilView = nullptr;
 }
 
 

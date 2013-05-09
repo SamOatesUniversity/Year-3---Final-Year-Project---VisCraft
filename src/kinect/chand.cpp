@@ -9,6 +9,12 @@ CHand::CHand() : m_edgeTempBuffer(nullptr)
 	m_handState = HandState::NotFound;
 	m_startClose = 0;
 	m_center = D3DXVECTOR2(m_frameWidth * 0.5f, m_frameHeight * 0.5f);
+	m_configuratState = ConfigurationState::None;
+
+	for (unsigned int dtmIndex = 0; dtmIndex < HandState::Noof; ++dtmIndex)
+	{
+			m_handStateDTM[dtmIndex] = nullptr;
+	}
 }
 
 CHand::~CHand()

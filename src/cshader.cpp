@@ -14,6 +14,9 @@ CShader::CShader()
 	m_lightBuffer = nullptr;
 	m_sampleState = nullptr;
 
+	m_light = nullptr;
+	m_shadowbuffer = nullptr;
+
 	for (int textureIndex = 0; textureIndex < TerrainTexture::Noof; ++textureIndex)
 		m_texture[textureIndex] = nullptr;
 }

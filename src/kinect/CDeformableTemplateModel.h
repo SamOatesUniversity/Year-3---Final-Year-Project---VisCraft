@@ -27,13 +27,6 @@ private:
 	SamplePoint															m_center;
 	std::vector<SamplePoint>											m_points;
 
-																		//! Test the DTM against a buffer of data
-	bool																TestPoint(
-																			RGBQUAD *data,
-																			const unsigned int xOffset,
-																			const unsigned int yOffset
-																		);
-
 public:
 																		//! Class constructor
 																		CDeformableTemplateModel();

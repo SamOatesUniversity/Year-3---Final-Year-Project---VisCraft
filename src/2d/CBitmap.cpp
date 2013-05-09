@@ -5,6 +5,15 @@ CBitmap::CBitmap()
 	m_vertexBuffer = nullptr;
 	m_indexBuffer = nullptr;
 	m_texture = nullptr;
+
+	m_vertexCount = 0;
+	m_indexCount = 0;
+	m_screenWidth = 0;
+	m_screenHeight = 0;
+	m_bitmapWidth = 0;
+	m_bitmapHeight = 0;
+	m_previousPosX = 0;
+	m_previousPosY = 0;
 }
 
 CBitmap::~CBitmap()
@@ -105,17 +114,9 @@ const bool CBitmap::CreateBuffers(
 
 	// Create the vertex array.
 	VertexType *const vertices = new VertexType[m_vertexCount];
-	if(!vertices)
-	{
-		return false;
-	}
 
 	// Create the index array.
 	unsigned long *const indices = new unsigned long[m_indexCount];
-	if(!indices)
-	{
-		return false;
-	}
 
 	// Initialize vertex array to zeros at first.
 	memset(vertices, 0, (sizeof(VertexType) * m_vertexCount));
@@ -145,6 +146,8 @@ const bool CBitmap::CreateBuffers(
 	const HRESULT createVertexBufferResult = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
 	if (FAILED(createVertexBufferResult))
 	{
+		delete [] vertices;
+		delete [] indices;
 		return false;
 	}
 
@@ -167,6 +170,8 @@ const bool CBitmap::CreateBuffers(
 	const HRESULT createIndexBufferResult = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
 	if (FAILED(createIndexBufferResult))
 	{
+		delete [] vertices;
+		delete [] indices;
 		return false;
 	}
 
@@ -227,10 +232,6 @@ bool CBitmap::UpdateBuffers(
 
 	// Create the vertex array.
 	VertexType *const vertices = new VertexType[m_vertexCount];
-	if (!vertices)
-	{
-		return false;
-	}
 
 	// Load the vertex array with data.
 	// First triangle.
@@ -258,6 +259,7 @@ bool CBitmap::UpdateBuffers(
 	const HRESULT mapResult = deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(mapResult))
 	{
+		delete [] vertices;
 		return false;
 	}
 

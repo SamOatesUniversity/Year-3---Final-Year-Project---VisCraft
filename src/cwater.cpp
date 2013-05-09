@@ -22,6 +22,7 @@ bool CWater::Create(
 		CRenderer *renderer
 	)
 {
+	SafeDelete(m_mesh);
 	m_mesh = new CMesh();
 	if (!m_mesh->LoadMesh(renderer, "data/models/water/water.obj"))
 	{

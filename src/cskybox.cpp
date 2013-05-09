@@ -5,6 +5,10 @@ CSkyBox::CSkyBox()
 	m_mesh = nullptr;
 	m_texture = nullptr;
 	m_sampleState = nullptr;
+	m_vertexShader = nullptr;
+	m_pixelShader = nullptr;
+	m_layout = nullptr;
+	m_matrixBuffer = nullptr;
 }
 
 CSkyBox::~CSkyBox()
@@ -16,6 +20,11 @@ bool CSkyBox::Create(
 		CRenderer *renderer
 	)
 {
+	if (m_mesh != nullptr)
+	{
+		SafeDelete(m_mesh);
+	}
+
 	m_mesh = new CMesh();
 	m_mesh->LoadMesh(renderer, "data/skybox/skysphere.obj");
 
@@ -25,23 +34,35 @@ bool CSkyBox::Create(
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	result = D3DX11CompileFromFile("data/skybox/skysphere.vs", NULL, NULL, "ColorVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Compile the pixel shader code.
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	result = D3DX11CompileFromFile("data/skybox/skysphere.ps", NULL, NULL, "ColorPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Create the vertex shader from the buffer.
 	result = renderer->GetDevice()->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Create the pixel shader from the buffer.
 	result = renderer->GetDevice()->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Now setup the layout of the data that goes into the shader.
 	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
@@ -76,7 +97,10 @@ bool CSkyBox::Create(
 	// Create the vertex input layout.
 	result = renderer->GetDevice()->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	SafeRelease(vertexShaderBuffer);
@@ -94,7 +118,10 @@ bool CSkyBox::Create(
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	result = renderer->GetDevice()->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	// Load the terrain texture
 	if (FAILED(D3DX11CreateShaderResourceViewFromFile(
@@ -104,7 +131,10 @@ bool CSkyBox::Create(
 		&m_texture,
 		NULL
 	)))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 	
 
 	// Create a texture sampler state description.
@@ -125,7 +155,10 @@ bool CSkyBox::Create(
 
 	// Create the texture sampler state.
 	if (FAILED(renderer->GetDevice()->CreateSamplerState(&samplerDesc, &m_sampleState)))
+	{
+		SafeDelete(m_mesh);
 		return false;
+	}
 
 	return true;
 }

@@ -2,7 +2,9 @@
 
 CDeformableTemplateModel::CDeformableTemplateModel()
 {
-
+	m_center.color.Set(0, 0, 0);
+	m_center.position.Set(0, 0);
+	m_center.tolerance = 0;
 }
 
 CDeformableTemplateModel::~CDeformableTemplateModel()
@@ -68,15 +70,6 @@ bool CDeformableTemplateModel::Test(
 		}
 	}
 
-	return false;
-}
-
-bool CDeformableTemplateModel::TestPoint( 
-		RGBQUAD *data, 
-		const unsigned int xOffset, 
-		const unsigned int yOffset 
-	)
-{
 	return false;
 }
 
