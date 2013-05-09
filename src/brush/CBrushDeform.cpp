@@ -60,7 +60,7 @@ void CBrushDeform::Apply(
 		return;
 
 	const D3DXVECTOR2 mousePos = kinect->GetHandPosition();
-	const float moveAmount = ((mousePos.y - gizmo->DragData().lastY) * 0.025f) * m_strength;
+	const float moveAmount = ((mousePos.y - gizmo->DragData().lastY) * 0.1f) * m_strength;
 
 	if (moveAmount == 0.0f)
 		return;
