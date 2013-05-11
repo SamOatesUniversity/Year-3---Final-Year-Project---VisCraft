@@ -174,7 +174,7 @@ void CSkyBox::Render(
 
 	D3DXMATRIX xformmat, scalemat;
 	D3DXMatrixTranslation(&xformmat, 64, 0, 64); 
-	D3DXMatrixScaling(&scalemat, 2.0f, 2.0f, 2.0f);
+	D3DXMatrixScaling(&scalemat, 5.0f, 5.0f, 5.0f);
 
 	D3DXMatrixMultiply (&world, &scalemat, &xformmat);
 
