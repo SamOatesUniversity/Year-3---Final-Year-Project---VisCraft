@@ -79,25 +79,35 @@ const bool CKinect::Create(
 
  	const HRESULT createResult = NuiCreateSensorByIndex(0, &m_nuiSensor);
 	if (FAILED(createResult))
+	{
+		VISASSERT(false, "Could not initialize the Kinect device. Is it plugged in?");
 		return false;
+	}
 
 	m_kinectID = m_nuiSensor->NuiDeviceConnectionId();
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_D2DFactory);
 
 	m_drawDepth = new DrawDevice();
 	if (!m_drawDepth->Initialize(m_hwndDepth, m_D2DFactory, 640, 480, 640 * 4))
+	{
+		VISASSERT(false, "Failed to create the depth draw buffer");
 		return false;
+	}
 
 	m_drawColor = new ImageRenderer();
 	HRESULT hr = m_drawColor->Initialize(m_hwndDepth, m_D2DFactory, 640, 480, 640 * sizeof(long));
 	if (FAILED(hr))
 	{
+		VISASSERT(false, "Failed to create the color draw buffer");
 		return false;
 	}
 
 	const HRESULT initResult = m_nuiSensor->NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH | NUI_INITIALIZE_FLAG_USES_COLOR | NUI_INITIALIZE_FLAG_USES_AUDIO);
 	if (FAILED(initResult))
+	{
+		VISASSERT(false, "Could not initialize the Kinect device. Is it plugged in?");
 		return false;
+	}
 
 	m_nextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
 
@@ -111,7 +121,10 @@ const bool CKinect::Create(
 	);
 
 	if (FAILED(depthStreeam))
+	{
+		VISASSERT(false, "Could not start the depth stream, are you using a PC Kinect?");
 		return false;
+	}
 
 	m_nextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
 
@@ -125,7 +138,10 @@ const bool CKinect::Create(
 		);
 
 	if (FAILED(colorStreeam))
+	{
+		VISASSERT(false, "Could not initialize the Kinect color stream. Is the Kinect plugged in?");
 		return false;
+	}
 
 	m_hand = new CHand();
 	m_hand->Create(640, 480);
@@ -134,24 +150,28 @@ const bool CKinect::Create(
 	hr = InitializeAudioStream();
 	if (FAILED(hr))
 	{
+		VISASSERT(false, "Could not initialize the Kinect microphones. Are the enabled in the Windows sound settings?");
 		return false;
 	}
 
 	hr = CreateSpeechRecognizer();
 	if (FAILED(hr))
 	{
+		VISASSERT(false, "Could not initialize the Kinect microphones. Are the enabled in the Windows sound settings?");
 		return false;
 	}
 
 	hr = LoadSpeechGrammar();
 	if (FAILED(hr))
 	{
+		VISASSERT(false, "Could not parse the speech grammar file, is the file corrupted?");
 		return false;
 	}
 
 	hr = StartSpeechRecognition();
 	if (FAILED(hr))
 	{
+		VISASSERT(false, "An unknown audio initialization error has occured");
 		return false;
 	}
 	
