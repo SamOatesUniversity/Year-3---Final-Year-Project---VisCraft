@@ -178,6 +178,8 @@
     <ResourceCompile Include="resource\Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\graphics\icon.ico" />
+    <Image Include="data\graphics\SplashScreen.bmp" />
     <Image Include="graphics\SplashScreen.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
