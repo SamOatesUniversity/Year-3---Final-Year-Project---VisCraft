@@ -476,6 +476,18 @@ const bool CTerrain::LoadHeightMap(
 		return false;
 	}
 
+	if (fileInfo.biWidth != fileInfo.biHeight)
+	{
+		VISASSERT(false, "Heightmap image is not square");
+		return false;
+	}
+
+	if (fileInfo.biBitCount / 8 != 3)
+	{
+		VISASSERT(false, "The height map is not a 24 bit image");
+		return false;
+	}
+
 	m_size = D3DXVECTOR2(static_cast<float>(fileInfo.biWidth), static_cast<float>(fileInfo.biHeight));
 
 	const unsigned int imageSize = static_cast<const unsigned int>(m_size.x * m_size.y * 3);

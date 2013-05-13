@@ -43,6 +43,11 @@ CVisCraft::~CVisCraft()
  */
 const bool CVisCraft::Create()
 {
+	if (!PrepareData())
+	{
+		return false;
+	}
+
 	m_instance = this;
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
@@ -626,6 +631,68 @@ void CVisCraft::SaveTerrain()
 	}
 
 	m_terrain->DisableFlag(TERRAIN_FLAG_LOCK);
+}
+
+bool CVisCraft::PrepareData()
+{
+	auto checkFile = [](const char *const path)
+	{
+		DWORD dwAttrib = GetFileAttributes(path);
+		if (dwAttrib != INVALID_FILE_ATTRIBUTES) 
+		{
+			return true;
+		}
+
+		std::stringstream errorBuf;
+		errorBuf << "The file '" << path << "' is missing, please make sure the file exists and try launching VisCraft again.";
+		::MessageBox(NULL, errorBuf.str().c_str(), "Failed to Prepare File", MB_OK | MB_ICONERROR);
+		return false;
+	};
+
+	// root
+	if (!checkFile("data/VisCraft-Phrases.grxml")) return false;
+
+	// graphics
+	if (!checkFile("data/graphics/SplashScreen.bmp")) return false;
+	if (!checkFile("data/graphics/GUI/overlay.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/main_menu.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/listening.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/file.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/deform.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/level.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/lower.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/noise.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/raise.png")) return false;
+	if (!checkFile("data/graphics/GUI/text overlay/brushes/smooth.png")) return false;
+	if (!checkFile("data/graphics/Terrain Textures/base.dds")) return false;
+	if (!checkFile("data/graphics/Terrain Textures/high.dds")) return false;
+	if (!checkFile("data/graphics/Terrain Textures/low.dds")) return false;
+	if (!checkFile("data/graphics/Terrain Textures/medium.dds")) return false;
+
+	// models
+	if (!checkFile("data/models/gizmo.obj")) return false;
+	if (!checkFile("data/models/water/water.obj")) return false;
+	
+	// shaders
+	if (!checkFile("data/shaders/gizmo.ps")) return false;
+	if (!checkFile("data/shaders/gizmo.vs")) return false;
+	if (!checkFile("data/shaders/terrain_diffuse.ps")) return false;
+	if (!checkFile("data/shaders/terrain_diffuse.vs")) return false;
+	if (!checkFile("data/shaders/terrain_shadow.ps")) return false;
+	if (!checkFile("data/shaders/terrain_shadow.vs")) return false;
+	if (!checkFile("data/shaders/GUI/texture.ps")) return false;
+	if (!checkFile("data/shaders/GUI/texture.vs")) return false;
+	if (!checkFile("data/shaders/water/water.ps")) return false;
+	if (!checkFile("data/shaders/water/water.vs")) return false;
+
+	// skybox
+	if (!checkFile("data/skybox/skysphere.obj")) return false;
+	if (!checkFile("data/skybox/skysphere.ps")) return false;
+	if (!checkFile("data/skybox/skysphere.vs")) return false;
+	if (!checkFile("data/skybox/texture.dds")) return false;
+
+	return true;
 }
 
 /*!
