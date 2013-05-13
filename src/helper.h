@@ -26,7 +26,14 @@
 		} \
 	} while (false)
 #else
-	#define VISASSERT(condition, message) do { } while (false)
+	#define VISASSERT(condition, message) \
+	do { \
+		if (!(condition)) { \
+		std::stringstream msg; \
+		msg << message; \
+		::MessageBox(NULL, msg.str().c_str(), "Assert Failed", MB_OK | MB_ICONERROR); \
+		} \
+	} while (false)
 #endif
 
 
