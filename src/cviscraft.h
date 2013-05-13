@@ -130,4 +130,7 @@ public:
 								{
 									return m_terrain;
 								}
+
+								//! 
+	bool						PrepareData();
 };
